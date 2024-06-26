@@ -9,7 +9,14 @@ import { CommonInputProps, InputBase, isENS } from "~~/components/scaffold-eth";
 /**
  * Address input with ENS name resolution
  */
-export const AddressInput = ({ value, name, placeholder, onChange, disabled }: CommonInputProps<Address | string>) => {
+export const AddressInput = ({
+  value,
+  name,
+  placeholder,
+  onChange,
+  disabled,
+  triggerValidation,
+}: CommonInputProps<Address | string>) => {
   // Debounce the input to keep clean RPC calls when resolving ENS names
   // If the input is an address, we don't need to debounce it
   const [_debouncedValue] = useDebounceValue(value, 500);
@@ -32,7 +39,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
       enabled: isDebouncedValueLive && isENS(debouncedValue),
     },
   });
-
+  const [errorState, setError] = useState<boolean>(() => false);
   const [enteredEnsName, setEnteredEnsName] = useState<string>();
   const {
     data: ensName,
@@ -66,10 +73,19 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     onChange(ensAddress);
   }, [ensAddress, onChange, debouncedValue]);
 
+  useEffect(() => {
+    if (triggerValidation && !isAddress(value)) {
+      setError(true);
+    }
+  }, [triggerValidation, value]);
+
   const handleChange = useCallback(
     (newValue: Address) => {
       setEnteredEnsName(undefined);
       onChange(newValue);
+      if (errorState) {
+        setError(false);
+      }
     },
     [onChange],
   );
@@ -81,12 +97,11 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
     isEnsAddressSuccess ||
     ensName === null ||
     ensAddress === null;
-
   return (
     <InputBase<Address>
       name={name}
       placeholder={placeholder}
-      error={ensAddress === null}
+      error={errorState}
       value={value as Address}
       onChange={handleChange}
       disabled={isEnsAddressLoading || isEnsNameLoading || disabled}
@@ -117,7 +132,7 @@ export const AddressInput = ({ value, name, placeholder, onChange, disabled }: C
       suffix={
         // Don't want to use nextJS Image here (and adding remote patterns for the URL)
         // eslint-disable-next-line @next/next/no-img-element
-        value && <img alt="" className="!rounded-full" src={blo(value as `0x${string}`)} width="35" height="35" />
+        value && <img alt="" className="!rounded-3xl mr-2" src={blo(value as `0x${string}`)} width="35" height="35" />
       }
     />
   );

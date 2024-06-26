@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
@@ -32,7 +32,7 @@ export const ReadOnlyFunctionForm = ({
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [result, setResult] = useState<unknown>();
   const { targetNetwork } = useTargetNetwork();
-
+  const [triggerValidation, setTriggerValidation] = useState(false);
   const { isFetching, refetch, error } = useReadContract({
     address: contractAddress,
     functionName: abiFunction.name,
@@ -53,21 +53,26 @@ export const ReadOnlyFunctionForm = ({
   }, [error]);
 
   const transformedFunction = transformAbiFunction(abiFunction);
-  const inputElements = transformedFunction.inputs.map((input, inputIndex) => {
-    const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
-    return (
-      <ContractInput
-        key={key}
-        setForm={updatedFormValue => {
-          setResult(undefined);
-          setForm(updatedFormValue);
-        }}
-        form={form}
-        stateObjectKey={key}
-        paramType={input}
-      />
-    );
-  });
+  const inputElements = useMemo(
+    () =>
+      transformedFunction.inputs.map((input, inputIndex) => {
+        const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
+        return (
+          <ContractInput
+            key={key}
+            setForm={updatedFormValue => {
+              setResult(undefined);
+              setForm(updatedFormValue);
+            }}
+            form={form}
+            stateObjectKey={key}
+            paramType={input}
+            triggerValidation={triggerValidation}
+          />
+        );
+      }),
+    [transformedFunction],
+  );
 
   return (
     <div className="flex flex-col gap-3 py-5 first:pt-0 last:pb-1">
@@ -88,6 +93,8 @@ export const ReadOnlyFunctionForm = ({
         <button
           className="btn btn-secondary btn-sm self-end md:self-start"
           onClick={async () => {
+            setTriggerValidation(true);
+            setTimeout(() => setTriggerValidation(false), 500);
             const { data } = await refetch();
             setResult(data);
           }}

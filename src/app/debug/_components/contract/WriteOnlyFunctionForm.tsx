@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
@@ -38,10 +38,12 @@ export const WriteOnlyFunctionForm = ({
   const writeTxn = useTransactor();
   const { targetNetwork } = useTargetNetwork();
   const writeDisabled = !isConnected || !chain || chain?.id !== targetNetwork.id || chain?.name !== targetNetwork.name;
-
+  const [triggerValidation, setTriggerValidation] = useState(false);
   const { data: result, isPending, writeContractAsync } = useWriteContract();
 
   const handleWrite = async () => {
+    setTriggerValidation(true);
+    setTimeout(() => setTriggerValidation(false), 500);
     if (writeContractAsync) {
       try {
         const makeWriteWithParams = () =>
@@ -68,23 +70,27 @@ export const WriteOnlyFunctionForm = ({
     setDisplayedTxResult(txResult);
   }, [txResult]);
 
-  // TODO use `useMemo` to optimize also update in ReadOnlyFunctionForm
   const transformedFunction = transformAbiFunction(abiFunction);
-  const inputs = transformedFunction.inputs.map((input, inputIndex) => {
-    const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
-    return (
-      <ContractInput
-        key={key}
-        setForm={updatedFormValue => {
-          setDisplayedTxResult(undefined);
-          setForm(updatedFormValue);
-        }}
-        form={form}
-        stateObjectKey={key}
-        paramType={input}
-      />
-    );
-  });
+  const inputs = useMemo(
+    () =>
+      transformedFunction.inputs.map((input, inputIndex) => {
+        const key = getFunctionInputKey(abiFunction.name, input, inputIndex);
+        return (
+          <ContractInput
+            key={key}
+            setForm={updatedFormValue => {
+              setDisplayedTxResult(undefined);
+              setForm(updatedFormValue);
+            }}
+            form={form}
+            stateObjectKey={key}
+            paramType={input}
+            triggerValidation={triggerValidation}
+          />
+        );
+      }),
+    [transformedFunction],
+  );
   const zeroInputs = inputs.length === 0 && abiFunction.stateMutability !== "payable";
 
   return (

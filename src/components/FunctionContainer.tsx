@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { parseEther } from "viem";
-import { useAccount } from "wagmi";
-import { useScaffoldWriteContract, useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { amountValidation } from "~~/utils/amountValidation";
-import { handleInputError } from "~~/utils/errorHandling";
+import React, { useEffect, useMemo, useState } from "react";
+import { Abi, AbiFunction, TransactionReceipt } from "viem";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  ContractInput,
+  TxReceipt,
+  getFunctionInputKey,
+  getInitialFormState,
+  getParsedContractFunctionArgs,
+  transformAbiFunction,
+} from "~~/app/debug/_components/contract";
+import { InheritanceTooltip } from "~~/app/debug/_components/contract/InheritanceTooltip";
+import { useDeployedContractInfo, useTargetNetwork, useTransactor } from "~~/hooks/scaffold-eth";
+import { GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
 /**
  * This component is implemented for 'burn' and 'mint' functions.
@@ -20,137 +28,138 @@ interface FunctionContainerProps {
 
 /**
  * FunctionContainer component
- * @param param0 - Contract name should be same as deployed contract name. Upper and lowercase are included. Also be sure this contract has been added in FunctionContainerProps.
+ * @param contractName - Contract name should be same as deployed contract name. Upper and lowercase are included. Should has been added in FunctionContainerProps.
+ * @param functionName - Mint or Burn
  * @returns A container for the selected function (mint or burn) with input fields and a submit button.
  */
+
 const FunctionContainer = ({ contractName, functionName }: FunctionContainerProps) => {
-  const [addr, setAddr] = useState<string>("");
-  const [amountMint, setAmount] = useState<string>("0");
-  const [amountBurn, setAmountBurn] = useState<string>("0");
-  const addressInputRef = useRef<HTMLInputElement | null>(null);
-  const amountInputRef = useRef<HTMLInputElement | null>(null);
-  const amountInputRefBurn = useRef<HTMLInputElement | null>(null);
   const { chain, isConnected } = useAccount();
   const { targetNetwork } = useTargetNetwork();
   const writeDisabled = !isConnected || !chain || chain?.id !== targetNetwork.id || chain?.name !== targetNetwork.name;
   const suffix = "token";
-  const showAddressInput = functionName === "mint" ? true : false;
+  const writeTxn = useTransactor();
   const contractSymbol = contractName.toLowerCase().endsWith(suffix)
     ? contractName.slice(0, -suffix.length).toUpperCase()
     : contractName.toUpperCase();
-  const titleText = functionName === "mint" ? "💵 Mint " + contractSymbol : "🔥 Burn " + contractSymbol;
-  const buttonText = functionName === "mint" ? "💵 Mint" : "🔥 Burn";
 
-  const handleAddrChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleInputError(addressInputRef, undefined, false);
-    setAddr(event.target.value);
-  };
+  const { data: result, isPending, writeContractAsync } = useWriteContract();
+  const { data: deployedContractData } = useDeployedContractInfo(contractName);
+  const [triggerValidation, setTriggerValidation] = useState(false);
+  const [displayedTxResult, setDisplayedTxResult] = useState<TransactionReceipt>();
 
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleInputError(showAddressInput ? amountInputRef : amountInputRefBurn, undefined, false);
-    showAddressInput ? setAmount(event.target.value) : setAmountBurn(event.target.value);
-  };
+  const { data: txResult } = useWaitForTransactionReceipt({
+    hash: result,
+  });
+  useEffect(() => {
+    setDisplayedTxResult(txResult);
+  }, [txResult]);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleButtonClick();
-    }
-  };
+  const abiFunction = useMemo(() => {
+    if (!deployedContractData) return null;
+    return ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
+      .filter(fn => {
+        const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
+        return isWriteableFunction;
+      })
+      .map(fn => {
+        return {
+          fn,
+          inheritedFrom: ((deployedContractData as GenericContract)?.inheritedFunctions as InheritedFunctions)?.[
+            fn.name
+          ],
+        };
+      })
+      .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1))
+      .find(fn => fn.fn.name === functionName);
+  }, [deployedContractData, functionName]);
 
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract(contractName);
-  const argMint = parseEther(amountMint);
-  const argBurn = parseEther(amountBurn);
+  const [form, setForm] = useState<Record<string, any>>(() => abiFunction && getInitialFormState(abiFunction.fn));
+  const transformedFunction = useMemo(() => (abiFunction ? transformAbiFunction(abiFunction.fn) : null), [abiFunction]);
 
-  const asyncMint = async () => {
-    try {
-      await writeYourContractAsync({
-        functionName: "mint",
-        args: [addr as `0x${string}`, argMint],
-      });
-    } catch (e) {
-      console.error("Error executing mint:", e);
-    }
-  };
-
-  const asyncBurn = async () => {
-    try {
-      await writeYourContractAsync({
-        functionName: "burn",
-        args: [argBurn],
-      });
-    } catch (e) {
-      console.error("Error executing burn:", e);
-    }
-  };
-
+  if (!transformedFunction) {
+    return null;
+  }
   const handleButtonClick = async () => {
-    console.log(`${functionName} ${contractName} Token!`);
-    if (showAddressInput) {
-      if (!/^0x[0-9a-fA-F]{40}$/.test(addr.trim())) {
-        return handleInputError(addressInputRef, "INVALID_ADDRESS");
-      } else if (amountValidation(amountMint, amountInputRef)) {
-        return;
-      }
-    } else {
-      if (amountValidation(amountBurn, amountInputRefBurn)) {
-        return;
+    setTriggerValidation(true);
+    setTimeout(() => setTriggerValidation(false), 500);
+    if (writeContractAsync && abiFunction && deployedContractData) {
+      try {
+        const makeWriteWithParams = () => {
+          return writeContractAsync({
+            address: deployedContractData.address,
+            functionName: abiFunction.fn.name,
+            abi: deployedContractData.abi as Abi,
+            args: getParsedContractFunctionArgs(form),
+          });
+        };
+        await writeTxn(makeWriteWithParams);
+      } catch (e: any) {
+        console.error(`Error executing ${functionName}: `, e);
       }
     }
-    showAddressInput ? await asyncMint() : await asyncBurn();
   };
 
+  const inputs = transformedFunction.inputs.map((input, inputIndex) => {
+    const key = abiFunction
+      ? getFunctionInputKey(abiFunction.fn.name, input, inputIndex)
+      : getFunctionInputKey(functionName, input, inputIndex);
+    return (
+      <ContractInput
+        key={key}
+        setForm={updatedFormValue => {
+          setDisplayedTxResult(undefined);
+          setForm(updatedFormValue);
+        }}
+        form={form}
+        stateObjectKey={key}
+        paramType={input}
+        triggerValidation={triggerValidation}
+      />
+    );
+  });
   return (
     <>
-      <div className="flex flex-col mt-24 justify-center items-center w-full h-auto px-8">
-        <div className="flex flex-col relative w-[35svw] min-w-[500px] max-sm:min-w-[350px] max-sm:w-full lg:max-w-[600px] items-center justify-center">
+      <div
+        className="flex flex-col mt-24 justify-center items-center w-full h-auto px-8"
+        id={contractName + " " + functionName + " id"}
+      >
+        <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
           <div className="flex h-[5.5rem] w-full pr-1 bg-base-300 absolute self-start rounded-[22px] -top-[55px] -left-[1px] shadow-lg shadow-base-300">
-            <h1 className="antialiased font-bold text-3xl max-md:text-xl bold m-2 text-center w-full">{titleText}</h1>
+            <h1 className="antialiased font-bold text-3xl max-md:text-xl bold m-2 text-center w-full">
+              {functionName === "mint" ? "💵 Mint " + contractSymbol : "🔥 Burn " + contractSymbol}
+            </h1>
           </div>
           <div className="relative w-full z-10 p-5 divide-y bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300">
-            <div className="flex flex-col gap-6">
-              <div>
-                {showAddressInput && (
-                  <>
-                    <p className="text my-1">Address:</p>
-                    <div>
-                      <div className="flex min-h-[3.2rem] border-2 border-base-200 bg-base-200 rounded-2xl text-accent">
-                        <input
-                          placeholder="Wallet Address"
-                          ref={addressInputRef}
-                          className="input input-ghost focus:bg-transparent focus:text-gray-400 h-[3rem] min-h-[3rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-500 rounded-2xl"
-                          onKeyDown={handleKeyDown}
-                          onChange={handleAddrChange}
-                        />
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-              <div>
-                <p className="text my-1">Amount:</p>
-                <div className="flex min-h-[3.2rem] border-2 border-base-200 bg-base-200 rounded-2xl text-accent">
-                  <input
-                    placeholder={`${contractSymbol} Token Amount`}
-                    ref={showAddressInput ? amountInputRef : amountInputRefBurn}
-                    className="input input-ghost focus:bg-transparent focus:text-gray-400  h-[3rem] min-h-[3rem] px-4 border w-full font-medium placeholder:text-accent/50 text-gray-400 rounded-2xl"
-                    onChange={handleAmountChange}
-                    onKeyDown={handleKeyDown}
-                  />
-                </div>
-              </div>
+            <div className="flex flex-col justify-center items-center gap-6 min-h-[250px]">
+              <p className="font-medium my-0 break-words -mb-4">
+                <InheritanceTooltip inheritedFrom={abiFunction?.inheritedFrom} />
+              </p>
+              {inputs}
             </div>
             <div className="w-full flex justify-end border-none mt-4 relative">
-              <div
-                className={`flex ${writeDisabled && "tooltip rounded-md"}`}
-                data-tip={!isConnected ? "Connect your wallet" : `Change network to ${targetNetwork.name}`}
-              >
-                <button
-                  className="btn btn-secondary btn-sm text-base rounded-xl w-[110px] h-[40px]"
-                  disabled={writeDisabled}
-                  onClick={handleButtonClick}
+              <div className="flex justify-between gap-2">
+                <div className="flex-grow basis-0">
+                  {displayedTxResult ? <TxReceipt txResult={displayedTxResult} /> : null}
+                </div>
+                <div
+                  className={`flex ${writeDisabled && "tooltip rounded-md"}`}
+                  data-tip={!isConnected ? "Connect your wallet" : `Change network to ${targetNetwork.name}`}
                 >
-                  {buttonText}
-                </button>
+                  <button
+                    className="btn btn-secondary btn-sm text-base rounded-xl w-[110px] h-[40px]"
+                    disabled={writeDisabled}
+                    onClick={handleButtonClick}
+                  >
+                    {isPending ? (
+                      <span className="loading loading-spinner loading-sm"></span>
+                    ) : functionName === "mint" ? (
+                      "💵 Mint"
+                    ) : (
+                      "🔥 Burn"
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

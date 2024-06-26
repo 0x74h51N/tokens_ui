@@ -19,12 +19,13 @@ type ContractInputProps = {
   form: Record<string, any> | undefined;
   stateObjectKey: string;
   paramType: AbiParameter;
+  triggerValidation?: boolean;
 };
 
 /**
  * Generic Input component to handle input's based on their function param type
  */
-export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: ContractInputProps) => {
+export const ContractInput = ({ setForm, form, stateObjectKey, paramType, triggerValidation }: ContractInputProps) => {
   const inputProps = {
     name: stateObjectKey,
     value: form?.[stateObjectKey],
@@ -32,6 +33,7 @@ export const ContractInput = ({ setForm, form, stateObjectKey, paramType }: Cont
     onChange: (value: any) => {
       setForm(form => ({ ...form, [stateObjectKey]: value }));
     },
+    triggerValidation: triggerValidation || false,
   };
 
   const renderInput = () => {

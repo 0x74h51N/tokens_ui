@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
+import { AbiParameter } from "abitype";
 import { Abi, AbiFunction, TransactionReceipt } from "viem";
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
@@ -11,9 +12,8 @@ import {
   getParsedContractFunctionArgs,
   transformAbiFunction,
 } from "~~/app/debug/_components/contract";
-import { InheritanceTooltip } from "~~/app/debug/_components/contract/InheritanceTooltip";
 import { useDeployedContractInfo, useTargetNetwork, useTransactor } from "~~/hooks/scaffold-eth";
-import { GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
+import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 /**
  * This component is implemented for 'burn' and 'mint' functions.
@@ -22,13 +22,13 @@ import { GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contr
  */
 
 interface FunctionContainerProps {
-  contractName: "NNNToken" | "NVMToken" | "NXAGToken" | "NPTtoken";
+  contractName: ContractName;
   functionName: "mint" | "burn";
 }
 
 /**
  * FunctionContainer component
- * @param contractName - Contract name should be same as deployed contract name. Upper and lowercase are included. Should has been added in FunctionContainerProps.
+ * @param contractName - Contract name should be same as deployed contract name. Upper and lowercase are included.
  * @param functionName - Mint or Burn
  * @returns A container for the selected function (mint or burn) with input fields and a submit button.
  */
@@ -44,7 +44,7 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
     : contractName.toUpperCase();
 
   const { data: result, isPending, writeContractAsync } = useWriteContract();
-  const { data: deployedContractData } = useDeployedContractInfo(contractName);
+  const { data: deployedContractData } = useDeployedContractInfo(contractName) as { data: Contract<ContractName> };
   const [triggerValidation, setTriggerValidation] = useState(false);
   const [displayedTxResult, setDisplayedTxResult] = useState<TransactionReceipt>();
 
@@ -62,20 +62,12 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
         const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
         return isWriteableFunction;
       })
-      .map(fn => {
-        return {
-          fn,
-          inheritedFrom: ((deployedContractData as GenericContract)?.inheritedFunctions as InheritedFunctions)?.[
-            fn.name
-          ],
-        };
-      })
-      .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1))
-      .find(fn => fn.fn.name === functionName);
+
+      .find(fn => fn.name === functionName) as AbiFunction;
   }, [deployedContractData, functionName]);
 
-  const [form, setForm] = useState<Record<string, any>>(() => abiFunction && getInitialFormState(abiFunction.fn));
-  const transformedFunction = useMemo(() => (abiFunction ? transformAbiFunction(abiFunction.fn) : null), [abiFunction]);
+  const [form, setForm] = useState<Record<string, any>>(() => abiFunction && getInitialFormState(abiFunction));
+  const transformedFunction = useMemo(() => (abiFunction ? transformAbiFunction(abiFunction) : null), [abiFunction]);
 
   if (!transformedFunction) {
     return null;
@@ -88,7 +80,7 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
         const makeWriteWithParams = () => {
           return writeContractAsync({
             address: deployedContractData.address,
-            functionName: abiFunction.fn.name,
+            functionName: abiFunction.name,
             abi: deployedContractData.abi as Abi,
             args: getParsedContractFunctionArgs(form),
           });
@@ -100,9 +92,9 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
     }
   };
 
-  const inputs = transformedFunction.inputs.map((input, inputIndex) => {
+  const inputs = transformedFunction.inputs.map((input: AbiParameter, inputIndex: number) => {
     const key = abiFunction
-      ? getFunctionInputKey(abiFunction.fn.name, input, inputIndex)
+      ? getFunctionInputKey(abiFunction.name, input, inputIndex)
       : getFunctionInputKey(functionName, input, inputIndex);
     return (
       <ContractInput
@@ -131,12 +123,7 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
             </h1>
           </div>
           <div className="relative w-full z-10 p-5 divide-y bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300">
-            <div className="flex flex-col justify-center items-center gap-6 min-h-[250px]">
-              <p className="font-medium my-0 break-words -mb-4">
-                <InheritanceTooltip inheritedFrom={abiFunction?.inheritedFrom} />
-              </p>
-              {inputs}
-            </div>
+            <div className="flex flex-col justify-center items-center gap-6 min-h-[250px]">{inputs}</div>
             <div className="w-full flex justify-end border-none mt-4 relative">
               <div className="flex justify-between gap-2">
                 <div className="flex-grow basis-0">

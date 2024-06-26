@@ -130,7 +130,11 @@ export const WriteOnlyFunctionForm = ({
             }`}
             data-tip={!isConnected ? "Connect your wallet" : `Change network to ${targetNetwork.name}`}
           >
-            <button className="btn btn-secondary btn-sm" disabled={writeDisabled || isPending} onClick={handleWrite}>
+            <button
+              className="btn btn-secondary btn-sm rounded-xl min-h-[40px] font-bold"
+              disabled={writeDisabled || isPending}
+              onClick={handleWrite}
+            >
               {isPending && <span className="loading loading-spinner loading-xs"></span>}
               Send 💸
             </button>

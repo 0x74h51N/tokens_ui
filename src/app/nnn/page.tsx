@@ -13,6 +13,7 @@ const Page: NextPage = () => {
     <>
       <FunctionContainer functionName="mint" contractName="NNNToken" />
       <FunctionContainer functionName="burn" contractName="NNNToken" />
+      <FunctionContainer functionName="transfer" contractName="NNNToken" />
     </>
   );
 };

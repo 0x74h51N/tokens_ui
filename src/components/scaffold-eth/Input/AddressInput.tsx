@@ -74,10 +74,10 @@ export const AddressInput = ({
   }, [ensAddress, onChange, debouncedValue]);
 
   useEffect(() => {
-    if (triggerValidation && !isAddress(value)) {
+    if ((triggerValidation && !isAddress(value)) || isEnsAddressError || isEnsNameError) {
       setError(true);
     }
-  }, [triggerValidation, value]);
+  }, [triggerValidation, value, isEnsAddressError, isEnsNameError]);
 
   const handleChange = useCallback(
     (newValue: Address) => {

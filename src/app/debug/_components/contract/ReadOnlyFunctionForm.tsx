@@ -91,7 +91,7 @@ export const ReadOnlyFunctionForm = ({
           )}
         </div>
         <button
-          className="btn btn-secondary btn-sm self-end md:self-start"
+          className="btn btn-secondary btn-sm self-end md:self-start rounded-xl min-h-[40px] font-bold"
           onClick={async () => {
             setTriggerValidation(true);
             setTimeout(() => setTriggerValidation(false), 500);

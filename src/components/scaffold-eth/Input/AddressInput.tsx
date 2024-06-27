@@ -132,7 +132,9 @@ export const AddressInput = ({
       suffix={
         // Don't want to use nextJS Image here (and adding remote patterns for the URL)
         // eslint-disable-next-line @next/next/no-img-element
-        value && <img alt="" className="!rounded-3xl mr-2" src={blo(value as `0x${string}`)} width="35" height="35" />
+        value && (
+          <img alt="" className="!rounded-3xl mr-1.5 ml-1" src={blo(value as `0x${string}`)} width="35" height="35" />
+        )
       }
     />
   );

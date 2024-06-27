@@ -69,7 +69,7 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
       >
         <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
           <div className="flex h-[5.5rem] w-full pr-1 bg-base-300 absolute self-start rounded-[22px] -top-[55px] -left-[1px] shadow-lg shadow-base-300">
-            <h1 className="antialiased font-bold text-3xl max-md:text-xl bold m-2 text-center w-full">
+            <h1 className="antialiased font-bold text-3xl max-md:text-2xl max-md:pt-1 bold m-2 text-center w-full">
               {functionName === "mint"
                 ? "💵 Mint " + contractSymbol
                 : functionName === "burn"

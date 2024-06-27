@@ -5,17 +5,17 @@ import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/
 export const ContractWriteMethods = ({
   onChange,
   deployedContractData,
+  functionName,
 }: {
   onChange: () => void;
   deployedContractData: Contract<ContractName>;
+  functionName?: string;
 }) => {
   if (!deployedContractData) {
     return null;
   }
 
-  const functionsToDisplay = (
-    (deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[]
-  )
+  const functions = ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
     .filter(fn => {
       const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
       return isWriteableFunction;
@@ -27,6 +27,10 @@ export const ContractWriteMethods = ({
       };
     })
     .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
+
+  const functionsToDisplay = functionName
+    ? functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase())
+    : functions;
 
   if (!functionsToDisplay.length) {
     return <>No write methods</>;

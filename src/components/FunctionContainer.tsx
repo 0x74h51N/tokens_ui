@@ -1,7 +1,6 @@
 "use client";
 
-import { Abi, AbiFunction } from "viem";
-import { WriteOnlyFunctionForm } from "~~/app/debug/_components/contract";
+import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
 import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
@@ -48,16 +47,6 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
       </p>
     );
   }
-  const abiFunction = ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
-    .filter(fn => {
-      const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
-      return isWriteableFunction;
-    })
-    .find(fn => fn.name.toLowerCase() === functionName.toLowerCase()) as AbiFunction;
-
-  if (!abiFunction) {
-    return <>No write methods</>;
-  }
   function capitalizeFirstLetter(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
@@ -80,11 +69,9 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
             </h1>
           </div>
           <div className="flex flex-col justify-center w-full z-10 p-7 divide-y bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 min-h-[250px]">
-            <WriteOnlyFunctionForm
-              abi={deployedContractData.abi as Abi}
-              key={`${abiFunction?.name}-${contractName}}`}
-              abiFunction={abiFunction}
-              contractAddress={deployedContractData.address}
+            <ContractWriteMethods
+              deployedContractData={deployedContractData}
+              functionName={functionName}
               onChange={() => {}}
             />
           </div>

@@ -18,7 +18,7 @@ interface FunctionContainerProps {
 
 /**
  * FunctionContainer component
- * @param contractName - Contract name should be same as deployed contract name. Upper and lowercase are included.
+ * @param contractName - Contract name should be same as deployed contract name.
  * @param functionName - It should be same as deployed contract abi functions.
  * @returns A container for the selected function (mint or burn) with input fields and a submit button.
  */
@@ -53,7 +53,7 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
       const isWriteableFunction = fn.stateMutability !== "view" && fn.stateMutability !== "pure";
       return isWriteableFunction;
     })
-    .find(fn => fn.name === functionName) as AbiFunction;
+    .find(fn => fn.name.toLowerCase() === functionName.toLowerCase()) as AbiFunction;
 
   if (!abiFunction) {
     return <>No write methods</>;

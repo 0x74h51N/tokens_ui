@@ -36,7 +36,7 @@ const FunctionContainer = ({ contractName, functionName, deployedContractData, o
   return (
     <>
       <div
-        className="flex flex-col  justify-center items-center w-full h-auto px-8"
+        className="flex flex-col  justify-center items-center w-full h-auto"
         id={contractName + " " + functionName + " id"}
       >
         <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">

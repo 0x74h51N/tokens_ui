@@ -9,6 +9,7 @@ import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { formatVariableName } from "~~/utils/formatVariableName";
 import { getParsedError, notification } from "~~/utils/scaffold-eth";
 
 type DisplayVariableProps = {
@@ -17,6 +18,7 @@ type DisplayVariableProps = {
   refreshDisplayVariables: boolean;
   inheritedFrom?: string;
   abi: Abi;
+  nameFix: boolean;
 };
 
 export const DisplayVariable = ({
@@ -25,6 +27,7 @@ export const DisplayVariable = ({
   refreshDisplayVariables,
   abi,
   inheritedFrom,
+  nameFix,
 }: DisplayVariableProps) => {
   const { targetNetwork } = useTargetNetwork();
 
@@ -59,7 +62,9 @@ export const DisplayVariable = ({
   return (
     <div className="space-y-1 pb-2">
       <div className="flex items-center">
-        <h3 className="font-medium text-lg mb-0 break-all">{abiFunction.name}</h3>
+        <h3 className="font-medium text-lg mb-0 break-all">
+          {nameFix ? formatVariableName(abiFunction.name) : abiFunction.name}
+        </h3>
         <button className="btn btn-ghost btn-xs" onClick={async () => await refetch()}>
           {isFetching ? (
             <span className="loading loading-spinner loading-xs"></span>

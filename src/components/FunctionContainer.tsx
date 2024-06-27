@@ -1,7 +1,6 @@
 "use client";
 
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
-import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 /**
@@ -13,6 +12,8 @@ import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 interface FunctionContainerProps {
   contractName: ContractName;
   functionName: string;
+  deployedContractData: Contract<ContractName>;
+  onChange: () => void;
 }
 
 /**
@@ -22,38 +23,20 @@ interface FunctionContainerProps {
  * @returns A container for the selected function (mint or burn) with input fields and a submit button.
  */
 
-const FunctionContainer = ({ contractName, functionName }: FunctionContainerProps) => {
+const FunctionContainer = ({ contractName, functionName, deployedContractData, onChange }: FunctionContainerProps) => {
   const suffix = "token";
-  const { targetNetwork } = useTargetNetwork();
+
   const contractSymbol = contractName.toLowerCase().endsWith(suffix)
     ? contractName.slice(0, -suffix.length).toUpperCase()
     : contractName.toUpperCase();
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName) as {
-    data: Contract<ContractName>;
-    isLoading: boolean;
-  };
-  if (deployedContractLoading) {
-    return (
-      <div className="mt-[15rem] w-full min-h-full flex flex-col justify-center items-center">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    );
-  }
 
-  if (!deployedContractData) {
-    return (
-      <p className="text-3xl mt-14">
-        {`No contract found by the name of "${contractName}" on chain "${targetNetwork.name}"!`}
-      </p>
-    );
-  }
   function capitalizeFirstLetter(s: string) {
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
   return (
     <>
       <div
-        className="flex flex-col mt-32 justify-center items-center w-full h-auto px-8"
+        className="flex flex-col  justify-center items-center w-full h-auto px-8"
         id={contractName + " " + functionName + " id"}
       >
         <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
@@ -72,7 +55,8 @@ const FunctionContainer = ({ contractName, functionName }: FunctionContainerProp
             <ContractWriteMethods
               deployedContractData={deployedContractData}
               functionName={functionName}
-              onChange={() => {}}
+              onChange={onChange}
+              nameFix={true}
             />
           </div>
         </div>

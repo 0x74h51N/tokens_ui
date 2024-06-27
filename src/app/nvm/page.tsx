@@ -1,6 +1,6 @@
 import React from "react";
-import FunctionContainer from "../../components/FunctionContainer";
 import { NextPage } from "next";
+import TokenPage from "~~/components/TokenPage";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export const metadata = getMetadata({
@@ -9,11 +9,7 @@ export const metadata = getMetadata({
 });
 
 const Page: NextPage = () => {
-  return (
-    <>
-      <FunctionContainer functionName="burn" contractName="NVMToken" />
-    </>
-  );
+  return <TokenPage contractName="NVMToken" functionNames={["burn", "transfer"]} />;
 };
 
 export default Page;

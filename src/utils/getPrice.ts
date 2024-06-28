@@ -12,11 +12,13 @@ export interface CoinData {
   price: number;
   total_supply: number;
 }
-export const getPrice = async (name: string, currency: string) => {
+export const getPrice = async (name: string, currency: string): Promise<CoinData | null> => {
   const tokenId = tokenNameToIdMap[name.toLowerCase()] || name.toLowerCase();
-
   try {
-    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}`);
+    const response = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}`, {
+      cache: "force-cache",
+      next: { revalidate: 60 },
+    });
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }

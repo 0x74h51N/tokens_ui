@@ -23,19 +23,25 @@ const ExternalVariable = ({ contractName }: { contractName: ContractName }) => {
     try {
       const response = await fetch(`/api/get-price?tokenName=${contractName.toLowerCase()}&currency=usd`);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("API Network response was not ok");
       }
       const data: CoinData = await response.json();
       setPrice(data.price);
       setSupply(data.total_supply);
-      setFetching(false);
     } catch (error) {
       console.error("Fetch error:", error);
+    } finally {
+      setFetching(false);
     }
   };
 
   useEffect(() => {
     fetchData();
+    const intervalId = setInterval(() => {
+      fetchData();
+    }, 60000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   const variables = [

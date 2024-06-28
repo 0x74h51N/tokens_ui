@@ -1,6 +1,7 @@
 "use client";
 
 import { useReducer } from "react";
+import ExternalVariable from "./ExternalVariable";
 import FunctionContainer from "./FunctionContainer";
 import { Address } from "./scaffold-eth/Address";
 import { ContractVariables } from "~~/app/debug/_components/contract/ContractVariables";
@@ -16,16 +17,18 @@ interface TokenPageProps {
  * FunctionContainer component
  * @param contractName - Contract name should be same as deployed contract name.
  * @param functionNames - They should be same as deployed contract abi functions.
- * @returns A container for the selected function (mint or burn) with input fields and a submit button.
+ * @returns
  */
 
 const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
+
   const { targetNetwork } = useTargetNetwork();
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName) as {
     data: Contract<ContractName>;
     isLoading: boolean;
   };
+
   if (deployedContractLoading) {
     return (
       <div className="mt-[15rem] w-full min-h-full flex flex-col justify-center items-center">
@@ -41,6 +44,7 @@ const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
       </p>
     );
   }
+
   return (
     <div className="flex flex-col items-center w-full ">
       <div className={`grid grid-cols-1 lg:grid-cols-6 px-2 lg:px-10 md:px-8 lg:gap-12 w-full max-w-7xl my-0 mt-20`}>
@@ -66,18 +70,16 @@ const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
                 filters={["name", "symbol", "totalSupply", "paused"]}
                 nameFix={true}
               />
+              <ExternalVariable contractName={contractName} />
             </div>
           </div>
-          <div className="col-span-1 lg:col-span-2 flex flex-col gap-28 mt-14">
-            {functionNames.map((functionName, i) => (
-              <FunctionContainer
-                key={functionName + " key " + i}
-                functionName={functionName}
-                contractName={contractName}
-                deployedContractData={deployedContractData}
-                onChange={triggerRefreshDisplayVariables}
-              />
-            ))}
+          <div className="col-span-1 lg:col-span-2 flex flex-col mt-14 relative z-50">
+            <FunctionContainer
+              functionNames={functionNames}
+              contractName={contractName}
+              deployedContractData={deployedContractData}
+              onChange={triggerRefreshDisplayVariables}
+            />
           </div>
         </div>
       </div>

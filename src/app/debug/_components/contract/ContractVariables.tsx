@@ -28,8 +28,7 @@ export const ContractVariables = ({
         fn,
         inheritedFrom: ((deployedContractData as GenericContract)?.inheritedFunctions as InheritedFunctions)?.[fn.name],
       };
-    })
-    .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
+    });
 
   const functionsToDisplay =
     filters && filters.length > 0 ? functions.filter(fn => filters.includes(fn.fn.name)) : functions;

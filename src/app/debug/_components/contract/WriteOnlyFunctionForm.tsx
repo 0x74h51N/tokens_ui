@@ -17,6 +17,7 @@ import { IntegerInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { formatVariableName } from "~~/utils/formatVariableName";
+import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;
@@ -25,6 +26,7 @@ type WriteOnlyFunctionFormProps = {
   contractAddress: Address;
   inheritedFrom?: string;
   nameFix: boolean;
+  debug: boolean;
 };
 
 export const WriteOnlyFunctionForm = ({
@@ -34,6 +36,7 @@ export const WriteOnlyFunctionForm = ({
   contractAddress,
   inheritedFrom,
   nameFix,
+  debug,
 }: WriteOnlyFunctionFormProps) => {
   const [form, setForm] = useState<Record<string, any>>(() => getInitialFormState(abiFunction));
   const [txValue, setTxValue] = useState<string | bigint>("");
@@ -140,12 +143,10 @@ export const WriteOnlyFunctionForm = ({
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-sm"></span>
-              ) : abiFunction.name === "mint" ? (
-                "💵 Mint"
-              ) : abiFunction.name === "burn" ? (
-                "🔥 Burn"
-              ) : (
+              ) : debug ? (
                 "💸 Send"
+              ) : (
+                getCoolDisplayName(abiFunction.name)
               )}
             </button>
           </div>

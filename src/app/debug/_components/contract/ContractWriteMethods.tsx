@@ -8,11 +8,13 @@ export const ContractWriteMethods = ({
   deployedContractData,
   functionName,
   nameFix = false,
+  debug = true,
 }: {
   onChange: () => void;
   deployedContractData: Contract<ContractName>;
   functionName?: string;
   nameFix?: boolean;
+  debug?: boolean;
 }) => {
   if (!deployedContractData) {
     return null;
@@ -56,6 +58,7 @@ export const ContractWriteMethods = ({
           contractAddress={deployedContractData.address}
           inheritedFrom={inheritedFrom}
           nameFix={nameFix}
+          debug={debug}
         />
       ))}
     </>

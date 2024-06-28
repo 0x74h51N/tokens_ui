@@ -1,6 +1,8 @@
 "use client";
 
+import { Fragment, useState } from "react";
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
+import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 /**
@@ -11,7 +13,7 @@ import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 interface FunctionContainerProps {
   contractName: ContractName;
-  functionName: string;
+  functionNames: string[];
   deployedContractData: Contract<ContractName>;
   onChange: () => void;
 }
@@ -20,47 +22,48 @@ interface FunctionContainerProps {
  * FunctionContainer component
  * @param contractName - Contract name should be same as deployed contract name.
  * @param functionName - It should be same as deployed contract abi functions.
- * @returns A container for the selected function (mint or burn) with input fields and a submit button.
+ * @returns A container for the selected functions with input fields and a submit button.
  */
 
-const FunctionContainer = ({ contractName, functionName, deployedContractData, onChange }: FunctionContainerProps) => {
-  const suffix = "token";
+const FunctionContainer = ({ contractName, functionNames, deployedContractData, onChange }: FunctionContainerProps) => {
+  const [activeFunction, setActiveFunc] = useState<string>(functionNames[0]);
 
-  const contractSymbol = contractName.toLowerCase().endsWith(suffix)
-    ? contractName.slice(0, -suffix.length).toUpperCase()
-    : contractName.toUpperCase();
-
-  function capitalizeFirstLetter(s: string) {
-    return s.charAt(0).toUpperCase() + s.slice(1);
-  }
   return (
     <>
-      <div
-        className="flex flex-col  justify-center items-center w-full h-auto"
-        id={contractName + " " + functionName + " id"}
-      >
-        <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
-          <div className="flex h-[5.5rem] w-full pr-1 bg-base-300 absolute self-start rounded-[22px] -top-[55px] -left-[1px] shadow-lg shadow-base-300">
-            <h1 className="antialiased font-bold text-3xl max-md:text-2xl max-md:pt-1 bold m-2 text-center w-full">
-              {functionName === "mint"
-                ? "💵 Mint " + contractSymbol
-                : functionName === "burn"
-                ? "🔥 Burn " + contractSymbol
-                : functionName === "transfer"
-                ? "💸 Transfer " + contractSymbol
-                : capitalizeFirstLetter(functionName) + " " + contractSymbol}
+      {functionNames.map((functionName, i) => (
+        <Fragment key={functionName + " fragment " + i}>
+          <button
+            className={`flex h-[5.7rem] w-[10rem] btn btn-secondary btn-md rounded-xl font-light hover:border-transparent p-0 absolute -top-12 ${
+              functionName === activeFunction
+                ? "bg-base-300 hover:bg-base-300 no-animation shadow-xl shadow-base-300"
+                : "bg-base-100 hover:bg-secondary"
+            }`}
+            style={{ left: i * 150, zIndex: functionName === activeFunction ? 10 : -1 * i }}
+            onClick={() => setActiveFunc(functionName)}
+          >
+            <h1 className="antialiased font-bold text-2xl max-md:pt-1 bold m-1 text-center w-full self-start pt-2">
+              {getCoolDisplayName(functionName)}
             </h1>
+          </button>
+          <div
+            className="flex flex-col justify-center items-center w-full h-auto"
+            id={contractName + " " + functionName + " id"}
+            style={{ display: functionName !== activeFunction ? "none" : "block" }}
+          >
+            <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
+              <div className="flex flex-col justify-end w-full z-10 p-7 divide-y bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 min-h-[305px]">
+                <ContractWriteMethods
+                  deployedContractData={deployedContractData}
+                  functionName={functionName}
+                  onChange={onChange}
+                  nameFix={true}
+                  debug={false}
+                />
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col justify-center w-full z-10 p-7 divide-y bg-base-100 rounded-3xl shadow-md shadow-secondary border border-base-300 min-h-[250px]">
-            <ContractWriteMethods
-              deployedContractData={deployedContractData}
-              functionName={functionName}
-              onChange={onChange}
-              nameFix={true}
-            />
-          </div>
-        </div>
-      </div>
+        </Fragment>
+      ))}
     </>
   );
 };

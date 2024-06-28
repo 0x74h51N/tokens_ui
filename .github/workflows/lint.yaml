@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Run nextjs lint
-        run: yarn next:lint --max-warnings=0
+      - name: Run linting
+        run: yarn lint
 
       - name: Check typings on nextjs
-        run: yarn next:check-types
+        run: yarn check-types

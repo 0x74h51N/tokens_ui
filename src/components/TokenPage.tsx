@@ -70,7 +70,13 @@ const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
                 filters={["name", "symbol", "totalSupply", "paused"]}
                 nameFix={true}
               />
-              <ExternalVariable contractName={contractName} />
+              {targetNetwork.name.toLowerCase().includes("testnet") ? null : (
+                <>
+                  <h3 className="mt-2">CoinGecko</h3>
+                  <hr className="w-1/2 py-1"></hr>
+                  <ExternalVariable contractName={contractName} />
+                </>
+              )}
             </div>
           </div>
           <div className="col-span-1 lg:col-span-2 flex flex-col mt-14 relative z-50">

@@ -16,8 +16,7 @@ export const getPrice = async (name: string, currency: string): Promise<CoinData
   const tokenId = tokenNameToIdMap[name.toLowerCase()] || name.toLowerCase();
   try {
     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}`, {
-      cache: "force-cache",
-      next: { revalidate: 60 },
+      next: { revalidate: 59 },
     });
     if (!response.ok) {
       throw new Error("Network response was not ok");

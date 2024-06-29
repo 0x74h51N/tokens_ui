@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "debug"
+        versions: ["<4.3.1"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "chore"
+      include: scope
+    labels:
+      - "dependencies"
+      - "dependabot"
+    rebase-strategy: "auto"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    commit-message:
+      prefix: "security"
+      include: scope
+    labels:
+      - "security"
+      - "dependabot"

@@ -35,10 +35,9 @@ export const ContractWriteMethods = ({
     [deployedContractData],
   );
 
-  const functionsToDisplay = useMemo(
-    () => functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase()),
-    [functions, functionName],
-  );
+  const functionsToDisplay = useMemo(() => {
+    return functionName ? functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase()) : functions;
+  }, [functions, functionName]);
 
   if (!functionsToDisplay.length) {
     return <>No write methods</>;

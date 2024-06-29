@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
 import DisplayExternalVariables from "./DisplayExternalVariables";
 import { CoinData } from "~~/utils/getPrice";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
@@ -8,7 +8,7 @@ const ExternalVariable = ({ contractName }: { contractName: ContractName }) => {
   const [price, setPrice] = useState<number>(0);
   const [supply, setSupply] = useState<number>(0);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setFetching(true);
     try {
       const response = await fetch(`/api/get-price?tokenName=${contractName.toLowerCase()}&currency=usd`);
@@ -23,17 +23,14 @@ const ExternalVariable = ({ contractName }: { contractName: ContractName }) => {
     } finally {
       setFetching(false);
     }
-  };
+  }, [contractName]);
 
   useEffect(() => {
     fetchData();
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 60000);
+    const intervalId = setInterval(fetchData, 30000);
 
     return () => clearInterval(intervalId);
   }, [fetchData]);
-
   const variables = [
     {
       name: "Price",

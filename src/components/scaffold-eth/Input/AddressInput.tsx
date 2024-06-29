@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { blo } from "blo";
 import { useDebounceValue } from "usehooks-ts";
 import { Address, isAddress } from "viem";
@@ -87,7 +88,7 @@ export const AddressInput = ({
         setError(false);
       }
     },
-    [onChange],
+    [onChange, errorState],
   );
 
   const reFocus =
@@ -130,10 +131,8 @@ export const AddressInput = ({
         )
       }
       suffix={
-        // Don't want to use nextJS Image here (and adding remote patterns for the URL)
-        // eslint-disable-next-line @next/next/no-img-element
         value && (
-          <img alt="" className="!rounded-3xl mr-1.5 ml-1" src={blo(value as `0x${string}`)} width="35" height="35" />
+          <Image width={35} height={35} alt="" className="!rounded-3xl mr-1.5 ml-1" src={blo(value as `0x${string}`)} />
         )
       }
     />

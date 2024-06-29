@@ -71,7 +71,7 @@ export const ReadOnlyFunctionForm = ({
           />
         );
       }),
-    [transformedFunction, abiFunction.name],
+    [transformedFunction, abiFunction.name, triggerValidation, form],
   );
 
   return (

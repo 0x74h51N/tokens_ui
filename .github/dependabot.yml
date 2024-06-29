@@ -1,0 +1,26 @@
+version: 2
+updates:
+  - package-ecosystem: "yarn"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 8
+    ignore:
+      - dependency-name: "debug"
+        versions: ["<4.3.1"]
+    commit-message:
+      prefix: "deps"
+      prefix-development: "chore"
+      include: scope
+    labels:
+      - "dependencies"
+      - "dependabot"
+    rebase-strategy: "auto"
+  - package-ecosystem: "yarn"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-type: "indirect"
+    security-updates: true
+versioning-strategy: "increase"

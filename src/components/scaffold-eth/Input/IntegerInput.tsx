@@ -14,6 +14,7 @@ export const IntegerInput = ({
   disabled,
   variant = IntegerVariant.UINT256,
   disableMultiplyBy1e18 = false,
+  triggerValidation,
 }: IntegerInputProps) => {
   const [inputError, setInputError] = useState(false);
   const multiplyBy1e18 = useCallback(() => {
@@ -34,6 +35,11 @@ export const IntegerInput = ({
     }
   }, [value, variant]);
 
+  useEffect(() => {
+    if (triggerValidation && (value === "" || value === "0" || !value)) {
+      setInputError(true);
+    }
+  }, [triggerValidation, value]);
   return (
     <InputBase
       name={name}

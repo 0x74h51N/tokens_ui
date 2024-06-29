@@ -50,7 +50,7 @@ export const displayTxResult = (
 };
 
 const NumberDisplay = ({ value }: { value: bigint }) => {
-  const [isEther, setIsEther] = useState(false);
+  const [isEther, setIsEther] = useState(true);
 
   const asNumber = Number(value);
   if (asNumber <= Number.MAX_SAFE_INTEGER && asNumber >= Number.MIN_SAFE_INTEGER) {
@@ -59,7 +59,7 @@ const NumberDisplay = ({ value }: { value: bigint }) => {
 
   return (
     <div className="flex items-baseline">
-      {isEther ? "Ξ" + formatEther(value) : String(value)}
+      {isEther ? "Ξ" + Number(formatEther(value)).toLocaleString("en-US") : String(value)}
       <span
         className="tooltip tooltip-secondary font-sans ml-2"
         data-tip={isEther ? "Multiply by 1e18" : "Divide by 1e18"}

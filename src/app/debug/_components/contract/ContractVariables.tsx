@@ -5,17 +5,19 @@ import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/
 export const ContractVariables = ({
   refreshDisplayVariables,
   deployedContractData,
+  filters,
+  nameFix = false,
 }: {
   refreshDisplayVariables: boolean;
   deployedContractData: Contract<ContractName>;
+  filters?: string[];
+  nameFix?: boolean;
 }) => {
   if (!deployedContractData) {
     return null;
   }
 
-  const functionsToDisplay = (
-    (deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[]
-  )
+  const functions = ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
     .filter(fn => {
       const isQueryableWithNoParams =
         (fn.stateMutability === "view" || fn.stateMutability === "pure") && fn.inputs.length === 0;
@@ -26,13 +28,14 @@ export const ContractVariables = ({
         fn,
         inheritedFrom: ((deployedContractData as GenericContract)?.inheritedFunctions as InheritedFunctions)?.[fn.name],
       };
-    })
-    .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1));
+    });
+
+  const functionsToDisplay =
+    filters && filters.length > 0 ? functions.filter(fn => filters.includes(fn.fn.name)) : functions;
 
   if (!functionsToDisplay.length) {
     return <>No contract variables</>;
   }
-
   return (
     <>
       {functionsToDisplay.map(({ fn, inheritedFrom }) => (
@@ -43,6 +46,7 @@ export const ContractVariables = ({
           key={fn.name}
           refreshDisplayVariables={refreshDisplayVariables}
           inheritedFrom={inheritedFrom}
+          nameFix={nameFix}
         />
       ))}
     </>

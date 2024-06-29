@@ -9,6 +9,37 @@ on:
       - main
 
 jobs:
+  nalyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript", "typescript"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
   ci:
     runs-on: ${{ matrix.os }}
 
@@ -30,14 +61,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Run hardhat node, deploy contracts (& generate contracts typescript output)
-        run: yarn chain & yarn deploy
-
-      - name: Run nextjs lint
-        run: yarn next:lint --max-warnings=0
+      - name: Run linting
+        run: yarn lint
 
       - name: Check typings on nextjs
-        run: yarn next:check-types
-
-      - name: Run hardhat lint
-        run: yarn hardhat:lint --max-warnings=0
+        run: yarn check-types

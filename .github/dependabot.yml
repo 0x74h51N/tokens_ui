@@ -4,7 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 8
+    open-pull-requests-limit: 5
     ignore:
       - dependency-name: "debug"
         versions: ["<4.3.1"]
@@ -19,13 +19,9 @@ updates:
     allow:
       - dependency-type: "direct"
       - dependency-type: "indirect"
-    security-updates: true
-    pull-request-branch-name: "dependabot-update-<dependency-name>-<version>"
     commit-message:
-      prefix: "deps"
-      prefix-development: "chore"
+      prefix: "security"
       include: scope
     labels:
-      - "dependencies"
+      - "security"
       - "dependabot"
-    rebase-strategy: "auto"

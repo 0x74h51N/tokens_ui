@@ -12,14 +12,10 @@ export const ContractWriteMethods = ({
 }: {
   onChange: () => void;
   deployedContractData: Contract<ContractName>;
-  functionName?: string;
+  functionName: string;
   nameFix?: boolean;
   debug?: boolean;
 }) => {
-  if (!deployedContractData) {
-    return null;
-  }
-
   const functions = useMemo(
     () =>
       ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
@@ -39,9 +35,10 @@ export const ContractWriteMethods = ({
     [deployedContractData],
   );
 
-  const functionsToDisplay = functionName
-    ? useMemo(() => functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase()), [functions])
-    : functions;
+  const functionsToDisplay = useMemo(
+    () => functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase()),
+    [functions, functionName],
+  );
 
   if (!functionsToDisplay.length) {
     return <>No write methods</>;

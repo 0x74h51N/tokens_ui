@@ -95,7 +95,7 @@ export const WriteOnlyFunctionForm = ({
           />
         );
       }),
-    [transformedFunction],
+    [transformedFunction, abiFunction.name],
   );
   const zeroInputs = inputs.length === 0 && abiFunction.stateMutability !== "payable";
 

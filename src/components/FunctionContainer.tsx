@@ -38,6 +38,7 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
       <div className="flex w-full -mb-6 z-20">
         {functionNames.map((functionName, i) => (
           <div
+            key={functionName + " button " + i}
             className="flex max-w-[10rem] h-[4.7rem] w-[10rem] min-w-1 tooltip tooltip-top tooltip-secondary before:px-2 before:content-[attr(data-tip)] before:-right-3 before:left-auto before:transform-none"
             style={{ zIndex: functionName === activeFunction ? 2 : -1 * i, marginLeft: i === 0 ? 0 : -15 + i }}
             data-tip={getCoolDisplayName(functionName) + " " + contractSymbol}
@@ -57,6 +58,7 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
       </div>
       {functionNames.map((functionName, i) => (
         <div
+          key={functionName + " container " + i}
           className="flex flex-col justify-center items-center w-full h-auto z-30"
           id={contractName + " " + functionName + " id"}
           style={{ display: functionName !== activeFunction ? "none" : "block" }}

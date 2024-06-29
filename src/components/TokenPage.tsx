@@ -79,7 +79,7 @@ const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
               )}
             </div>
           </div>
-          <div className="col-span-1 lg:col-span-2 flex flex-col mt-14 relative z-50">
+          <div className="col-span-1 lg:col-span-2 flex flex-col relative z-50">
             <FunctionContainer
               functionNames={functionNames}
               contractName={contractName}

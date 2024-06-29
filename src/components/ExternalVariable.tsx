@@ -1,12 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Abi, Address, formatEther } from "viem";
-import { useReadContract } from "wagmi";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { useAnimationConfig } from "~~/hooks/scaffold-eth";
 import { formatPrice } from "~~/utils/formatPrice";
 import { CoinData } from "~~/utils/getPrice";
-import { ChainWithAttributes } from "~~/utils/scaffold-eth";
-import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 const ExternalVariable = ({ contractName }: { contractName: ContractName }) => {
   const [isFetch, setFetching] = useState(false);

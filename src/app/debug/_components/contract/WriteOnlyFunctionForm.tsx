@@ -132,7 +132,7 @@ export const WriteOnlyFunctionForm = ({
           <div
             className={`flex ${
               writeDisabled &&
-              "tooltip before:content-[attr(data-tip)] before:right-[-10px] before:left-auto before:transform-none"
+              "tooltip tooltip-secondary before:content-[attr(data-tip)] before:right-[10px] before:left-auto before:transform-none"
             }`}
             data-tip={!isConnected ? "Connect your wallet" : `Change network to ${targetNetwork.name}`}
           >

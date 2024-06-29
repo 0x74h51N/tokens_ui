@@ -18,10 +18,21 @@ updates:
     rebase-strategy: "auto"
     allow:
       - dependency-type: "direct"
+    security-updates: false
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "security"
+      prefix-development: "chore"
+      include: scope
+    labels:
+      - "security"
+      - "dependabot"
+    rebase-strategy: "auto"
     allow:
       - dependency-type: "indirect"
     security-updates: true

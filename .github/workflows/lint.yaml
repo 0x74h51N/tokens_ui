@@ -1,4 +1,4 @@
-name: Lint
+name: Lint and Analyze
 
 on:
   push:
@@ -9,22 +9,21 @@ on:
       - main
 
 jobs:
-  ci:
-    runs-on: ${{ matrix.os }}
+  lint_and_analyze:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        node: [lts/*]
+        node-version: [lts/*]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Setup node env
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node }}
+          node-version: ${{ matrix.node-version }}
           cache: yarn
 
       - name: Install dependencies
@@ -35,3 +34,21 @@ jobs:
 
       - name: Check typings on nextjs
         run: yarn check-types
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript, typescript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "javascript"
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "typescript"

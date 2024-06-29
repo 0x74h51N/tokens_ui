@@ -1,10 +1,10 @@
 version: 2
 updates:
-  - package-ecosystem: "yarn"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 8
+    open-pull-requests-limit: 5
     ignore:
       - dependency-name: "debug"
         versions: ["<4.3.1"]
@@ -16,11 +16,12 @@ updates:
       - "dependencies"
       - "dependabot"
     rebase-strategy: "auto"
-  - package-ecosystem: "yarn"
+    allow:
+      - dependency-type: "direct"
+  - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
     allow:
       - dependency-type: "indirect"
     security-updates: true
-versioning-strategy: "increase"

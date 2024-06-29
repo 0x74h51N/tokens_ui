@@ -4,43 +4,14 @@ on:
   push:
     branches:
       - main
+      - staging
   pull_request:
     branches:
       - main
+      - staging
 
 jobs:
-  nalyze:
-    name: Analyze
-    runs-on: ubuntu-latest
-    timeout-minutes: 360
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ["javascript", "typescript"]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      # Initializes the CodeQL tools for scanning.
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: ${{ matrix.language }}
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        with:
-          category: "/language:${{ matrix.language }}"
-  ci:
+  lint:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -49,10 +20,10 @@ jobs:
         node: [lts/*]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@master
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup node env
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
@@ -61,8 +32,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Run linting
+      - name: Run lint
         run: yarn lint
 
-      - name: Check typings on nextjs
+      - name: Check typings
         run: yarn check-types

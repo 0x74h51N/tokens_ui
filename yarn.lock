@@ -1287,9 +1287,9 @@ __metadata:
   linkType: hard
 
 "@safe-global/safe-gateway-typescript-sdk@npm:^3.5.3":
-  version: 3.21.6
-  resolution: "@safe-global/safe-gateway-typescript-sdk@npm:3.21.6"
-  checksum: 9701c2f2a15455dee8376a715165054ea171698a643965bd2258d59c58c6111131c19c2e177b7f372c1377150209a22f30fbb14ae8d4077aee5afda4e6905dd0
+  version: 3.21.8
+  resolution: "@safe-global/safe-gateway-typescript-sdk@npm:3.21.8"
+  checksum: 67b3c993fc6fbb47b8d2f76719fbe7aa9fbf2d3b6eff26848724f79ae78ccd4d3a5b04fa0de9efc6262afd31b3e6fb1b1cddc0d026f3b0dc886b1a1c4b1e03c9
   languageName: node
   linkType: hard
 

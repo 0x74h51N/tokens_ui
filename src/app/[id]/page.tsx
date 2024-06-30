@@ -6,7 +6,7 @@ import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   return getMetadata({
-    title: params.id + " Token",
+    title: params.id.toUpperCase() + " Token",
     description: params.id + " | Novem Token UI",
   });
 }

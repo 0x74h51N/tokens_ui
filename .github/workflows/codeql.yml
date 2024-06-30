@@ -1,18 +1,16 @@
-name: "CodeQL"
+name: "CodeQL and Lint"
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "staging"]
   pull_request:
-    branches: ["main"]
-  schedule:
-    - cron: "33 0 * * 3"
+    branches: ["main", "staging"]
 
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
-    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    runs-on: ${{ matrix.language == 'swift' && 'macos-latest' || 'ubuntu-latest' }}
+    timeout-minutes: ${{ matrix.language == 'swift' && 120 || 360 }}
     permissions:
       security-events: write
       packages: read
@@ -23,8 +21,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: javascript-typescript
-            build-mode: none
+          - language: javascript
+          - language: typescript
 
     steps:
       - name: Checkout repository
@@ -33,18 +31,25 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: 20
+          cache: yarn
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --immutable
+
+      - name: Run lint
+        run: yarn lint
+
+      - name: Check typings
+        run: yarn check-types
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-          build-mode: ${{ matrix.build-mode }}
+          build-mode: none
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          category: "/language:${{matrix.language}}"
+          category: "/language:${{ matrix.language }}"

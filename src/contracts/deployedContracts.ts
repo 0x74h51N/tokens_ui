@@ -172,7 +172,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken: {
+    nnn: {
       address: "0x5D5c5c1d14FaF8Ff704295b2F502dAA9D06799a0",
       abi: [
         {
@@ -1163,7 +1163,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken_Implementation: {
+    nnn_Implementation: {
       address: "0x2D0bd1eb6e8577A2e73C7Fd772e587a0dEc9A9c3",
       abi: [
         {
@@ -2023,7 +2023,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken_Proxy: {
+    nnn_Proxy: {
       address: "0x5D5c5c1d14FaF8Ff704295b2F502dAA9D06799a0",
       abi: [
         {
@@ -2160,7 +2160,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken: {
+    npt: {
       address: "0xF9f594D86AEF52644473edC43B6dC9656E4fD2Ce",
       abi: [
         {
@@ -3141,7 +3141,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken_Implementation: {
+    npt_Implementation: {
       address: "0xD6E9De6228115Bfc023c1bEbAadA86B7190E0Ea3",
       abi: [
         {
@@ -3978,7 +3978,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken_Proxy: {
+    npt_Proxy: {
       address: "0xF9f594D86AEF52644473edC43B6dC9656E4fD2Ce",
       abi: [
         {
@@ -4128,7 +4128,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken: {
+    nvm: {
       address: "0xbe2D8AC2A370972C4328BED520b224C3903A4941",
       abi: [
         {
@@ -5136,7 +5136,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken_Implementation: {
+    nvm_Implementation: {
       address: "0x76c73BB0f32B985d35f72cE681a4F5BBD87A1347",
       abi: [
         {
@@ -6000,7 +6000,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken_Proxy: {
+    nvm_Proxy: {
       address: "0xbe2D8AC2A370972C4328BED520b224C3903A4941",
       abi: [
         {
@@ -6150,7 +6150,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken: {
+    nxag: {
       address: "0x55b6d96126879Fe99ca1f57A05F81941d0932F9C",
       abi: [
         {
@@ -7131,7 +7131,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken_Implementation: {
+    nxag_Implementation: {
       address: "0xaB10DeE9C50582636203881833a4987AC3D2ED8e",
       abi: [
         {
@@ -7968,7 +7968,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken_Proxy: {
+    nxag_Proxy: {
       address: "0x55b6d96126879Fe99ca1f57A05F81941d0932F9C",
       abi: [
         {
@@ -8286,7 +8286,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken: {
+    nnn: {
       address: "0x70aF4c67f16019C13516D814aAf9A6aD74CFd2F4",
       abi: [
         {
@@ -9277,7 +9277,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken_Implementation: {
+    nnn_Implementation: {
       address: "0xe4bd76b14dee4b52e776de880fdb507973b023bc",
       abi: [
         {
@@ -10137,7 +10137,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NNNToken_Proxy: {
+    nnn_Proxy: {
       address: "0x70aF4c67f16019C13516D814aAf9A6aD74CFd2F4",
       abi: [
         {
@@ -10274,7 +10274,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken: {
+    npt: {
       address: "0x891F52b828C7242dC95D38903D387D7d12e33CB2",
       abi: [
         {
@@ -11255,7 +11255,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken_Implementation: {
+    npt_Implementation: {
       address: "0x1692C90b2D753AdeC5766241a1E6A854fC144667",
       abi: [
         {
@@ -12092,7 +12092,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NPTtoken_Proxy: {
+    npt_Proxy: {
       address: "0x891F52b828C7242dC95D38903D387D7d12e33CB2",
       abi: [
         {
@@ -12242,7 +12242,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken: {
+    nvm: {
       address: "0x9eB947Be4de53332022Edbc51528d33EB5D80f94",
       abi: [
         {
@@ -13250,7 +13250,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken_Implementation: {
+    nvm_Implementation: {
       address: "0xA3D68ECC21c01283155Cf41E041E340eB1dDDA7f",
       abi: [
         {
@@ -14114,7 +14114,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NVMToken_Proxy: {
+    nvm_Proxy: {
       address: "0x9eB947Be4de53332022Edbc51528d33EB5D80f94",
       abi: [
         {
@@ -14264,7 +14264,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken: {
+    nxag: {
       address: "0xdC7B8A96e0Ce131E1C0562BB0Cf35F12a0D1b6d6",
       abi: [
         {
@@ -15245,7 +15245,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken_Implementation: {
+    nxag_Implementation: {
       address: "0xf8A73150406675944f6Cfe18019A079fD74f21b8",
       abi: [
         {
@@ -16082,7 +16082,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    NXAGToken_Proxy: {
+    nxag_Proxy: {
       address: "0xdC7B8A96e0Ce131E1C0562BB0Cf35F12a0D1b6d6",
       abi: [
         {

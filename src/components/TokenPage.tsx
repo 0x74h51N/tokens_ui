@@ -10,17 +10,15 @@ import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 interface TokenPageProps {
   contractName: ContractName;
-  functionNames: string[];
 }
 
 /**
  * FunctionContainer component
  * @param contractName - Contract name should be same as deployed contract name.
- * @param functionNames - They should be same as deployed contract abi functions.
  * @returns
  */
 
-const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
+const TokenPage = ({ contractName }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
 
   const { targetNetwork } = useTargetNetwork();
@@ -44,7 +42,7 @@ const TokenPage = ({ contractName, functionNames }: TokenPageProps) => {
       </p>
     );
   }
-
+  const functionNames = ["mint", "burn"];
   return (
     <div className="flex flex-col items-center w-full ">
       <div className={`grid grid-cols-1 lg:grid-cols-6 px-2 lg:px-10 md:px-8 lg:gap-12 w-full max-w-7xl my-0 mt-20`}>

@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import SearchDropdown from "./SearchDropdown";
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
+import { useGlobalState } from "~~/services/store/store";
+import getContractSymbol from "~~/utils/getContractSymbol";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
@@ -27,24 +30,30 @@ interface FunctionContainerProps {
 
 const FunctionContainer = ({ contractName, functionNames, deployedContractData, onChange }: FunctionContainerProps) => {
   const [activeFunction, setActiveFunc] = useState<string>(functionNames[0]);
-  const suffix = "token";
+  const [showSearch, setShowSearch] = useState<boolean>(false);
+  const contractFunctions = useGlobalState(state => state.contractFunctions);
+  const functions = contractFunctions[deployedContractData.address];
+  const [displayedFunctions, setDisplayedFunctions] = useState<string[]>(functionNames);
+  const handleSelect = (option: string) => {
+    setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
+    setShowSearch(false);
+  };
 
-  const contractSymbol = contractName.toLowerCase().endsWith(suffix)
-    ? contractName.slice(0, -suffix.length).toUpperCase()
-    : contractName.toUpperCase();
-
+  const availableFunctions = useMemo(() => {
+    return functions ? functions.filter(fn => !displayedFunctions.includes(fn)) : [];
+  }, [functions, displayedFunctions]);
   return (
     <>
       <div className="flex w-full -mb-6 z-20">
-        {functionNames.map((functionName, i) => (
+        {displayedFunctions.map((functionName, i) => (
           <div
             key={functionName + " button " + i}
             className="flex max-w-[10rem] h-[4.7rem] w-[10rem] min-w-1 tooltip tooltip-top tooltip-secondary before:px-2 before:content-[attr(data-tip)] before:-right-3 before:left-auto before:transform-none"
             style={{ zIndex: functionName === activeFunction ? 2 : -1 * i, marginLeft: i === 0 ? 0 : -15 + i }}
-            data-tip={getCoolDisplayName(functionName) + " " + contractSymbol}
+            data-tip={getCoolDisplayName(functionName) + " " + getContractSymbol(contractName)}
           >
             <button
-              className={`w-full h-full btn btn-secondary rounded-xl hover:border-transparent p-0 ${
+              className={`group relative w-full h-full btn btn-secondary rounded-lg hover:border-transparent p-0 ${
                 functionName === activeFunction ? "bg-base-300 hover:bg-base-300" : "bg-base-100 hover:bg-secondary"
               }`}
               onClick={() => setActiveFunc(functionName)}
@@ -55,11 +64,24 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
             </button>
           </div>
         ))}
+        <button
+          onClick={() => setShowSearch(!showSearch)}
+          className={`btn btn-primary hover:border-transparent w-[5rem] h-[4.7rem] rounded-none font-bold antialiased text-2xl p-0 pl-1 pb-5 -ml-6 -z-50 plus-btn shadow-lg shadow-base-300 ${
+            showSearch ? "brightness-75" : "brightness-100"
+          }`}
+        >
+          +
+        </button>
       </div>
-      {functionNames.map((functionName, i) => (
+      {showSearch && availableFunctions && (
+        <div onBlur={() => setShowSearch(false)} className="absolute top-0 right-0 z-50">
+          <SearchDropdown options={availableFunctions} handleSelect={handleSelect} />{" "}
+        </div>
+      )}
+      {displayedFunctions.map((functionName, i) => (
         <div
           key={functionName + " container " + i}
-          className="flex flex-col justify-center items-center w-full h-auto z-30"
+          className="flex flex-col justify-center items-center w-full h-auto z-20"
           id={contractName + " " + functionName + " id"}
           style={{ display: functionName !== activeFunction ? "none" : "block" }}
         >

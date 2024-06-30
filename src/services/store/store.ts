@@ -1,3 +1,4 @@
+import { AbiFunction } from "viem";
 import { create } from "zustand";
 import scaffoldConfig from "~~/scaffold.config";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
@@ -20,6 +21,8 @@ type GlobalState = {
   setIsNativeCurrencyFetching: (newIsNativeCurrencyFetching: boolean) => void;
   targetNetwork: ChainWithAttributes;
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
+  contractFunctions: { [address: string]: string[] };
+  setContractFunctions: (address: string, functions: string[]) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -33,4 +36,12 @@ export const useGlobalState = create<GlobalState>(set => ({
     set(state => ({ nativeCurrency: { ...state.nativeCurrency, isFetching: newValue } })),
   targetNetwork: scaffoldConfig.targetNetworks[0],
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => set(() => ({ targetNetwork: newTargetNetwork })),
+  contractFunctions: {},
+  setContractFunctions: (address, functions) =>
+    set(state => ({
+      contractFunctions: {
+        ...state.contractFunctions,
+        [address]: functions,
+      },
+    })),
 }));

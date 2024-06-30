@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import SearchDropdown from "./SearchDropdown";
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
 import { useGlobalState } from "~~/services/store/store";

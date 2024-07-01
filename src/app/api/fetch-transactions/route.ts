@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
   const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
 
   try {
-    const response = await fetch(url, { next: { revalidate: 50 } });
+    const response = await fetch(url);
     const data = await response.json();
     if (data.status === "1") {
       return NextResponse.json(data.result, { status: 200 });

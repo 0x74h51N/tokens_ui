@@ -1,12 +1,8 @@
 "use client";
 
-import { SetStateAction, useMemo, useState } from "react";
-import SearchDropdown from "../SearchDropdown";
+import { useState } from "react";
 import FunctionTitles from "./FunctionTitles";
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
-import { useGlobalState } from "~~/services/store/store";
-import getContractSymbol from "~~/utils/getContractSymbol";
-import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 /**

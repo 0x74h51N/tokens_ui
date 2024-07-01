@@ -6,7 +6,43 @@
 [data-theme] {
   background: oklch(var(--b2));
 }
+::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
 
+::-webkit-scrollbar-track {
+  background: oklch(var(--b1)); /* Scrollbar track rengi */
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(var(--b3));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(var(--b3));
+  filter: brightness(0.75);
+}
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"><path fill="black" d="M12 8l-6 6h12z"/></svg>')
+    center no-repeat;
+}
+
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"><path fill="black" d="M12 16l-6-6h12z"/></svg>')
+    center no-repeat;
+}
+
+::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"><path fill="black" d="M8 12l6-6v12z"/></svg>')
+    center no-repeat;
+}
+
+::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24"><path fill="black" d="M16 12l-6 6v-12z"/></svg>')
+    center no-repeat;
+}
 @layer utilities {
   .plus-btn {
     clip-path: polygon(

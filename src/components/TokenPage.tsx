@@ -2,7 +2,7 @@
 
 import { useReducer } from "react";
 import ExternalVariable from "./ExternalVariable";
-import FunctionContainer from "./FunctionContainer";
+import FunctionContainer from "./FunctionContainer/FunctionContainer";
 import { Address } from "./scaffold-eth/Address";
 import { ContractVariables } from "~~/app/debug/_components/contract/ContractVariables";
 import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";

@@ -72,8 +72,8 @@ export const TransactionsTable = ({
           </div>
         ) : (
           <>
-            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm h-full">
-              <thead className="h-16">
+            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm h-full ">
+              <thead className="min-h-10 align-text-top">
                 <tr className="rounded-lg text-sm text-base-content">
                   <th className="bg-primary">Time</th>
                   <th className="bg-primary">Transaction Hash</th>

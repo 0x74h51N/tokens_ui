@@ -9,8 +9,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
   }
   if (!testnet) {
-    return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
+    return NextResponse.json({ error: "Testnet parameter is required" }, { status: 400 });
   }
+
   try {
     const transactions = await getBscTransactions(contractAddress, testnet);
     return NextResponse.json(transactions, { status: 200 });

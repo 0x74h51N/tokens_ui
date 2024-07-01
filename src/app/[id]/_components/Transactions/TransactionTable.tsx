@@ -1,7 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import HandlePages from "./HandlePages";
 import { TransactionHash } from "./TransactionHash";
-import { TransactionBase, decodeFunctionData, formatEther } from "viem";
+import { TransactionBase, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
@@ -62,17 +62,7 @@ export const TransactionsTable = ({
       return () => clearInterval(interval);
     }
   }, [deployedContractData.address]);
-  const decodeInput = (input: `0x${string}`) => {
-    try {
-      const decodedData = decodeFunctionData({
-        abi: deployedContractData.abi,
-        data: input,
-      });
-      return decodedData;
-    } catch (error) {
-      return "unknown";
-    }
-  };
+
   return (
     <div className="flex flex-col flex-1 justify-center px-4 md:px-0 overflow-hidden h-full">
       <div className="overflow-x-auto w-full shadow-2xl rounded-xl flex-1">

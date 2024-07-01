@@ -1,5 +1,5 @@
 import React from "react";
-import TokenPage from "~~/components/TokenPage";
+import TokenPage from "./_components/TokenPage";
 import { tokenItems } from "~~/contracts/selectedContractNames";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";

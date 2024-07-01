@@ -42,7 +42,7 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
         id={contractName + " " + activeFunction + " id"}
         style={{ display: activeFunction !== activeFunction ? "none" : "block" }}
       >
-        <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] max-w-[650px] items-center justify-center">
+        <div className="flex flex-col relative w-full min-w-[500px] max-sm:min-w-[350px] items-center justify-center">
           <div className="flex flex-col justify-end w-full z-10 p-7 divide-y bg-base-100 rounded-b-xl shadow-lg shadow-secondary border border-base-300 min-h-[305px]">
             <ContractWriteMethods
               deployedContractData={deployedContractData}

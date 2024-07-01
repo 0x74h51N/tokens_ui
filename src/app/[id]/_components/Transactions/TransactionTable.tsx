@@ -64,15 +64,17 @@ export const TransactionsTable = ({
   }, [deployedContractData.address]);
 
   return (
-    <div className="flex flex-col flex-1 justify-center px-4 md:px-0 overflow-hidden h-full">
-      <div className="overflow-x-auto w-full shadow-2xl rounded-xl flex-1">
+    <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
+      <div
+        className={`overflow-x-auto w-full shadow-2xl rounded-xl ${currentTransactions.length > 10 ? "flex-1" : ""}`}
+      >
         {loading ? (
           <div className="w-full h-full flex justify-center items-center">
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         ) : (
           <>
-            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm h-full ">
+            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm h-full">
               <thead className="min-h-10 align-text-top">
                 <tr className="rounded-lg text-sm text-base-content">
                   <th className="bg-primary">Time</th>

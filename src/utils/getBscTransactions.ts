@@ -1,11 +1,11 @@
-export async function getBscTransactions(contractAddress: string, testnet: boolean = false) {
+export async function getBscTransactions(contractAddress: string, testnet: string) {
   if (!contractAddress) {
     throw new Error("Contract address is required");
   }
 
   const apiKey = process.env.BSC_SCAN_API_KEY;
   const offset = 250;
-  const domain = testnet ? "api-testnet.bscscan.com" : "api.bscscan.com";
+  const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
 
   try {

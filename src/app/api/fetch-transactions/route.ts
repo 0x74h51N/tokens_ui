@@ -4,8 +4,11 @@ import { getBscTransactions } from "~~/utils/getBscTransactions";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const contractAddress = searchParams.get("contractaddress");
-  const testnet = searchParams.get("testnet") === "true";
+  const testnet = searchParams.get("testnet");
   if (!contractAddress) {
+    return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
+  }
+  if (!testnet) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
   }
   try {

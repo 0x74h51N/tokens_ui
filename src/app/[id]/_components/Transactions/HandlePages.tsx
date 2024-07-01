@@ -56,7 +56,7 @@ const HandlePages = ({
   }, [totalPages, currentPage, handleClick]);
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center w-full">
       <div className="btn-group">{renderPageNumbers}</div>
     </div>
   );

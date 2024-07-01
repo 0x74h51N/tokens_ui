@@ -3,14 +3,15 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const contractAddress = searchParams.get("contractaddress");
-
+  const testnet = searchParams.get("testnet");
   if (!contractAddress) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
   }
 
   const apiKey = process.env.BSC_SCAN_API_KEY;
   const offset = 250;
-  const url = `https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
+  const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
+  const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
 
   try {
     const response = await fetch(url);

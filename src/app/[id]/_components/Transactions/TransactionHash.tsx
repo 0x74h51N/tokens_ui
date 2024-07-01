@@ -4,13 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 export const TransactionHash = ({ hash }: { hash: string }) => {
   const [addressCopied, setAddressCopied] = useState(false);
-
+  const { targetNetwork } = useTargetNetwork();
   return (
     <div className="flex items-center">
-      <Link href={`/blockexplorer/transaction/${hash}`}>
+      <Link target="_blank" href={`https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/tx/${hash}`}>
         {hash?.substring(0, 6)}...{hash?.substring(hash.length - 4)}
       </Link>
       {addressCopied ? (

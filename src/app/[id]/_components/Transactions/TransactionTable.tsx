@@ -1,8 +1,9 @@
-import { useEffect, useReducer, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import HandlePages from "./HandlePages";
 import { TransactionHash } from "./TransactionHash";
 import { TransactionBase, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 
 export interface ExtendedTransaction extends TransactionBase {
@@ -17,19 +18,21 @@ export const TransactionsTable = ({
   deployedContractData: Contract<ContractName>;
   contractName: ContractName;
 }) => {
-  const transactionsPerPage = 17;
+  const { targetNetwork } = useTargetNetwork();
   const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
   const [currentTransactions, setCurrentTransactions] = useReducer(
     (state: ExtendedTransaction[], action: ExtendedTransaction[]) => action,
     [],
   );
   const [loading, setLoading] = useState(false);
+  const transactionsPerPage = 17;
 
   const fetchTransactions = async () => {
     if (!deployedContractData.address) return;
 
     setLoading(true);
-    const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}`;
+    const testnet = targetNetwork.testnet ? "true" : "false";
+    const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}`;
     const response = await fetch(url);
     const data = await response.json();
 
@@ -46,19 +49,18 @@ export const TransactionsTable = ({
       fetchTransactions();
     }
   }, [deployedContractData.address]);
-
   return (
-    <div className="flex flex-1 justify-center px-4 md:px-0 overflow-y-auto h-full">
-      <div className="overflow-x-auto w-full shadow-2xl rounded-xl">
+    <div className="flex flex-col flex-1 justify-center px-4 md:px-0 overflow-hidden h-full">
+      <div className="overflow-x-auto w-full shadow-2xl rounded-xl flex-1">
         {loading ? (
           <div className="w-full h-full flex justify-center items-center">
             <span className="loading loading-spinner loading-lg"></span>
           </div>
         ) : (
           <>
-            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm">
+            <table className="table text-lg bg-base-100 table-zebra w-full md:table-md table-sm h-full">
               <thead className="h-16">
-                <tr className="rounded-lg text-sm  text-base-content">
+                <tr className="rounded-lg text-sm text-base-content">
                   <th className="bg-primary">Time</th>
                   <th className="bg-primary">{"Transaction\nHash"}</th>
                   <th className="bg-primary">From</th>
@@ -66,12 +68,12 @@ export const TransactionsTable = ({
                   <th className="bg-primary text-end">Value ({contractName.toUpperCase()})</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="overflow-y-auto">
                 {currentTransactions.map((tx, i: number) => {
                   const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
 
                   return (
-                    <tr key={tx.hash + " table key " + i} className="hover text-sm">
+                    <tr key={tx.hash + " table key " + i} className="hover text-sm min-h-5">
                       <td className="w-2/12 md:py-2 text-xs">{timeMined}</td>
                       <td className="w-1/12 md:py-2">
                         <TransactionHash hash={tx.hash} />
@@ -92,12 +94,12 @@ export const TransactionsTable = ({
             </table>
           </>
         )}
-        <HandlePages
-          transactions={transactions}
-          transactionsPerPage={transactionsPerPage}
-          setCurrentTransactions={setCurrentTransactions}
-        />
       </div>
+      <HandlePages
+        transactions={transactions}
+        transactionsPerPage={transactionsPerPage}
+        setCurrentTransactions={setCurrentTransactions}
+      />
     </div>
   );
 };

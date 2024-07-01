@@ -1,7 +1,7 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import HandlePages from "./HandlePages";
 import { TransactionHash } from "./TransactionHash";
-import { TransactionBase, formatEther } from "viem";
+import { TransactionBase, decodeFunctionData, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
@@ -24,13 +24,17 @@ export const TransactionsTable = ({
     (state: ExtendedTransaction[], action: ExtendedTransaction[]) => action,
     [],
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const transactionsPerPage = 17;
+  const initialLoad = useRef(true);
 
   const fetchTransactions = async () => {
     if (!deployedContractData.address) return;
 
-    setLoading(true);
+    if (initialLoad.current) {
+      setLoading(true);
+    }
+
     const testnet = targetNetwork.testnet ? "true" : "false";
     const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}`;
     const response = await fetch(url);
@@ -38,17 +42,37 @@ export const TransactionsTable = ({
 
     if (response.ok) {
       setTransactions(data);
+      console.log(data);
     } else {
       console.error(data.error);
     }
-    setLoading(false);
+
+    if (initialLoad.current) {
+      setLoading(false);
+      initialLoad.current = false;
+    }
   };
 
   useEffect(() => {
     if (deployedContractData.address) {
       fetchTransactions();
+      const interval = setInterval(() => {
+        fetchTransactions();
+      }, 30000);
+      return () => clearInterval(interval);
     }
   }, [deployedContractData.address]);
+  const decodeInput = (input: `0x${string}`) => {
+    try {
+      const decodedData = decodeFunctionData({
+        abi: deployedContractData.abi,
+        data: input,
+      });
+      return decodedData;
+    } catch (error) {
+      return "unknown";
+    }
+  };
   return (
     <div className="flex flex-col flex-1 justify-center px-4 md:px-0 overflow-hidden h-full">
       <div className="overflow-x-auto w-full shadow-2xl rounded-xl flex-1">
@@ -62,7 +86,7 @@ export const TransactionsTable = ({
               <thead className="h-16">
                 <tr className="rounded-lg text-sm text-base-content">
                   <th className="bg-primary">Time</th>
-                  <th className="bg-primary">{"Transaction\nHash"}</th>
+                  <th className="bg-primary">Transaction Hash</th>
                   <th className="bg-primary">From</th>
                   <th className="bg-primary">To</th>
                   <th className="bg-primary text-end">Value ({contractName.toUpperCase()})</th>

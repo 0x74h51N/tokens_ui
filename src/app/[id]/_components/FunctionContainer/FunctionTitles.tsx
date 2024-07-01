@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useMemo, useState } from "react";
-import SearchDropdown from "~~/components/SearchDropdown";
+import SearchDropdown from "../SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import getContractSymbol from "~~/utils/getContractSymbol";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";

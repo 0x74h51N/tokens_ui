@@ -1,5 +1,3 @@
-import React from "react";
-
 const formatTime = (timestamp: string, showHour = true) => {
   const date = new Date(Number(timestamp) * 1000);
   const formattedDate = date.toLocaleDateString("eu-EU", {

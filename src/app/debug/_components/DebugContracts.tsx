@@ -4,20 +4,19 @@ import { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { ContractUI } from "~~/app/debug/_components/contract";
+import { tokenItems } from "~~/contracts/selectedContractNames";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getAllContracts } from "~~/utils/scaffold-eth/contractsData";
-
-type Contracts = "NNNToken" | "NVMToken" | "NXAGToken" | "NPTtoken";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedContract";
 const contractsData = getAllContracts();
-const contractNames = Object.keys(contractsData) as Contracts[];
+const contractNames = Object.keys(contractsData) as ContractName[];
 
-const filteredContracts = contractNames.filter(
-  (a): a is Contracts => a === "NNNToken" || a === "NVMToken" || a === "NXAGToken" || a === "NPTtoken",
+const filteredContracts = tokenItems.filter((item): item is ContractName =>
+  contractNames.includes(item as ContractName),
 );
-
 export function DebugContracts() {
-  const [selectedContract, setSelectedContract] = useLocalStorage<Contracts>(
+  const [selectedContract, setSelectedContract] = useLocalStorage<ContractName>(
     selectedContractStorageKey,
     filteredContracts[0],
     { initializeWithValue: false },
@@ -47,7 +46,7 @@ export function DebugContracts() {
                   key={contractName}
                   onClick={() => setSelectedContract(contractName)}
                 >
-                  {contractName}
+                  {contractName.toUpperCase() + " Token"}
                   {contractsData[contractName].external && (
                     <span className="tooltip tooltip-top tooltip-accent" data-tip="External contract">
                       <BarsArrowUpIcon className="h-4 w-4 cursor-pointer" />

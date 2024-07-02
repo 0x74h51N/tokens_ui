@@ -25,7 +25,7 @@ const DisplayExternalVariables = ({
   return (
     <Fragment key={variable.name + " key "}>
       <div className="flex items-center">
-        <h3 className="font-medium text-lg mb-0 break-all">{variable.name}</h3>
+        <h3 className="font-medium lg:text-lg text-sm mb-0 break-all">{variable.name}</h3>
         <button className="btn btn-ghost btn-xs" onClick={async () => await fetchData()}>
           {isFetch ? (
             <span className="loading loading-spinner loading-xs"></span>
@@ -36,7 +36,7 @@ const DisplayExternalVariables = ({
       </div>
       <div className="text-gray-500 font-medium flex flex-col items-start">
         <div
-          className={`break-all block transition bg-transparent ${
+          className={`break-all block transition bg-transparent lg:text-lg text-sm ${
             showAnimation ? "bg-warning rounded-sm animate-pulse-fast" : ""
           }`}
         >

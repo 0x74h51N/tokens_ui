@@ -1,9 +1,9 @@
 "use server";
 const tokenNameToIdMap: Record<string, string> = {
-  nnntoken: "novem-gold",
-  nvmtoken: "novem-pro",
-  npttoken: "novem-silver",
-  nxagtoken: "novem-platinum",
+  nnn: "novem-gold",
+  nvm: "novem-pro",
+  npt: "novem-silver",
+  nxag: "novem-platinum",
 };
 
 export interface CoinData {

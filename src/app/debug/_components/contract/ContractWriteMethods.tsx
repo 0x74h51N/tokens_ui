@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Abi, AbiFunction } from "abitype";
 import { WriteOnlyFunctionForm } from "~~/app/debug/_components/contract";
+import { useGlobalState } from "~~/services/store/store";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
 
 export const ContractWriteMethods = ({
@@ -16,6 +17,7 @@ export const ContractWriteMethods = ({
   nameFix?: boolean;
   debug?: boolean;
 }) => {
+  const setContractFunctions = useGlobalState(state => state.setContractFunctions);
   const functions = useMemo(
     () =>
       ((deployedContractData.abi as Abi).filter(part => part.type === "function") as AbiFunction[])
@@ -31,9 +33,14 @@ export const ContractWriteMethods = ({
             ],
           };
         })
-        .sort((a, b) => (b.inheritedFrom ? b.inheritedFrom.localeCompare(a.inheritedFrom) : 1)),
+        .sort((a, b) => a.fn.name.localeCompare(b.fn.name)),
     [deployedContractData],
   );
+
+  useEffect(() => {
+    const fnArray = functions.map(f => f.fn.name);
+    setContractFunctions(deployedContractData.address, fnArray);
+  }, [deployedContractData, functions, setContractFunctions]);
 
   const functionsToDisplay = useMemo(() => {
     return functionName ? functions.filter(fn => fn.fn.name.toLowerCase() === functionName.toLowerCase()) : functions;

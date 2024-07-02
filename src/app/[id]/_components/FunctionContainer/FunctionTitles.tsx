@@ -20,14 +20,14 @@ const FunctionTitles = ({
   contractName,
 }: FunctionTitlesProps) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
-
+  const contractFunctions = useGlobalState(state => state.contractFunctions);
+  const functions = contractFunctions[contractAddress];
   const [displayedFunctions, setDisplayedFunctions] = useState<string[]>(initialFunctions);
   const handleSelect = (option: string) => {
     setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
     setShowSearch(false);
   };
-  const contractFunctions = useGlobalState(state => state.contractFunctions);
-  const functions = contractFunctions[contractAddress];
+
   const availableFunctions = useMemo(() => {
     return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
   }, [functions, displayedFunctions]);
@@ -35,7 +35,7 @@ const FunctionTitles = ({
   return (
     <>
       <div className="flex w-full -z-10 -mt-20">
-        <div className="flex overflow-x-auto overflow-y-hidden rounded-t-lg pt-20 h-[8.4rem] max-w-[91%] pr-3 z-10 scrollbar-thumb-custom">
+        <div className="flex overflow-x-auto overflow-y-hidden rounded-t-lg pt-20 h-[8rem] max-w-[91%] pr-3 z-10 scrollbar-thumb-custom">
           {displayedFunctions.map((functionName, i) => (
             <div
               key={functionName + " button " + i}

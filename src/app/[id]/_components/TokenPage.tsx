@@ -43,15 +43,15 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
 
   const functionNames = ["mint", "burn"];
   return (
-    <div className="flex flex-row flex-1">
+    <div className="flex md:flex-row flex-col flex-1">
       <SideBar
         contractName={contractName}
         refreshDisplayVariables={refreshDisplayVariables}
         deployedContractData={deployedContractData}
       />
-      <div className={`px-2 lg:px-6 md:px-4 lg:gap-12 my-0 mt-2 flex-1`}>
-        <div className="h-full grid grid-cols-1 md:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-9 gap-8 lg:gap-10">
-          <div className="col-span-1 md:col-span-3 xl:col-span-4 2xl:col-span-5 flex flex-col">
+      <div className={`2xl:px-6 lg:px-2 px-0 lg:gap-10 2xl:gap-12 my-0 mt-2 flex-1`}>
+        <div className="h-full grid grid-cols-1 xl:grid-cols-7 2xl:grid-cols-9 gap-3 lg:gap-5 2xl:gap-10">
+          <div className="col-span-1  xl:col-span-4 2xl:col-span-5 flex flex-col">
             <div className="flex flex-1"></div>
             <div className="w-full flex flex-col relative z-50">
               <FunctionContainer
@@ -62,7 +62,11 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
               />
             </div>
           </div>
-          <div className="col-span-1 md:col-span-4 flex flex-col relative  max-h-screen mt-2">
+
+          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative  max-h-screen mt-2">
+            <h1 className="w-full lg:text-3xl text-xl bg-base-300 p-4 pl-6 antialiased font-semibold rounded-t-xl m-0">
+              {contractName.toUpperCase()} Transactions
+            </h1>
             <TransactionsTable deployedContractData={deployedContractData} contractName={contractName} />
           </div>
         </div>

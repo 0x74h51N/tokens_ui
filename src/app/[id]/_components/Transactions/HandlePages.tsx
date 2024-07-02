@@ -38,7 +38,7 @@ const HandlePages = ({
         pageNumbers.push(
           <button
             key={i}
-            className={`bg-base-100 px-2 py-1 m-1 rounded-md text-xs ${i === currentPage ? "bg-base-300" : ""}`}
+            className={`bg-base-100 px-2 py-1 m-1 rounded-md text-xs ${i === currentPage ? "bg-base-200" : ""}`}
             onClick={() => handleClick(i)}
           >
             {i}
@@ -56,7 +56,7 @@ const HandlePages = ({
   }, [totalPages, currentPage, handleClick]);
 
   return (
-    <div className="flex justify-center w-full">
+    <div className="flex justify-center w-full bg-base-300 rounded-b-xl h-10">
       <div className="btn-group">{renderPageNumbers}</div>
     </div>
   );

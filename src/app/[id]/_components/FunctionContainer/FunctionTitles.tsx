@@ -92,7 +92,7 @@ const FunctionTitles = ({
                 }}
               >
                 <div
-                  className="absolute tooltip tooltip-top tooltip-secondary  -top-1 right-7 before:left-6 before:z-50 z-50"
+                  className="absolute tooltip tooltip-top tooltip-secondary -top-1.5 right-7 before:left-6 before:z-50 z-50"
                   data-tip="Close"
                 >
                   <button
@@ -100,15 +100,15 @@ const FunctionTitles = ({
                       e.stopPropagation();
                       closeFunction(functionName);
                     }}
-                    className="btn min-h-0 !w-4 !h-4 bg-opacity-0 text-opacity-60 hover:text-opacity-90 hover:bg-base-200 hover:bg-opacity-65 border-none shadow-none rounded-sm px-1 pb-1.5 -pt-1 !m-0 antialiased text-xs font-mono"
+                    className="btn min-h-0 !w-4 !h-4 bg-opacity-0 text-opacity-60 hover:text-opacity-90 hover:bg-base-200 hover:bg-opacity-65 border-none shadow-none rounded-sm px-1 !pb-[17px]  pr-1 !m-0 antialiased text-xs font-mono"
                   >
                     x
                   </button>
                 </div>
 
                 <div
-                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:content-[attr(data-tip)] before:-right-3 before:left-auto before:transform-none"
-                  data-tip={getCoolDisplayName(functionName) + " " + getContractSymbol(contractName)}
+                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-20 before:content-[attr(data-tip)] before:right-4 before:left-auto before:transform-none"
+                  data-tip={getCoolDisplayName(functionName)}
                 >
                   <button
                     className={`w-full h-full btn btn-secondary rounded-none hover:border-transparent plus-btn p-0 ${

@@ -56,7 +56,7 @@ const FunctionTitles = ({
     if (!loading) {
       createToken(displayedFunctions, contractAddress);
     }
-  }, [displayedFunctions]);
+  }, [displayedFunctions, loading, initial, contractAddress]);
 
   const availableFunctions = useMemo(() => {
     return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
@@ -65,10 +65,13 @@ const FunctionTitles = ({
   const closeFunction = (functionName: string) => {
     const index = displayedFunctions.indexOf(functionName);
 
-    setDisplayedFunctions(displayedFunctions.filter((fn: string) => fn !== functionName));
-    if (activeFunction === functionName) {
-      setActiveFunc(displayedFunctions[Math.max(0, index - 1)]);
-    }
+    setDisplayedFunctions(prevDisplayedFunctions => {
+      const updatedFunctions = prevDisplayedFunctions.filter((fn: string) => fn !== functionName);
+      if (activeFunction === functionName) {
+        setActiveFunc(updatedFunctions[Math.max(0, index - 1)] || "null");
+      }
+      return updatedFunctions;
+    });
   };
 
   return (
@@ -89,7 +92,7 @@ const FunctionTitles = ({
                 }}
               >
                 <div
-                  className="absolute tooltip tooltip-top tooltip-secondary  -top-0.5 right-7 before:left-6 before:z-50 z-50"
+                  className="absolute tooltip tooltip-top tooltip-secondary  -top-1 right-7 before:left-6 before:z-50 z-50"
                   data-tip="Close"
                 >
                   <button
@@ -97,9 +100,9 @@ const FunctionTitles = ({
                       e.stopPropagation();
                       closeFunction(functionName);
                     }}
-                    className="btn p-0 min-h-0 !w-4 !h-4 bg-opacity-0 text-opacity-60 hover:text-opacity-90 hover:bg-base-200 hover:bg-opacity-65 border-none shadow-none rounded-sm pr-0.5 pb-0.5 !m-0 antialiased text-sm font-mono"
+                    className="btn min-h-0 !w-4 !h-4 bg-opacity-0 text-opacity-60 hover:text-opacity-90 hover:bg-base-200 hover:bg-opacity-65 border-none shadow-none rounded-sm px-1 pb-1.5 -pt-1 !m-0 antialiased text-xs font-mono"
                   >
-                    X
+                    x
                   </button>
                 </div>
 
@@ -123,7 +126,7 @@ const FunctionTitles = ({
           )}
         </div>
         <div
-          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:right-5 before:left-auto before:transform-none"
+          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:-right-3 before:left-auto before:transform-none"
           style={{
             filter: "drop-shadow(.25em 0em 4px rgba(0, 0, 0, 0.5))",
           }}

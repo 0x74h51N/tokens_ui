@@ -35,7 +35,6 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
         contractAddress={deployedContractData.address}
         activeFunction={activeFunction}
         setActiveFunc={setActiveFunc}
-        contractName={contractName}
       />
       <div
         className="flex flex-col justify-center items-center w-full h-auto z-0"

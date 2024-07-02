@@ -2,7 +2,6 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "r
 import SearchDropdown from "../SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { createToken } from "~~/utils/createToken";
-import getContractSymbol from "~~/utils/getContractSymbol";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { tokenVerify } from "~~/utils/tokenVerify";
 
@@ -11,16 +10,9 @@ interface FunctionTitlesProps {
   contractAddress: `0x${string}`;
   activeFunction: string;
   setActiveFunc: Dispatch<SetStateAction<string>>;
-  contractName: string;
 }
 
-const FunctionTitles = ({
-  initialFunctions,
-  contractAddress,
-  activeFunction,
-  setActiveFunc,
-  contractName,
-}: FunctionTitlesProps) => {
+const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, setActiveFunc }: FunctionTitlesProps) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const contractFunctions = useGlobalState(state => state.contractFunctions);
   const functions = contractFunctions[contractAddress];

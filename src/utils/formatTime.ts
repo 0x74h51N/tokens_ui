@@ -1,10 +1,6 @@
 const formatTime = (timestamp: string, showHour = true) => {
   const date = new Date(Number(timestamp) * 1000);
-  const formattedDate = date.toLocaleDateString("eu-EU", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-  });
+  const formattedDate = date.toLocaleDateString("eu-EU");
   if (showHour) {
     const formattedTime = date.toLocaleTimeString("eu-EU", {
       hour: "2-digit",

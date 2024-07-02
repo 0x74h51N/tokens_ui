@@ -26,7 +26,7 @@ interface FunctionContainerProps {
  */
 
 const FunctionContainer = ({ contractName, functionNames, deployedContractData, onChange }: FunctionContainerProps) => {
-  const [activeFunction, setActiveFunc] = useState<string>(functionNames[0]);
+  const [activeFunction, setActiveFunc] = useState<string>(() => "null");
 
   return (
     <>

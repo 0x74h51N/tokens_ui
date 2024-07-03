@@ -4,10 +4,9 @@ export async function getBscTransactions(contractAddress: string, testnet: strin
   }
 
   const apiKey = process.env.BSC_SCAN_API_KEY;
-  const offset = 250;
+  const offset = 300;
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
-
   try {
     const response = await fetch(url, {
       next: { revalidate: 29 },

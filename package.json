@@ -46,7 +46,7 @@
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",
     "@types/jsonwebtoken": "^9",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.14.9",
     "@types/nprogress": "^0",
     "@types/react": "^18.0.9",
     "@types/react-copy-to-clipboard": "^5.0.4",

@@ -1,5 +1,6 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import HandlePages from "./HandlePages";
+import Method from "./Method";
 import { TransactionHash } from "./TransactionHash";
 import { TransactionBase, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
@@ -73,11 +74,12 @@ export const TransactionsTable = ({
           </div>
         ) : (
           <>
-            <table className="table text-lg bg-base-100 table-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
-              <thead className="min-h-10 align-text-top">
-                <tr className="text-sm text-base-content">
+            <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
+              <thead>
+                <tr className="text-sm text-base-content h-16">
                   <th className="bg-primary w-1/12 md:!px-4 !px-2">Time</th>
                   <th className="bg-primary w-1/12 !px-2">Tx Hash</th>
+                  <th className="bg-primary w-1/12 !px-2">Method</th>
                   <th className="bg-primary w-4/12 !px-2">From</th>
                   <th className="bg-primary w-4/12 !px-2">To</th>
                   <th className="bg-primary w-2/12 !px-2 text-end">Value ({contractName.toUpperCase()})</th>
@@ -100,6 +102,9 @@ export const TransactionsTable = ({
                       <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
                         <TransactionHash hash={tx.hash} />
                       </td>
+                      <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
+                        <Method from={tx.from} to={tx.to} />
+                      </td>
                       <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
                         <Address address={tx.from} size="sm" />
                       </td>
@@ -107,7 +112,7 @@ export const TransactionsTable = ({
                         {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
                       </td>
                       <td className="xl:w-2/12 w-2/12 12 text-right !p-2 truncate text-sm !pl-4">
-                        {formatPrice(Number(formatEther(tx.value)))} {tx.tokenSymbol}
+                        {formatPrice(Number(formatEther(tx.value)))}
                       </td>
                     </tr>
                   );

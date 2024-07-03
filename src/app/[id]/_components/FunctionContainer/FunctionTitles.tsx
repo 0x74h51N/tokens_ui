@@ -1,9 +1,8 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import SearchDropdown from "../SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
-import { createToken } from "~~/utils/createToken";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
-import { tokenVerify } from "~~/utils/tokenVerify";
+import { createToken, tokenVerify } from "~~/utils/jwt-token";
 
 interface FunctionTitlesProps {
   initialFunctions: string[];

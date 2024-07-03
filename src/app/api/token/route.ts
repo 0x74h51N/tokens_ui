@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
     }
 
     const decoded = jwt.verify(token, secretKey);
-    return NextResponse.json({ message: "Protected data access granted", data: decoded }, { status: 200 });
+    return NextResponse.json({ message: "JWT Token valid, data access granted", data: decoded }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ message: "Invalid token", error: err }, { status: 401 });
   }

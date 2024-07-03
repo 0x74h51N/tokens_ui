@@ -41,7 +41,7 @@
     "usehooks-ts": "^2.13.0",
     "viem": "2.13.6",
     "wagmi": "2.9.8",
-    "zustand": "^4.1.2"
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^4.1.1",

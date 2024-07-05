@@ -29,7 +29,7 @@ async function handleRequest(req: NextRequest) {
   const contractAddress = searchParams.get("contractaddress");
   const testnet = searchParams.get("testnet");
   const all = searchParams.get("all") || "false";
-
+  const cleanCache = searchParams.get("cleanCache") || "false";
   if (!contractAddress) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
   }
@@ -44,7 +44,7 @@ async function handleRequest(req: NextRequest) {
   }
 
   try {
-    const transactions = await getBscTransactions(contractAddress, testnet, all);
+    const transactions = await getBscTransactions(contractAddress, testnet, all, cleanCache);
     return NextResponse.json(transactions, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {

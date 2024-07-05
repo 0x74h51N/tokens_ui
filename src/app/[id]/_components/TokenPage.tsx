@@ -20,11 +20,14 @@ interface TokenPageProps {
 const TokenPage = ({ contractName }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
   const { targetNetwork } = useTargetNetwork();
+  const initialFunctions = ["mint", "burn"];
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName) as {
     data: Contract<ContractName>;
     isLoading: boolean;
   };
-
+  const bscUrl =
+    deployedContractData &&
+    `https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/token/${deployedContractData.address}`;
   if (deployedContractLoading) {
     return (
       <div className="mt-[15rem] w-full min-h-full flex flex-col justify-center items-center">
@@ -34,14 +37,8 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
   }
 
   if (!deployedContractData) {
-    return (
-      <p className="text-3xl mt-14">
-        {`No contract found by the name of "${contractName}" on chain "${targetNetwork.name}"!`}
-      </p>
-    );
+    return null;
   }
-  const bscUrl = `https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/token/${deployedContractData.address}`;
-  const functionNames = ["mint", "burn"];
   return (
     <div className="flex md:flex-row flex-col flex-1">
       <SideBar
@@ -55,7 +52,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
             <div className="flex flex-1"></div>
             <div className="w-full flex flex-col relative z-50">
               <FunctionContainer
-                functionNames={functionNames}
+                functionNames={initialFunctions}
                 contractName={contractName}
                 deployedContractData={deployedContractData}
                 onChange={triggerRefreshDisplayVariables}

@@ -31,23 +31,25 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
     fetchData();
   }, [contractAddress]);
 
-  const handleSelect = (option: string) => {
-    setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
-    setShowSearch(false);
-    setActiveFunc(option);
-  };
-
   useEffect(() => {
-    if (displayedFunctions.length === 0) {
-      setActiveFunc("null");
-    } else if (!loading && initial) {
-      setActiveFunc(displayedFunctions[0]);
+    if (!loading && initial) {
+      if (displayedFunctions.length === 0) {
+        setActiveFunc("null");
+      } else {
+        setActiveFunc(displayedFunctions[0]);
+      }
       setInitial(false);
     }
     if (!loading) {
       createToken(displayedFunctions, contractAddress);
     }
-  }, [displayedFunctions, loading, initial, contractAddress]);
+  }, [displayedFunctions, loading, initial, contractAddress, setActiveFunc]);
+
+  const handleSelect = (option: string) => {
+    setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
+    setShowSearch(false);
+    setActiveFunc(option);
+  };
 
   const availableFunctions = useMemo(() => {
     return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];

@@ -42,7 +42,17 @@ export const AddressInfoDropdown = ({
     dropdownRef.current?.removeAttribute("open");
   };
   useOutsideClick(dropdownRef, closeDropdown);
-
+  const handleLogout = async () => {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+    });
+    if (response.ok) {
+      disconnect();
+      console.log("Logout");
+    } else {
+      console.log("Logout failed");
+    }
+  };
   return (
     <>
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">
@@ -123,7 +133,7 @@ export const AddressInfoDropdown = ({
             <button
               className="menu-item text-error btn-sm !rounded-xl flex gap-3 py-3"
               type="button"
-              onClick={() => disconnect()}
+              onClick={handleLogout}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>
             </button>

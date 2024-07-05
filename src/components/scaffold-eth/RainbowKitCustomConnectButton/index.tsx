@@ -1,6 +1,7 @@
 "use client";
 
 // @refresh reset
+import { useEffect } from "react";
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
 import { AddressQRCodeModal } from "./AddressQRCodeModal";
@@ -15,6 +16,21 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
  */
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
+  const handleLogin = async (address: string) => {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ address }),
+    });
+
+    if (response.ok) {
+      console.log("Logged in");
+    } else {
+      console.log("Login failed");
+    }
+  };
 
   return (
     <ConnectButton.Custom>
@@ -23,6 +39,12 @@ export const RainbowKitCustomConnectButton = () => {
         const blockExplorerAddressLink = account
           ? getBlockExplorerAddressLink(targetNetwork, account.address)
           : undefined;
+
+        useEffect(() => {
+          if (account?.address && connected) {
+            handleLogin(account.address);
+          }
+        }, [account?.address]);
 
         return (
           <>

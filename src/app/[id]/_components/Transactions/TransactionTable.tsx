@@ -5,6 +5,7 @@ import { TransactionHash } from "./TransactionHash";
 import { TransactionBase, formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { fetchTransactions } from "~~/lib/fetchTransactions";
 import { formatPrice } from "~~/utils/formatPrice";
 import formatTime from "~~/utils/formatTime";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
@@ -22,31 +23,27 @@ export const TransactionsTable = ({
   contractName: ContractName;
 }) => {
   const { targetNetwork } = useTargetNetwork();
-  const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
   const [currentTransactions, setCurrentTransactions] = useReducer(
     (state: ExtendedTransaction[], action: ExtendedTransaction[]) => action,
     [],
   );
-  const [loading, setLoading] = useState(true);
   const transactionsPerPage = 17;
+  const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const initialLoad = useRef(true);
-
-  const fetchTransactions = async () => {
+  const testnet = targetNetwork.testnet || false;
+  const fetchAndSetTransactions = async (all: boolean) => {
     if (!deployedContractData.address) return;
 
     if (initialLoad.current) {
       setLoading(true);
     }
 
-    const testnet = targetNetwork.testnet ? "true" : "false";
-    const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    if (response.ok) {
+    try {
+      const data = await fetchTransactions(deployedContractData.address, testnet, all);
       setTransactions(data);
-    } else {
-      console.error(data.error);
+    } catch (error) {
+      console.error(error);
     }
 
     if (initialLoad.current) {
@@ -57,10 +54,17 @@ export const TransactionsTable = ({
 
   useEffect(() => {
     if (deployedContractData.address) {
-      fetchTransactions();
+      fetchAndSetTransactions(true).then(() => {
+        setLoading(false);
+        setTimeout(() => {
+          fetchAndSetTransactions(false);
+        }, 500);
+      });
+
       const interval = setInterval(() => {
-        fetchTransactions();
+        fetchAndSetTransactions(false);
       }, 30000);
+
       return () => clearInterval(interval);
     }
   }, [deployedContractData.address]);

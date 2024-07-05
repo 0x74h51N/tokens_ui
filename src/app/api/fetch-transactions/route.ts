@@ -28,7 +28,7 @@ async function handleRequest(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const contractAddress = searchParams.get("contractaddress");
   const testnet = searchParams.get("testnet");
-  const all = searchParams.get("all") || "false";
+  const all = searchParams.get("allTx") || "false";
   const cleanCache = searchParams.get("cleanCache") || "false";
   if (!contractAddress) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });

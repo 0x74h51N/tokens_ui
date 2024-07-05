@@ -43,11 +43,11 @@ export const AddressInfoDropdown = ({
   };
   useOutsideClick(dropdownRef, closeDropdown);
   const handleLogout = async () => {
+    disconnect();
     const response = await fetch("/api/logout", {
       method: "POST",
     });
     if (response.ok) {
-      disconnect();
       console.log("Logout");
     } else {
       console.log("Logout failed");

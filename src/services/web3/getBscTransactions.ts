@@ -34,21 +34,20 @@ export async function getBscTransactions(
 
   if (all === "true") {
     const maxOffset = 700;
-    let offset = 0;
     const revalidateTime = 60 * 60 * 24;
-    let fetchedTransactions: ExtendedTransaction[] = [];
+    let page = 1;
 
-    do {
-      const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${maxOffset}&startblock=${offset}&sort=desc&apikey=${apiKey}`;
+    while (true) {
+      const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=${page}&offset=${maxOffset}&sort=desc&apikey=${apiKey}`;
       if (cleanCache === "true") {
         await revalidatePaths(url);
       }
-      fetchedTransactions = await fetchData(url, revalidateTime);
-      if (fetchedTransactions.length > 0) {
-        transactions = transactions.concat(fetchedTransactions);
-        offset += maxOffset;
-      }
-    } while (fetchedTransactions.length === maxOffset);
+      const fetchedTransactions = await fetchData(url, revalidateTime);
+      if (fetchedTransactions.length === 0) break;
+      transactions = transactions.concat(fetchedTransactions);
+      page++;
+      if (fetchedTransactions.length < maxOffset) break;
+    }
   } else {
     const offset = 50;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;

@@ -4,7 +4,7 @@ const mainnetAddresses = JSON.parse(process.env.CONTRACT_ADDRESS_LIST || "[]");
 const baseUrl = process.env.VERCEL_URL || "https://tokens-ui.vercel.app";
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
-  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&all=true&cleanCache=true`;
+  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
   const response = await fetch(url, {
     method: "GET",
     headers: {

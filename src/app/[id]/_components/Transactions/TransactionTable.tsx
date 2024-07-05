@@ -47,12 +47,16 @@ export const TransactionsTable = ({
 
     try {
       if (response.ok) {
-        setTransactions(prevTransactions => {
-          const newTransactions = data.filter(
-            (newTx: ExtendedTransaction) => !prevTransactions.some(prevTx => prevTx.hash === newTx.hash),
-          );
-          return [...prevTransactions, ...newTransactions];
-        });
+        if (!all) {
+          setTransactions(prevTransactions => {
+            const recentPrevTransactions = prevTransactions.slice(0, 120);
+            const newTransactions = data.filter(
+              (newTx: ExtendedTransaction) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
+            );
+            const combinedTransactions = [...newTransactions, ...prevTransactions];
+            return combinedTransactions;
+          });
+        } else setTransactions(data);
       } else {
         throw new Error(data.error || "Failed to fetch transactions");
       }
@@ -70,7 +74,7 @@ export const TransactionsTable = ({
     !isConnected && setTransactions([]);
     const testnet = targetNetwork.testnet || false;
     const fetchTransactionsWithDelay = async () => {
-      await fetchTransactions(true, testnet);
+      transactions.length < 150 && (await fetchTransactions(true, testnet));
       setLoading(false);
       setTimeout(async () => {
         await fetchTransactions(false, testnet);
@@ -85,8 +89,9 @@ export const TransactionsTable = ({
       }, 30000);
 
       return () => clearInterval(interval);
-    } else setTransactions([]);
+    }
   }, [deployedContractData.address, targetNetwork.testnet, isConnected]);
+
   return (
     <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
       <div

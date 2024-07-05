@@ -39,13 +39,9 @@ export const RainbowKitCustomConnectButton = () => {
         const blockExplorerAddressLink = account
           ? getBlockExplorerAddressLink(targetNetwork, account.address)
           : undefined;
-
-        useEffect(() => {
-          if (account?.address && connected) {
-            handleLogin(account.address);
-          }
-        }, [account?.address]);
-
+        if (account?.address && connected) {
+          handleLogin(account.address);
+        }
         return (
           <>
             {(() => {

@@ -6,7 +6,7 @@ import { getBscTransactions } from "~~/services/web3/getBscTransactions";
 
 const cronSecret = process.env.CRON_SECRET;
 const allowedAddresses = JSON.parse(process.env.CONTRACT_ADDRESS_LIST || "[]");
-const testnetAdresses = JSON.parse(process.env.TESTNET_CONTRACT_ADDRESS_LIST || "[]");
+const testnetAddresses = JSON.parse(process.env.TESTNET_CONTRACT_ADDRESS_LIST || "[]");
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("Authorization");
@@ -36,7 +36,10 @@ async function handleRequest(req: NextRequest) {
   if (!testnet) {
     return NextResponse.json({ error: "Testnet parameter is required" }, { status: 400 });
   }
-  if (!allowedAddresses.includes(contractAddress) || !testnetAdresses.includes(contractAddress)) {
+  const isAllowedAddress = allowedAddresses.includes(contractAddress);
+  const isTestnetAddress = testnetAddresses.includes(contractAddress);
+
+  if (!isAllowedAddress && !isTestnetAddress) {
     return NextResponse.json({ error: "Invalid contract address" }, { status: 403 });
   }
 

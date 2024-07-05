@@ -31,16 +31,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "An error occurred during login" }, { status: 500 });
   }
 }
-
-export async function GET(req: NextRequest) {
-  console.log("Starting GET request");
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
-
-  if (session.isLoggedIn && session.walletAddress && isAddress(session.walletAddress)) {
-    console.log("Session is valid");
-    return NextResponse.json({ isLoggedIn: true, walletAddress: session.walletAddress }, { status: 200 });
-  } else {
-    console.error("Session is invalid");
-    return NextResponse.json({ isLoggedIn: false }, { status: 401 });
-  }
-}

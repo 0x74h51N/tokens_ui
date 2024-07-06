@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 // @refresh reset
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
@@ -7,6 +8,7 @@ import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
+import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
@@ -15,6 +17,28 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
  */
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
+  const { address, isConnected } = useAccount();
+
+  const handleLogin = async (address: string) => {
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ address }),
+    });
+
+    if (response.ok) {
+      console.log("Logged in");
+    } else {
+      console.log("Login failed");
+    }
+  };
+  useEffect(() => {
+    if (isConnected && address) {
+      handleLogin(address);
+    }
+  }, [isConnected, address]);
 
   return (
     <ConnectButton.Custom>
@@ -23,7 +47,6 @@ export const RainbowKitCustomConnectButton = () => {
         const blockExplorerAddressLink = account
           ? getBlockExplorerAddressLink(targetNetwork, account.address)
           : undefined;
-
         return (
           <>
             {(() => {

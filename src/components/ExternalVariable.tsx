@@ -1,6 +1,6 @@
 import React, { Fragment, useCallback, useEffect, useState } from "react";
 import DisplayExternalVariables from "./DisplayExternalVariables";
-import { CoinData } from "~~/utils/getPrice";
+import { CoinData } from "~~/services/web3/getCoinGeckoData";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 const ExternalVariable = ({ contractName }: { contractName: ContractName }) => {

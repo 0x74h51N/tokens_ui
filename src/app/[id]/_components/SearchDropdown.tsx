@@ -28,10 +28,10 @@ const SearchDropdown = ({ options, handleSelect }: { options: string[]; handleSe
         onChange={handleOnChange}
         onFocus={() => setIsDropdownVisible(true)}
         onBlur={() => setIsDropdownVisible(false)}
-        className="input input-bordered w-full rounded-lg"
+        className="absolute input input-bordered md:w-40 w-32 rounded-lg right-0 -top-1"
       />
       {isDropdownVisible && (
-        <ul className="absolute z-10 w-full bg-base-200 border border-base-100 rounded mt-1 text-sm max-h-40 overflow-y-auto overflow-x-hidden">
+        <ul className="absolute z-10 md:w-40 w-32 bg-base-200 border border-base-100 rounded right-0 top-12 text-sm max-h-40 overflow-y-auto overflow-x-hidden">
           {filteredOptions.map((option, index) => (
             <li
               key={index}

@@ -20,11 +20,14 @@ interface TokenPageProps {
 const TokenPage = ({ contractName }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
   const { targetNetwork } = useTargetNetwork();
+  const initialFunctions = ["mint", "burn"];
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName) as {
     data: Contract<ContractName>;
     isLoading: boolean;
   };
-
+  const bscUrl =
+    deployedContractData &&
+    `https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/token/${deployedContractData.address}`;
   if (deployedContractLoading) {
     return (
       <div className="mt-[15rem] w-full min-h-full flex flex-col justify-center items-center">
@@ -34,14 +37,8 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
   }
 
   if (!deployedContractData) {
-    return (
-      <p className="text-3xl mt-14">
-        {`No contract found by the name of "${contractName}" on chain "${targetNetwork.name}"!`}
-      </p>
-    );
+    return null;
   }
-  const bscUrl = `https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/token/${deployedContractData.address}`;
-  const functionNames = ["mint", "burn"];
   return (
     <div className="flex md:flex-row flex-col flex-1">
       <SideBar
@@ -55,14 +52,14 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
             <div className="flex flex-1"></div>
             <div className="w-full flex flex-col relative z-50">
               <FunctionContainer
-                functionNames={functionNames}
+                functionNames={initialFunctions}
                 contractName={contractName}
                 deployedContractData={deployedContractData}
                 onChange={triggerRefreshDisplayVariables}
               />
             </div>
           </div>
-          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative  max-h-screen mt-2">
+          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full mt-2">
             <h1 className="w-full lg:text-3xl text-xl bg-base-300 p-4 pl-4 antialiased font-semibold rounded-t-xl m-0">
               <span className="relative">
                 <a
@@ -75,7 +72,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
                 </a>
                 {" Transactions"}
                 <span
-                  data-tip="Displaying the last 300 txs for this contract"
+                  data-tip="Contract transactions (max 30s delay)"
                   className="absolute tooltip tooltip-info tooltip-right top-0 -right-2 text-[0.35em] text-xs cursor-help text-center before:max-w-[120px] before:top-4"
                 >
                   ?

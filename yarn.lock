@@ -3648,7 +3648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^0.6.0":
+"cookie@npm:0.6.0, cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "cookie@npm:0.6.0"
   checksum: f56a7d32a07db5458e79c726b77e3c2eff655c36792f2b6c58d351fb5f61531e5b1ab7f46987150136e366c65213cbe31729e02a3eaed630c3bf7334635fb410
@@ -5995,7 +5995,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iron-webcrypto@npm:^1.1.1":
+"iron-session@npm:^8.0.2":
+  version: 8.0.2
+  resolution: "iron-session@npm:8.0.2"
+  dependencies:
+    cookie: 0.6.0
+    iron-webcrypto: 1.2.1
+    uncrypto: 0.1.3
+  checksum: ee82a79505911c18659f4af81782d0c67f81fc3f4d7d373bea13b066f373c13f15cd15e93355936ec709e1e892e1f111f4c84b7db3b7296ee81f73f10c05465f
+  languageName: node
+  linkType: hard
+
+"iron-webcrypto@npm:1.2.1, iron-webcrypto@npm:^1.1.1":
   version: 1.2.1
   resolution: "iron-webcrypto@npm:1.2.1"
   checksum: b158d1893c8d037c11a7dcfd1998b519f31f979643c2c505c6eb1170fd63553498a58b05947d5dea116975df8f12ede5ca235cb68e4c1f404fa6695e4508c60c
@@ -9705,6 +9716,7 @@ __metadata:
     eslint-config-prettier: ^9.1.0
     eslint-plugin-prettier: ^4.2.1
     husky: ^9.0.11
+    iron-session: ^8.0.2
     jsonwebtoken: ^9.0.2
     lint-staged: ^15.2.7
     next: ^14.0.4
@@ -10019,7 +10031,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uncrypto@npm:^0.1.3":
+"uncrypto@npm:0.1.3, uncrypto@npm:^0.1.3":
   version: 0.1.3
   resolution: "uncrypto@npm:0.1.3"
   checksum: 07160e08806dd6cea16bb96c3fd54cd70fc801e02fc3c6f86980144d15c9ebbd1c55587f7280a207b3af6cd34901c0d0b77ada5a02c2f7081a033a05acf409e2

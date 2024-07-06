@@ -31,23 +31,25 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
     fetchData();
   }, [contractAddress]);
 
-  const handleSelect = (option: string) => {
-    setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
-    setShowSearch(false);
-    setActiveFunc(option);
-  };
-
   useEffect(() => {
-    if (displayedFunctions.length === 0) {
-      setActiveFunc("null");
-    } else if (!loading && initial) {
-      setActiveFunc(displayedFunctions[0]);
+    if (!loading && initial) {
+      if (displayedFunctions.length === 0) {
+        setActiveFunc("null");
+      } else {
+        setActiveFunc(displayedFunctions[0]);
+      }
       setInitial(false);
     }
     if (!loading) {
       createToken(displayedFunctions, contractAddress);
     }
-  }, [displayedFunctions, loading, initial, contractAddress]);
+  }, [displayedFunctions, loading, initial, contractAddress, setActiveFunc]);
+
+  const handleSelect = (option: string) => {
+    setDisplayedFunctions(prevDisplayedFunctions => [...prevDisplayedFunctions, option]);
+    setShowSearch(false);
+    setActiveFunc(option);
+  };
 
   const availableFunctions = useMemo(() => {
     return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
@@ -98,7 +100,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
                 </div>
 
                 <div
-                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-20 before:content-[attr(data-tip)] before:right-4 before:left-auto before:transform-none"
+                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-24 before:content-[attr(data-tip)] before:right-6 before:left-auto before:transform-none"
                   data-tip={getCoolDisplayName(functionName)}
                 >
                   <button
@@ -117,7 +119,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
           )}
         </div>
         <div
-          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:-right-3 before:left-auto before:transform-none"
+          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:right-0 before:left-auto before:transform-none"
           style={{
             filter: "drop-shadow(.25em 0em 4px rgba(0, 0, 0, 0.5))",
           }}

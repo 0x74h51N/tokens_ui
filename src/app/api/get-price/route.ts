@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { CoinData, getPrice } from "~~/utils/getPrice";
+import { CoinData, getCoinGeckoData } from "~~/services/web3/getCoinGeckoData";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
     if (!tokenName || !currency) {
       throw new Error("Invalid query parameters");
     }
-    const data: CoinData | null = await getPrice(tokenName, currency);
+    const data: CoinData | null = await getCoinGeckoData(tokenName, currency);
     if (!data) {
       throw new Error("Data fetch error");
     } else return NextResponse.json(data);

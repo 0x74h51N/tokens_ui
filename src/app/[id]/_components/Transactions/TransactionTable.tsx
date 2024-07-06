@@ -125,7 +125,7 @@ export const TransactionsTable = ({
         placeholder="Search..."
         value={searchTerm}
         onChange={handleSearch}
-        className="input input-bordered md:w-40 w-32 rounded-md absolute lg:top-2.5 top-2 right-2 truncate"
+        className="input input-secondary md:w-40 w-32 rounded-md absolute lg:top-2.5 top-2 right-2 truncate p-2"
       />
       <div
         className={`overflow-x-auto w-full shadow-2xl ${

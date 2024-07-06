@@ -78,7 +78,7 @@ export const TransactionsTable = ({
       setLoading(false);
       setTimeout(async () => {
         await fetchTransactions(false, testnet);
-      }, 500);
+      }, 50);
     };
 
     if (isConnected && deployedContractData.address) {

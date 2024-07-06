@@ -20,5 +20,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/fetch-transactions"],
+  matcher: ["/api/fetch-transactions*"],
 };

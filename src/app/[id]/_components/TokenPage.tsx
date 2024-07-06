@@ -72,7 +72,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
                 </a>
                 {" Transactions"}
                 <span
-                  data-tip="Displaying all transactions for this contract"
+                  data-tip="Contract transactions (max 30s delay)"
                   className="absolute tooltip tooltip-info tooltip-right top-0 -right-2 text-[0.35em] text-xs cursor-help text-center before:max-w-[120px] before:top-4"
                 >
                   ?

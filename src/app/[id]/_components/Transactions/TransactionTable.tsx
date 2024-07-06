@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from "react";
+import getMethodName from "../../../../utils/getMethodName";
 import HandlePages from "./HandlePages";
-import Method from "./Method";
+import TableHead from "./TableHead";
 import { TransactionHash } from "./TransactionHash";
 import { TransactionBase, formatEther } from "viem";
 import { useAccount } from "wagmi";
@@ -30,8 +31,10 @@ export const TransactionsTable = ({
   );
   const transactionsPerPage = 17;
   const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
+  const [sortedTransactions, setSortedTransactions] = useState<ExtendedTransaction[]>([]);
   const [loading, setLoading] = useState(true);
   const initialLoad = useRef(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchTransactions = async (all: boolean, testnet: boolean) => {
     if (!targetNetwork) return console.log("target error");
@@ -53,10 +56,15 @@ export const TransactionsTable = ({
             const newTransactions = data.filter(
               (newTx: ExtendedTransaction) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
             );
+            if (newTransactions.length === 0) {
+              return prevTransactions;
+            }
             const combinedTransactions = [...newTransactions, ...prevTransactions];
             return combinedTransactions;
           });
-        } else setTransactions(data);
+        } else {
+          setTransactions(data);
+        }
       } else {
         throw new Error(data.error || "Failed to fetch transactions");
       }
@@ -68,6 +76,10 @@ export const TransactionsTable = ({
       setLoading(false);
       initialLoad.current = false;
     }
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
   useEffect(() => {
@@ -92,8 +104,29 @@ export const TransactionsTable = ({
     }
   }, [deployedContractData.address, targetNetwork.testnet, isConnected]);
 
+  useEffect(() => {
+    let filteredTransactions = transactions;
+    if (searchTerm) {
+      filteredTransactions = transactions.filter(
+        tx =>
+          tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
+          getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+    setSortedTransactions(filteredTransactions);
+  }, [transactions, searchTerm]);
+
   return (
     <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
+      <input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={handleSearch}
+        className="input input-bordered md:w-40 w-32 rounded-md absolute lg:top-2.5 top-2 right-2 truncate"
+      />
       <div
         className={`overflow-x-auto w-full shadow-2xl ${
           currentTransactions.length > 10 || !isConnected ? "flex-1" : ""
@@ -107,22 +140,18 @@ export const TransactionsTable = ({
           ) : (
             <>
               <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
-                <thead>
-                  <tr className="text-sm text-base-content h-16">
-                    <th className="bg-primary w-1/12 md:!px-4 !px-2">Time</th>
-                    <th className="bg-primary w-1/12 !px-2">Tx Hash</th>
-                    <th className="bg-primary w-1/12 !px-2">Method</th>
-                    <th className="bg-primary w-4/12 !px-2">From</th>
-                    <th className="bg-primary w-4/12 !px-2">To</th>
-                    <th className="bg-primary w-2/12 !px-2 text-end">Value ({contractName.toUpperCase()})</th>
-                  </tr>
-                </thead>
+                <TableHead
+                  contractName={contractName}
+                  sortTransactions={setSortedTransactions}
+                  sortedTransactions={sortedTransactions}
+                />
                 <tbody className="overflow-y-auto">
                   {currentTransactions.map((tx, i: number) => {
                     const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
                     const timeMinedFormatted = formatTime(tx.timeStamp, false);
+                    const length = formatEther(tx.value).length;
                     return (
-                      <tr key={tx.hash + " table key " + i} className="hover min-h-5">
+                      <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
                         <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
                           <div
                             data-tip={timeMined}
@@ -134,17 +163,24 @@ export const TransactionsTable = ({
                         <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
                           <TransactionHash hash={tx.hash} />
                         </td>
-                        <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-                          <Method from={tx.from} to={tx.to} />
-                        </td>
+                        <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{getMethodName(tx.from, tx.to)}</td>
                         <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
                           <Address address={tx.from} size="sm" />
                         </td>
                         <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
                           {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
                         </td>
-                        <td className="xl:w-2/12 w-2/12 12 text-right !p-2 truncate text-sm !pl-4">
-                          {formatPrice(Number(formatEther(tx.value)))}
+                        <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
+                          <div
+                            data-tip={formatEther(tx.value)}
+                            className={`${
+                              length > 4 && "tooltip"
+                            } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
+                              length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
+                            }`}
+                          >
+                            {formatPrice(Number(formatEther(tx.value)))}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -160,7 +196,7 @@ export const TransactionsTable = ({
         )}
       </div>
       <HandlePages
-        transactions={transactions}
+        transactions={sortedTransactions}
         transactionsPerPage={transactionsPerPage}
         setCurrentTransactions={setCurrentTransactions}
       />

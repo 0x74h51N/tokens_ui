@@ -7,7 +7,7 @@ export async function middleware(req: NextRequest) {
   const cronSecret = process.env.CRON_SECRET;
 
   const authHeader = req.headers.get("Authorization");
-  if (authHeader === `Bearer ${cronSecret}`) {
+  if (authHeader && authHeader === `Bearer ${cronSecret}`) {
     return NextResponse.next();
   } else {
     const session = await getIronSession<SessionData>(cookies(), sessionOptions);
@@ -20,5 +20,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/fetch-transactions*"],
+  matcher: ["/api/fetch-transactions"],
 };

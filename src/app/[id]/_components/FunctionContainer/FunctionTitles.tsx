@@ -100,7 +100,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
                 </div>
 
                 <div
-                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-20 before:content-[attr(data-tip)] before:right-6 before:left-auto before:transform-none"
+                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-24 before:content-[attr(data-tip)] before:right-6 before:left-auto before:transform-none"
                   data-tip={getCoolDisplayName(functionName)}
                 >
                   <button

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
 import getMethodName from "../../../../utils/getMethodName";
 import HandlePages from "./HandlePages";
 import TableHead from "./TableHead";
@@ -36,57 +36,62 @@ export const TransactionsTable = ({
   const initialLoad = useRef(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const fetchTransactions = async (all: boolean, testnet: boolean) => {
-    if (!targetNetwork) return console.log("target error");
+  const fetchTransactions = useCallback(
+    async (all: boolean, testnet: boolean) => {
+      if (!targetNetwork) return console.log("target error");
+      if (!deployedContractData.address) return;
 
-    if (!deployedContractData.address) return;
+      if (initialLoad.current) {
+        setLoading(true);
+      }
+      const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}&allTx=${all}&cleanCache=false`;
+      const response = await fetch(url);
+      const data = await response.json();
 
-    if (initialLoad.current) {
-      setLoading(true);
-    }
-    const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}&allTx=${all}&cleanCache=false`;
-    const response = await fetch(url);
-    const data = await response.json();
-
-    try {
-      if (response.ok) {
-        if (!all) {
+      try {
+        if (response.ok) {
           setTransactions(prevTransactions => {
-            const recentPrevTransactions = prevTransactions.slice(0, 120);
-            const newTransactions = data.filter(
-              (newTx: ExtendedTransaction) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
-            );
-            if (newTransactions.length === 0) {
-              return prevTransactions;
+            if (!all) {
+              const recentPrevTransactions = prevTransactions.slice(0, 120);
+              const newTransactions = data.filter(
+                (newTx: { hash: string }) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
+              );
+              if (newTransactions.length === 0) {
+                return prevTransactions;
+              }
+              return [...newTransactions, ...prevTransactions];
+            } else {
+              return data;
             }
-            const combinedTransactions = [...newTransactions, ...prevTransactions];
-            return combinedTransactions;
           });
         } else {
-          setTransactions(data);
+          throw new Error(data.error || "Failed to fetch transactions");
         }
-      } else {
-        throw new Error(data.error || "Failed to fetch transactions");
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
 
-    if (initialLoad.current) {
-      setLoading(false);
-      initialLoad.current = false;
-    }
-  };
+      if (initialLoad.current) {
+        setLoading(false);
+        initialLoad.current = false;
+      }
+    },
+    [deployedContractData.address, targetNetwork],
+  );
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
     setSearchTerm(e.target.value);
   };
 
   useEffect(() => {
-    !isConnected && setTransactions([]);
+    if (!isConnected) {
+      setTransactions([]);
+    }
     const testnet = targetNetwork.testnet || false;
     const fetchTransactionsWithDelay = async () => {
-      transactions.length < 150 && (await fetchTransactions(true, testnet));
+      if (transactions.length < 150) {
+        await fetchTransactions(true, testnet);
+      }
       setLoading(false);
       setTimeout(async () => {
         await fetchTransactions(false, testnet);
@@ -102,7 +107,7 @@ export const TransactionsTable = ({
 
       return () => clearInterval(interval);
     }
-  }, [deployedContractData.address, targetNetwork.testnet, isConnected]);
+  }, [deployedContractData.address, targetNetwork.testnet, isConnected, fetchTransactions]);
 
   useEffect(() => {
     let filteredTransactions = transactions;
@@ -117,6 +122,48 @@ export const TransactionsTable = ({
     }
     setSortedTransactions(filteredTransactions);
   }, [transactions, searchTerm]);
+
+  const memoizedCurrentTransactions = useMemo(() => {
+    return currentTransactions.map((tx, i) => {
+      const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
+      const timeMinedFormatted = formatTime(tx.timeStamp, false);
+      const length = formatEther(tx.value).length;
+      return (
+        <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
+          <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
+            <div
+              data-tip={timeMined}
+              className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
+            >
+              {timeMinedFormatted}
+            </div>
+          </td>
+          <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
+            <TransactionHash hash={tx.hash} />
+          </td>
+          <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{getMethodName(tx.from, tx.to)}</td>
+          <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
+            <Address address={tx.from} size="sm" />
+          </td>
+          <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
+            {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
+          </td>
+          <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
+            <div
+              data-tip={formatEther(tx.value)}
+              className={`${
+                length > 4 && "tooltip"
+              } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
+                length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
+              }`}
+            >
+              {formatPrice(Number(formatEther(tx.value)))}
+            </div>
+          </td>
+        </tr>
+      );
+    });
+  }, [currentTransactions]);
 
   return (
     <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
@@ -145,47 +192,7 @@ export const TransactionsTable = ({
                   sortTransactions={setSortedTransactions}
                   sortedTransactions={sortedTransactions}
                 />
-                <tbody className="overflow-y-auto">
-                  {currentTransactions.map((tx, i: number) => {
-                    const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
-                    const timeMinedFormatted = formatTime(tx.timeStamp, false);
-                    const length = formatEther(tx.value).length;
-                    return (
-                      <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
-                        <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
-                          <div
-                            data-tip={timeMined}
-                            className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
-                          >
-                            {timeMinedFormatted}
-                          </div>
-                        </td>
-                        <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
-                          <TransactionHash hash={tx.hash} />
-                        </td>
-                        <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{getMethodName(tx.from, tx.to)}</td>
-                        <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
-                          <Address address={tx.from} size="sm" />
-                        </td>
-                        <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-                          {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
-                        </td>
-                        <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
-                          <div
-                            data-tip={formatEther(tx.value)}
-                            className={`${
-                              length > 4 && "tooltip"
-                            } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
-                              length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
-                            }`}
-                          >
-                            {formatPrice(Number(formatEther(tx.value)))}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+                <tbody className="overflow-y-auto">{memoizedCurrentTransactions}</tbody>
               </table>
             </>
           )

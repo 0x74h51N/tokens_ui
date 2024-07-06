@@ -59,7 +59,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
               />
             </div>
           </div>
-          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative  max-h-screen mt-2">
+          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full mt-2">
             <h1 className="w-full lg:text-3xl text-xl bg-base-300 p-4 pl-4 antialiased font-semibold rounded-t-xl m-0">
               <span className="relative">
                 <a

@@ -1,3 +1,5 @@
+import { ExtendedTransaction } from "../web3/getBscTransactions";
+import { Address } from "viem";
 import { create } from "zustand";
 import scaffoldConfig from "~~/scaffold.config";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
@@ -20,8 +22,12 @@ type GlobalState = {
   setIsNativeCurrencyFetching: (newIsNativeCurrencyFetching: boolean) => void;
   targetNetwork: ChainWithAttributes;
   setTargetNetwork: (newTargetNetwork: ChainWithAttributes) => void;
-  contractFunctions: { [address: string]: string[] };
-  setContractFunctions: (address: string, functions: string[]) => void;
+  contractFunctions: { [address: Address]: string[] };
+  setContractFunctions: (address: Address, functions: string[]) => void;
+  transactions: { [address: Address]: ExtendedTransaction[] };
+  setTransactions: (address: Address, transactions: ExtendedTransaction[]) => void;
+  sessionStart: { [walledAdress: Address]: { isLogin: boolean } };
+  setSessionStart: (walletAdress: Address, isLogin: boolean) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -41,6 +47,22 @@ export const useGlobalState = create<GlobalState>(set => ({
       contractFunctions: {
         ...state.contractFunctions,
         [address]: functions,
+      },
+    })),
+  transactions: {},
+  setTransactions: (address, transactions) =>
+    set(state => ({
+      transactions: {
+        ...state.transactions,
+        [address]: transactions,
+      },
+    })),
+  sessionStart: {},
+  setSessionStart: (walletAddress, isLogin) =>
+    set(state => ({
+      sessionStart: {
+        ...state.sessionStart,
+        [walletAddress]: { isLogin },
       },
     })),
 }));

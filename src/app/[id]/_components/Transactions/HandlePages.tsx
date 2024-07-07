@@ -1,5 +1,5 @@
 import React, { Dispatch, useCallback, useEffect, useMemo, useState } from "react";
-import { ExtendedTransaction } from "./TransactionTable";
+import { ExtendedTransaction } from "~~/types/utils";
 
 const HandlePages = ({
   transactions,

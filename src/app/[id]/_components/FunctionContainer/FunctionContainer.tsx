@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import FunctionTitles from "./FunctionTitles";
 import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";

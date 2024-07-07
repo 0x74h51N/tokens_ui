@@ -10,6 +10,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 
 /**
@@ -18,8 +19,8 @@ import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
   const { address, isConnected } = useAccount();
-
-  const handleLogin = async (address: string) => {
+  const setSessionStart = useGlobalState(state => state.setSessionStart);
+  const handleLogin = async (address: Address) => {
     const response = await fetch("/api/login", {
       method: "POST",
       headers: {
@@ -30,8 +31,10 @@ export const RainbowKitCustomConnectButton = () => {
 
     if (response.ok) {
       console.log("Logged in");
+      setSessionStart(address, true);
     } else {
       console.log("Login failed");
+      setSessionStart(address, false);
     }
   };
   useEffect(() => {

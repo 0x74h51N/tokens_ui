@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { useGlobalState } from "~~/services/store/store";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 
 const allowedNetworks = getTargetNetworks();
@@ -37,6 +38,7 @@ export const AddressInfoDropdown = ({
   const [addressCopied, setAddressCopied] = useState(false);
   const [selectingNetwork, setSelectingNetwork] = useState(false);
   const dropdownRef = useRef<HTMLDetailsElement>(null);
+  const setSessionStart = useGlobalState(state => state.setSessionStart);
   const closeDropdown = () => {
     setSelectingNetwork(false);
     dropdownRef.current?.removeAttribute("open");
@@ -49,6 +51,7 @@ export const AddressInfoDropdown = ({
     });
     if (response.ok) {
       console.log("Logout");
+      setSessionStart(address, false);
     } else {
       console.log("Logout failed");
     }

@@ -10,7 +10,6 @@ export async function POST(req: NextRequest) {
 
   try {
     const { address } = await req.json();
-    console.log("Received address:", address);
 
     if (!address) {
       console.error("Wallet address is required");

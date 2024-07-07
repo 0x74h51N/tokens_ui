@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
 import { useGlobalState } from "~~/services/store/store";
 import { ExtendedTransaction } from "~~/types/utils";
 
@@ -14,7 +13,6 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
   const [data, setFetchedData] = useState<ExtendedTransaction[]>([]);
   const [pending, setPending] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { address: walletAddress } = useAccount();
   const sessionStart = useGlobalState(state => state.sessionStart);
 
   const globalTransactions = useGlobalState(state => state.transactions[address]);
@@ -49,8 +47,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
   };
 
   useEffect(() => {
-    const isLoggedIn = (walletAddress && sessionStart[walletAddress]?.isLogin) || false;
-    if (isLoggedIn) {
+    if (sessionStart) {
       if (all && !globalTransactions) {
         setTimeout(() => fetchTransactions(), 500);
       } else if (!all) {
@@ -61,7 +58,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
-  }, [all, testnet, address, sessionStart, globalTransactions, walletAddress]);
+  }, [all, testnet, address, sessionStart, globalTransactions]);
 
   return { data, pending, error };
 };

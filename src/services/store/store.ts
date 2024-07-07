@@ -26,8 +26,8 @@ type GlobalState = {
   setContractFunctions: (address: Address, functions: string[]) => void;
   transactions: { [address: Address]: ExtendedTransaction[] };
   setTransactions: (address: Address, transactions: ExtendedTransaction[]) => void;
-  sessionStart: { [walledAdress: Address]: { isLogin: boolean } };
-  setSessionStart: (walletAdress: Address, isLogin: boolean) => void;
+  sessionStart: boolean;
+  setSessionStart: (isLogin: boolean) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -57,12 +57,6 @@ export const useGlobalState = create<GlobalState>(set => ({
         [address]: transactions,
       },
     })),
-  sessionStart: {},
-  setSessionStart: (walletAddress, isLogin) =>
-    set(state => ({
-      sessionStart: {
-        ...state.sessionStart,
-        [walletAddress]: { isLogin },
-      },
-    })),
+  sessionStart: false,
+  setSessionStart: isLogin => set(() => ({ sessionStart: isLogin })),
 }));

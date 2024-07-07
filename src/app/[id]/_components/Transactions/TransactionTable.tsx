@@ -3,7 +3,6 @@ import HandlePages from "./HandlePages";
 import TableHead from "./TableHead";
 import { TransactionHash } from "./TransactionHash";
 import { formatEther } from "viem";
-import { useAccount } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import useFetchTransactions from "~~/hooks/useFetchTransactions";
@@ -23,8 +22,7 @@ export const TransactionsTable = ({
 }) => {
   const { targetNetwork } = useTargetNetwork();
   const sessionStart = useGlobalState(state => state.sessionStart);
-  const { address: walletAddress } = useAccount();
-  const isLoggedIn = (walletAddress && sessionStart[walletAddress]?.isLogin) || false;
+  const isLoggedIn = sessionStart || false;
   const [currentTransactions, setCurrentTransactions] = useReducer(
     (state: ExtendedTransaction[], action: ExtendedTransaction[]) => action,
     [],
@@ -39,7 +37,7 @@ export const TransactionsTable = ({
 
   useEffect(() => {
     allTransactions && setTransactions(allTransactions);
-  }, [allTransactions, isLoggedIn]);
+  }, [allTransactions]);
 
   useEffect(() => {
     if (data && !error) {

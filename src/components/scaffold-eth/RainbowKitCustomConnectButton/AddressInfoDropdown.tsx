@@ -51,7 +51,7 @@ export const AddressInfoDropdown = ({
     });
     if (response.ok) {
       console.log("Logout");
-      setSessionStart(address, false);
+      setSessionStart(false);
     } else {
       console.log("Logout failed");
     }

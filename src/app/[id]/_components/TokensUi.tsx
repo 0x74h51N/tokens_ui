@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import FunctionContainer from "./FunctionContainer/FunctionContainer";
 import { TransactionsTable } from "./Transactions/TransactionTable";
-import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import useFetchTransactions from "~~/hooks/useFetchTransactions";
 import { useGlobalState } from "~~/services/store/store";
@@ -22,16 +21,15 @@ const TokenUI = ({
   const address = deployedContractData.address;
   const { data, pending } = useFetchTransactions(true, testnet, deployedContractData.address);
   const sessionStart = useGlobalState(state => state.sessionStart);
-  const { address: walletAddress } = useAccount();
-  const isLoggedIn = (walletAddress && sessionStart[walletAddress]?.isLogin) || false;
+  const isLoggedIn = sessionStart || false;
   const setTransactions = useGlobalState(state => state.setTransactions);
   const globalTransactions = useGlobalState(state => state.transactions[address]);
 
   useEffect(() => {
-    if (data && isLoggedIn) {
+    if (data && data.length > 2 && isLoggedIn && data !== globalTransactions) {
       setTransactions(address, data);
     }
-  }, [data, isLoggedIn, globalTransactions, address]);
+  }, [data, isLoggedIn, address]);
 
   return (
     <>

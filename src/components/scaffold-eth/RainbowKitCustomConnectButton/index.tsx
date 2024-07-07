@@ -31,10 +31,10 @@ export const RainbowKitCustomConnectButton = () => {
 
     if (response.ok) {
       console.log("Logged in");
-      setSessionStart(address, true);
+      setSessionStart(true);
     } else {
       console.log("Login failed");
-      setSessionStart(address, false);
+      setSessionStart(false);
     }
   };
   useEffect(() => {

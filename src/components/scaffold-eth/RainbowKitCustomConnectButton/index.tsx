@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 // @refresh reset
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
@@ -12,6 +12,7 @@ import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
+import { useAuth } from "~~/hooks/useAuth";
 
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
@@ -20,26 +21,14 @@ export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
   const { address, isConnected } = useAccount();
   const setSessionStart = useGlobalState(state => state.setSessionStart);
-  const handleLogin = async (address: Address) => {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ address }),
-    });
+  const { handleLogin, handleLogout } = useAuth();
 
-    if (response.ok) {
-      console.log("Logged in");
-      setSessionStart(true);
-    } else {
-      console.log("Login failed");
-      setSessionStart(false);
-    }
-  };
   useEffect(() => {
     if (isConnected && address) {
       handleLogin(address);
+    } else {
+      setSessionStart(false);
+      handleLogout();
     }
   }, [isConnected, address]);
 
@@ -77,8 +66,8 @@ export const RainbowKitCustomConnectButton = () => {
                       {chain.name === "BSC"
                         ? "BNB Smart Chain"
                         : "Binance Smart Chain Testnet"
-                        ? "BSC Testnet"
-                        : chain.name}
+                          ? "BSC Testnet"
+                          : chain.name}
                     </span>
                   </div>
                   <AddressInfoDropdown

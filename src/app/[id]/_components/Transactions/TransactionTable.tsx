@@ -49,7 +49,7 @@ export const TransactionsTable = ({
         setTransactions(prevTransactions => [...newTxs, ...prevTransactions]);
       }
     }
-  }, [data]);
+  }, [data, transactions]);
 
   const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
     setSearchTerm(e.target.value);
@@ -70,14 +70,16 @@ export const TransactionsTable = ({
   }, [transactions, searchTerm]);
 
   return (
-    <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={handleSearch}
-        className="input input-secondary md:w-40 w-32 rounded-md absolute lg:top-2.5 top-2 right-2 truncate p-2"
-      />
+    <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
+      {isLoggedIn && (
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={handleSearch}
+          className="input input-secondary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute lg:top-2.5 top-2 right-2 truncate p-2 transition-all ease-in-out duration-500"
+        />
+      )}
       <div
         className={`overflow-x-auto w-full shadow-2xl ${
           currentTransactions.length > 10 || !isLoggedIn ? "flex-1" : ""

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Address } from "viem";
 import { useGlobalState } from "~~/services/store/store";
 import { ExtendedTransaction } from "~~/types/utils";
@@ -17,7 +17,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
 
   const globalTransactions = useGlobalState(state => state.transactions[address]);
 
-  const fetchTransactions = async () => {
+  const fetchTransactions = useCallback(async () => {
     setPending(true);
     setError(null);
 
@@ -44,7 +44,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
     } finally {
       setPending(false);
     }
-  };
+  }, [all, testnet, address]);
 
   useEffect(() => {
     if (sessionStart) {
@@ -58,7 +58,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
-  }, [all, testnet, address, sessionStart, globalTransactions]);
+  }, [all, testnet, address, sessionStart, globalTransactions, fetchTransactions]);
 
   return { data, pending, error };
 };

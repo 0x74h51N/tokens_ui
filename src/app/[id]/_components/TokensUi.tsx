@@ -29,7 +29,7 @@ const TokenUI = ({
     if (data && data.length > 2 && isLoggedIn && data !== globalTransactions) {
       setTransactions(address, data);
     }
-  }, [data, isLoggedIn, address]);
+  }, [data, isLoggedIn, address, globalTransactions, setTransactions]);
 
   return (
     <>

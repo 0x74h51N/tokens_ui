@@ -77,7 +77,7 @@ export const TransactionsTable = ({
           placeholder="Search..."
           value={searchTerm}
           onChange={handleSearch}
-          className="input input-secondary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute lg:top-2.5 top-2 right-2 truncate p-2 transition-all ease-in-out duration-500"
+          className="input input-secondary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute 2xl:h-12 h-10 top-2.5 right-2 truncate p-2 transition-all ease-in-out duration-500"
         />
       )}
       <div

@@ -108,8 +108,8 @@ const DailyGraphs = ({
                       text: "Date",
                     },
                     ticks: {
-                      callback: function (_value, index, _values) {
-                        const date = new Date(chartData.labels[index]);
+                      callback: function (index) {
+                        const date = new Date(chartData.labels[index as number]);
                         const month = date.toLocaleString("default", { month: "short" });
                         const year = date.getFullYear();
                         return `${month} ${year}`;

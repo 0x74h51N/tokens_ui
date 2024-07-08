@@ -14,7 +14,7 @@ interface FunctionTitlesProps {
 const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, setActiveFunc }: FunctionTitlesProps) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const contractFunctions = useGlobalState(state => state.contractFunctions);
-  const functions = contractFunctions[contractAddress];
+  const allFunctions = contractFunctions[contractAddress];
   const [initial, setInitial] = useState(() => true);
   const [loading, setLoading] = useState<boolean>(true);
   const [displayedFunctions, setDisplayedFunctions] = useState<string[]>(initialFunctions);
@@ -52,8 +52,8 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   };
 
   const availableFunctions = useMemo(() => {
-    return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
-  }, [functions, displayedFunctions]);
+    return allFunctions ? allFunctions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
+  }, [allFunctions, displayedFunctions]);
 
   const closeFunction = (functionName: string) => {
     const index = displayedFunctions.indexOf(functionName);

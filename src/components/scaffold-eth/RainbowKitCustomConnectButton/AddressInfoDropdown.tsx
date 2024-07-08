@@ -3,7 +3,6 @@ import { NetworkOptions } from "./NetworkOptions";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { getAddress } from "viem";
 import { Address } from "viem";
-import { useDisconnect } from "wagmi";
 import {
   ArrowLeftOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
@@ -16,6 +15,7 @@ import {
 import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
+import { useAuth } from "~~/hooks/useAuth";
 
 const allowedNetworks = getTargetNetworks();
 
@@ -32,7 +32,6 @@ export const AddressInfoDropdown = ({
   displayName,
   blockExplorerAddressLink,
 }: AddressInfoDropdownProps) => {
-  const { disconnect } = useDisconnect();
   const checkSumAddress = getAddress(address);
   const [addressCopied, setAddressCopied] = useState(false);
   const [selectingNetwork, setSelectingNetwork] = useState(false);
@@ -42,17 +41,8 @@ export const AddressInfoDropdown = ({
     dropdownRef.current?.removeAttribute("open");
   };
   useOutsideClick(dropdownRef, closeDropdown);
-  const handleLogout = async () => {
-    disconnect();
-    const response = await fetch("/api/logout", {
-      method: "POST",
-    });
-    if (response.ok) {
-      console.log("Logout");
-    } else {
-      console.log("Logout failed");
-    }
-  };
+  const { handleLogout } = useAuth();
+
   return (
     <>
       <details ref={dropdownRef} className="dropdown dropdown-end leading-3">

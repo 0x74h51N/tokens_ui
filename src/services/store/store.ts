@@ -28,6 +28,8 @@ type GlobalState = {
   setTransactions: (address: Address, transactions: ExtendedTransaction[]) => void;
   sessionStart: boolean;
   setSessionStart: (isLogin: boolean) => void;
+  sidebarOpen: { [contractName: string]: boolean };
+  setSidebarOpen: (contractName: string, sidebarOpen: boolean) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -59,4 +61,12 @@ export const useGlobalState = create<GlobalState>(set => ({
     })),
   sessionStart: false,
   setSessionStart: isLogin => set(() => ({ sessionStart: isLogin })),
+  sidebarOpen: {},
+  setSidebarOpen: (contractName, sidebarOpen) =>
+    set(state => ({
+      sidebarOpen: {
+        ...state.sidebarOpen,
+        [contractName]: sidebarOpen,
+      },
+    })),
 }));

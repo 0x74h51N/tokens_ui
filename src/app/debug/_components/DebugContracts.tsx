@@ -4,15 +4,14 @@ import { useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
 import { BarsArrowUpIcon } from "@heroicons/react/20/solid";
 import { ContractUI } from "~~/app/debug/_components/contract";
-import { tokenItems } from "~~/contracts/selectedContractNames";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getAllContracts } from "~~/utils/scaffold-eth/contractsData";
 
 const selectedContractStorageKey = "scaffoldEth2.selectedContract";
 const contractsData = getAllContracts();
 const contractNames = Object.keys(contractsData) as ContractName[];
-
-const filteredContracts = tokenItems.filter((item): item is ContractName =>
+const tokenItems = JSON.parse(process.env.NEXT_PUBLIC_SELECTED_TOKEN_ID || "[]");
+const filteredContracts = tokenItems.filter((item: string): item is ContractName =>
   contractNames.includes(item as ContractName),
 );
 export function DebugContracts() {
@@ -36,7 +35,7 @@ export function DebugContracts() {
         <>
           {filteredContracts.length > 1 && (
             <div className="flex flex-row gap-2 w-full max-w-7xl pb-1 px-6 lg:px-10 flex-wrap">
-              {filteredContracts.map(contractName => (
+              {filteredContracts.map((contractName: ContractName) => (
                 <button
                   className={`btn btn-secondary btn-md rounded-xl font-light hover:border-transparent ${
                     contractName === selectedContract
@@ -56,7 +55,7 @@ export function DebugContracts() {
               ))}
             </div>
           )}
-          {filteredContracts.map(contractName => (
+          {filteredContracts.map((contractName: ContractName) => (
             <ContractUI
               key={contractName}
               contractName={contractName}

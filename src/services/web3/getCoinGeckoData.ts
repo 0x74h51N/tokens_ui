@@ -12,7 +12,7 @@ export interface CoinData {
   price: number;
   total_supply: number;
 }
-export const getPrice = async (name: string, currency: string): Promise<CoinData | null> => {
+export const getCoinGeckoData = async (name: string, currency: string): Promise<CoinData | null> => {
   const tokenId = tokenNameToIdMap[name.toLowerCase()] || name.toLowerCase();
   try {
     const response = await fetch(`https://api.coingecko.com/api/v3/coins/${tokenId}`, {

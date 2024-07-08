@@ -1,9 +1,8 @@
-import React from "react";
 import TokenPage from "./_components/TokenPage";
-import { tokenItems } from "~~/contracts/selectedContractNames";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
+const tokenItems = JSON.parse(process.env.NEXT_PUBLIC_SELECTED_TOKEN_ID || "[]");
 export async function generateMetadata({ params }: { params: { id: string } }) {
   return getMetadata({
     title: params.id.toUpperCase() + " Token",
@@ -12,7 +11,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export function generateStaticParams() {
-  return tokenItems.map(item => ({
+  return tokenItems.map((item: string) => ({
     id: item,
   }));
 }

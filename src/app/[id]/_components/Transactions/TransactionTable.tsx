@@ -70,21 +70,17 @@ export const TransactionsTable = ({
   }, [transactions, searchTerm]);
 
   return (
-    <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
+    <div className="flex flex-col justify-start px-0 overflow-hidden h-full ">
       {isLoggedIn && (
         <input
           type="text"
           placeholder="Search..."
           value={searchTerm}
           onChange={handleSearch}
-          className="input input-secondary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute 2xl:h-12 h-10 top-2.5 right-2 truncate p-2 transition-all ease-in-out duration-500"
+          className="input input-primary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute 2xl:h-12 h-10 top-2.5 right-2 truncate p-2 transition-all ease-in-out duration-500"
         />
       )}
-      <div
-        className={`overflow-x-auto w-full shadow-2xl ${
-          currentTransactions.length > 10 || !isLoggedIn ? "flex-1" : ""
-        }`}
-      >
+      <div className={`overflow-x-auto w-full ${currentTransactions.length > 10 || !isLoggedIn ? "flex-1" : ""}`}>
         {isLoggedIn ? (
           <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
             <TableHead
@@ -135,7 +131,7 @@ export const TransactionsTable = ({
             </tbody>
           </table>
         ) : (
-          <div className="h-full flex items-center justify-center text-xl italic bg-base-100">
+          <div className="h-full flex items-center justify-center text-xl italic bg-base-100 max-md:min-h-40">
             Please connect your wallet for data request...
           </div>
         )}

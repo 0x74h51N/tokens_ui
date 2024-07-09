@@ -19,7 +19,7 @@ interface ChartData {
   }[];
 }
 
-const DailyGraphs = ({
+const TokenMetrics = ({
   deployedContractData,
   contractName,
 }: {
@@ -92,45 +92,43 @@ const DailyGraphs = ({
     }
   }, [allTransactions]);
   return (
-    <div className=" w-full justify-center items-center h-full max-h-[65svh]">
+    <div className=" w-full justify-center items-center h-full max-h-[67vh] min-h-[650px] max-md:px-2">
       {isLoggedIn ? (
         chartData && (
-          <div className="w-full h-full">
-            <Bar
-              data={chartData}
-              options={{
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    type: "category",
-                    title: {
-                      display: true,
-                      text: "Date",
-                    },
-                    ticks: {
-                      callback: function (index) {
-                        const date = new Date(chartData.labels[index as number]);
-                        const month = date.toLocaleString("default", { month: "short" });
-                        const year = date.getFullYear();
-                        return `${month} ${year}`;
-                      },
-                    },
+          <Bar
+            data={chartData}
+            options={{
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  type: "category",
+                  title: {
+                    display: true,
+                    text: "Date",
                   },
-                  y: {
-                    title: {
-                      display: true,
-                      text: `Amount (${contractName.toUpperCase()})`,
-                    },
-                    ticks: {
-                      callback: function (value) {
-                        return value.toLocaleString();
-                      },
+                  ticks: {
+                    callback: function (index) {
+                      const date = new Date(chartData.labels[index as number]);
+                      const month = date.toLocaleString("en-UK", { month: "short" });
+                      const year = date.getFullYear();
+                      return `${month} ${year}`;
                     },
                   },
                 },
-              }}
-            />
-          </div>
+                y: {
+                  title: {
+                    display: true,
+                    text: `Amount (${contractName.toUpperCase()})`,
+                  },
+                  ticks: {
+                    callback: function (value) {
+                      return value.toLocaleString();
+                    },
+                  },
+                },
+              },
+            }}
+          />
         )
       ) : (
         <div className="h-full flex items-center justify-center text-xl italic">
@@ -141,4 +139,4 @@ const DailyGraphs = ({
   );
 };
 
-export default DailyGraphs;
+export default TokenMetrics;

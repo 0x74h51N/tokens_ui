@@ -5,7 +5,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import useFetchTransactions from "~~/hooks/useFetchTransactions";
 import { useGlobalState } from "~~/services/store/store";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
-import DailyGraphs from "./DailyGraphs/DailyGraphs";
+import TokenMetrics from "./TokenMetrics/TokenMetrics";
 
 const TokenUI = ({
   deployedContractData,
@@ -34,16 +34,15 @@ const TokenUI = ({
 
   return (
     <>
-      <div className="2xl:px-4 lg:px-2 px-0 lg:gap-6 my-0 mt-2 w-full h-full grid grid-cols-1 xl:grid-cols-7 2xl:grid-cols-9 gap-3">
-        <div className="col-span-1 xl:col-span-4 2xl:col-span-5 max-h-full flex flex-col">
+      <div className="2xl:px-4 lg:px-2 px-0 lg:gap-6 my-0 pt-2 w-full h-full grid grid-cols-1 xl:grid-cols-7 2xl:grid-cols-9 gap-3">
+        <div className="col-span-1 xl:col-span-4 2xl:col-span-5 h-full">
           {pending ? (
             <div className="w-full h-full flex justify-center items-center">
               <span className="loading loading-spinner loading-lg"></span>
             </div>
           ) : (
-            <DailyGraphs deployedContractData={deployedContractData} contractName={contractName} />
+            <TokenMetrics deployedContractData={deployedContractData} contractName={contractName} />
           )}
-
           <div className="w-full flex flex-col relative z-50">
             <FunctionContainer
               functionNames={initialFunctions}
@@ -53,7 +52,7 @@ const TokenUI = ({
             />
           </div>
         </div>
-        <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full">
+        <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full shadow-md shadow-base-300 rounded-2xl border-base-300 border-2">
           <h1 className="w-full 2xl:text-3xl text-xl bg-base-300 p-4 pl-4 antialiased font-semibold rounded-t-xl m-0">
             <span className="relative">
               {contractName.toUpperCase()}

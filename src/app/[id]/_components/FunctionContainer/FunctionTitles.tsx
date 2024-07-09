@@ -69,7 +69,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
 
   return (
     <>
-      <div className="flex w-full -z-10 -mt-20 overflow-hidden">
+      <div className="flex w-full -z-10 -mt-2 overflow-hidden">
         <div className="flex overflow-x-auto overflow-y-hidden rounded-t-lg pt-20 h-[8rem] max-w-[91%] pr-3 z-10 scrollbar-thumb-custom">
           {loading ? (
             <span className="loading loading-spinner loading-lg"></span>

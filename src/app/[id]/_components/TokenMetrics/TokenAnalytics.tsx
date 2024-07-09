@@ -9,7 +9,7 @@ import chartOptions, { ChartData } from "./_utils/chartOptions";
 import verticalLinePlugin from "./_utils/verticalLinePlugin";
 import { useTheme } from "next-themes";
 import { color, Colors, getThemeColors, initialColors } from "./_utils/colors";
-
+import "chartjs-adapter-date-fns";
 ChartJS.register(...registerables);
 
 const TokenAnalytics = ({

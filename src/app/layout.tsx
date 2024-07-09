@@ -3,7 +3,6 @@ import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithPro
 import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
-
 export const metadata = getMetadata({
   title: "Novem Gold Tokens UI",
   description: "Novem Gold Tokens Minting & Burning UI",

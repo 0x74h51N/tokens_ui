@@ -16,6 +16,7 @@ import { BlockieAvatar, isENS } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 import { useAuth } from "~~/hooks/useAuth";
+import { useDisconnect } from "wagmi";
 
 const allowedNetworks = getTargetNetworks();
 
@@ -32,6 +33,7 @@ export const AddressInfoDropdown = ({
   displayName,
   blockExplorerAddressLink,
 }: AddressInfoDropdownProps) => {
+  const { disconnect } = useDisconnect();
   const checkSumAddress = getAddress(address);
   const [addressCopied, setAddressCopied] = useState(false);
   const [selectingNetwork, setSelectingNetwork] = useState(false);
@@ -123,7 +125,10 @@ export const AddressInfoDropdown = ({
             <button
               className="menu-item text-error btn-sm !rounded-xl flex gap-3 py-3"
               type="button"
-              onClick={handleLogout}
+              onClick={() => {
+                handleLogout();
+                disconnect();
+              }}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>
             </button>

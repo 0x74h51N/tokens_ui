@@ -121,7 +121,7 @@ const TokenAnalytics = ({
         datasets: [
           {
             label: "Transfer Amount",
-            data,
+            data: data,
             backgroundColor: (colors.amountBar as color).backgroundColor,
             borderColor: (colors.amountBar as color).borderColor,
             yAxisID: "y1",
@@ -137,15 +137,16 @@ const TokenAnalytics = ({
         ],
       });
     }
-    if (chartData) {
-      setOptions(chartOptions(chartData, colors, maxDateTicks));
-    }
 
     const plugin = verticalLinePlugin(colors.lineColor as string);
     ChartJS.unregister(plugin);
     ChartJS.register(plugin);
   }, [colors, dataToUse]);
-
+  useEffect(() => {
+    if (chartData) {
+      setOptions(chartOptions(chartData, colors, maxDateTicks));
+    }
+  }, [chartData, colors]);
   return (
     <div className="w-full justify-center items-center h-auto max-md:px-2 relative flex-grow pb-3">
       <TokenAnalyticsHead

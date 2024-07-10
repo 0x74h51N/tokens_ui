@@ -3940,6 +3940,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.11":
+  version: 1.11.11
+  resolution: "dayjs@npm:1.11.11"
+  checksum: 84788275aad8a87fee4f1ce4be08861df29687aae6b7b43dd65350118a37dda56772a3902f802cb2dc651dfed447a5a8df62d88f0fb900dba8333e411190a5d5
+  languageName: node
+  linkType: hard
+
 "debug@npm:4, debug@npm:^4.1.0, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2, debug@npm:~4.3.4":
   version: 4.3.5
   resolution: "debug@npm:4.3.5"
@@ -8711,6 +8718,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-tailwindcss-datepicker@npm:^1.6.6":
+  version: 1.6.6
+  resolution: "react-tailwindcss-datepicker@npm:1.6.6"
+  peerDependencies:
+    dayjs: ^1.11.6
+    react: ^17.0.2 || ^18.2.0
+  checksum: d995a775aa773fadf36dda67f6b678e5a5682df2df339289ae0a079f77e7a629c92092826e2570ae45245f0f5e19fc4f909e59ed316e837727e46fe3fd837360
+  languageName: node
+  linkType: hard
+
 "react@npm:^18.2.0":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
@@ -9842,6 +9859,7 @@ __metadata:
     cookies-next: ^4.2.1
     daisyui: 4.5.0
     date-fns: ^3.6.0
+    dayjs: ^1.11.11
     eslint: ^8.15.0
     eslint-config-next: ^14.0.4
     eslint-config-prettier: ^9.1.0
@@ -9861,6 +9879,7 @@ __metadata:
     react-copy-to-clipboard: ^5.1.0
     react-dom: ^18.2.0
     react-hot-toast: ^2.4.0
+    react-tailwindcss-datepicker: ^1.6.6
     tailwindcss: ^3.4.3
     type-fest: ^4.6.0
     typescript: 5.5.3

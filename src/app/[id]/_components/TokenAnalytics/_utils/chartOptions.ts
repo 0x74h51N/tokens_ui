@@ -1,45 +1,16 @@
 import { ChartOptions } from "chart.js";
 import { Colors } from "./colors";
 
-const getUnitForDateRange = (dateRange: number) => {
-  if (dateRange > 2 * 365 * 24 * 60 * 60 * 1000) {
-    return "quarter";
-  } else if (dateRange > 365 * 24 * 60 * 60 * 1000) {
-    return "month";
-  } else if (dateRange > 6 * 30 * 24 * 60 * 60 * 1000) {
-    return "month";
-  } else if (dateRange > 3 * 30 * 24 * 60 * 60 * 1000) {
-    return "day";
-  } else if (dateRange > 30 * 24 * 60 * 60 * 1000) {
-    return "week";
-  } else {
-    return "day";
-  }
-};
-
-const chartOptions = (chartData: ChartData, colors: Colors): ChartOptions => {
-  const labels = chartData.labels.map(label => new Date(label).getTime());
-  const dateRange = Math.max(...labels) - Math.min(...labels);
-  const unit = getUnitForDateRange(dateRange);
-
+const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number): ChartOptions => {
   return {
     maintainAspectRatio: false,
     scales: {
       x: {
         type: "time",
-        time: {
-          unit: unit,
-          displayFormats: {
-            quarter: "MMM yyyy",
-            month: "MMM yyyy",
-            week: "MMM d",
-            day: "MMM d",
-          },
-        },
         ticks: {
           color: colors.xTicks as string,
           autoSkip: true,
-          maxTicksLimit: unit === "day" ? 30 : 12,
+          maxTicksLimit: maxDateTicks,
         },
         title: {
           display: true,
@@ -48,12 +19,10 @@ const chartOptions = (chartData: ChartData, colors: Colors): ChartOptions => {
         grid: {
           color: colors.xGrid as string,
         },
-        offset: false,
-        bounds: "data",
       },
       y1: {
         type: "linear",
-        display: true,
+        display: "auto",
         position: "left",
         title: {
           display: true,
@@ -71,7 +40,8 @@ const chartOptions = (chartData: ChartData, colors: Colors): ChartOptions => {
       },
       y2: {
         type: "linear",
-        display: true,
+        suggestedMax: 100,
+        display: "auto",
         position: "right",
         title: {
           display: true,
@@ -93,9 +63,15 @@ const chartOptions = (chartData: ChartData, colors: Colors): ChartOptions => {
         mode: "index",
         axis: "x",
         intersect: false,
-        position: "nearest",
         yAlign: "center",
         callbacks: {
+          title: function (tooltipItems) {
+            if (tooltipItems.length) {
+              const dateLabel = tooltipItems[0].label;
+              return dateLabel.split(",")[0] + dateLabel.split(",")[1];
+            }
+            return "";
+          },
           label: function (tooltipItem) {
             const datasetIndex = tooltipItem.datasetIndex;
             const label = tooltipItem.dataset.label || "";
@@ -103,6 +79,15 @@ const chartOptions = (chartData: ChartData, colors: Colors): ChartOptions => {
             return `${label}: ${value !== undefined && value !== null ? value.toLocaleString() : ""}`;
           },
         },
+      },
+    },
+    datasets: {
+      bar: {
+        barThickness: "flex",
+        borderWidth: 1,
+      },
+      line: {
+        borderWidth: 1,
       },
     },
   };
@@ -117,7 +102,6 @@ export interface ChartData {
     data: number[];
     backgroundColor: string;
     borderColor: string;
-    borderWidth: number;
     type?: "line" | "bar";
     yAxisID?: string;
   }[];

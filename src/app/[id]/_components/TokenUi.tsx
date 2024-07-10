@@ -5,7 +5,7 @@ import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import useFetchTransactions from "~~/hooks/useFetchTransactions";
 import { useGlobalState } from "~~/services/store/store";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
-import TokenAnalytics from "./TokenMetrics/TokenAnalytics";
+import TokenAnalytics from "./TokenAnalytics/TokenAnalytics";
 
 const TokenUI = ({
   deployedContractData,
@@ -43,7 +43,7 @@ const TokenUI = ({
           ) : (
             <TokenAnalytics deployedContractData={deployedContractData} contractName={contractName} />
           )}
-          <div className="w-full flex flex-col relative z-50">
+          <div className="w-full flex flex-col relative z-50 mt-auto">
             <FunctionContainer
               functionNames={initialFunctions}
               contractName={contractName}

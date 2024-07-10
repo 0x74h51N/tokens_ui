@@ -45,10 +45,10 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
   return (
     <div className="flex md:flex-row flex-col min-h-[95vh]">
       <div
-        className={`transition-transform duration-500 ${isSidebarOpen ? "md:translate-x-0 translate-y-0" : "md:-translate-x-full max-md:-translate-y-full"} ease-in-out`}
+        className={`transition-transform duration-500 z-50 ${isSidebarOpen ? "md:translate-x-0 translate-y-0" : "md:-translate-x-full max-md:-translate-y-full"} ease-in-out relative`}
       >
         <button
-          className={`absolute btn btn-secondary md:top-12 text-start p-2  md:bg-base-300 bg-base-100 w-10 h-10 z-[50] transition-all duration-500 ease-in-out before:max-md:hidden tooltip md:tooltip-secondary before:z-50 tooltip-right
+          className={`absolute btn btn-secondary md:top-12 text-start p-2 md:bg-base-300 bg-base-100 w-10 h-10 transition-all duration-500 ease-in-out before:max-md:hidden tooltip md:tooltip-secondary before:z-50 tooltip-right
             ${isSidebarOpen ? "md:right-0 max-md:right-10 max-md:bottom-10 md:rounded-r-full max-md:rounded-b-full pt-2" : "md:-right-10 max-md:-bottom-10 max-md:right-10 md:rounded-l-full max-md:rounded-t-full md:pt-1 max-md:pl-3 pt-3"}`}
           onClick={toggleSidebar}
           data-tip={isSidebarOpen ? "Close" : contractName.toUpperCase() + " Info"}

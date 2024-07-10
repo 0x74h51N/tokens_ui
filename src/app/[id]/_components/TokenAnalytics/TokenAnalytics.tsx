@@ -147,14 +147,14 @@ const TokenAnalytics = ({
   }, [colors, dataToUse]);
 
   return (
-    <div className="w-full justify-center items-center max-h-[60vh] min-h-[650px] max-md:px-2 relative flex-grow mb-4">
+    <div className="w-full justify-center items-center h-auto max-md:px-2 relative flex-grow pb-3">
       <TokenAnalyticsHead
         contractName={contractName}
         setFilteredTransfers={setFilteredTransfers}
         transfers={dailyTransferStats}
       />
       {isLoggedIn ? (
-        <>
+        <div className="flex h-full min-h-[650px]  max-h-[60vh]">
           {chartData && options ? (
             <Chart type="bar" data={chartData} options={options} />
           ) : (
@@ -162,7 +162,7 @@ const TokenAnalytics = ({
               <span className="loading loading-spinner loading-lg"></span>
             </div>
           )}
-        </>
+        </div>
       ) : (
         <div className="h-full flex items-center justify-center text-xl italic">
           Please connect your wallet for data request...

@@ -43,7 +43,7 @@ const TokenUI = ({
           ) : (
             <TokenAnalytics deployedContractData={deployedContractData} contractName={contractName} />
           )}
-          <div className="w-full flex flex-col relative z-50 mt-auto">
+          <div className="w-full flex flex-col relative z-50 -mt-16">
             <FunctionContainer
               functionNames={initialFunctions}
               contractName={contractName}

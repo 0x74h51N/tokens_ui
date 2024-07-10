@@ -74,12 +74,12 @@ const TokenAnalyticsHead: React.FC<TokenAnalyticsHeadProps> = ({ contractName, s
   ];
 
   return (
-    <div className="m-4 mx-8 ">
+    <div className="pt-4 -mb-2 px-8 ">
       <h1 className="font-bold lg:text-4xl md:text-2xl text-xl card-title m-0">
         {contractName.toUpperCase() + " Analytics"}
       </h1>
       {isLoggedIn && (
-        <div className="flex h-7 my-2 relative">
+        <div className="flex h-7 mt-2 relative">
           {buttons.map(button => (
             <button
               key={button.type}

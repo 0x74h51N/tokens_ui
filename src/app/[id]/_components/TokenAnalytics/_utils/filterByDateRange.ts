@@ -1,4 +1,4 @@
-import { ChartDataType } from "../TokenAnalytics";
+import { ChartDataType } from "./chartOptions";
 
 export const filterByDateRange = (data: Record<string, ChartDataType>, startDate: Date, endDate: Date) => {
   const filteredData: Record<string, ChartDataType> = {};

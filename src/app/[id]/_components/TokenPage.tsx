@@ -66,7 +66,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
         />
       </div>
       <div
-        className={`flex w-full transition-all duration-500 ease-in-out ${isSidebarOpen ? "" : "lg:-ml-[260px] md:-ml-[195px] max-md:-mt-[470px]"}`}
+        className={`flex w-full transition-all duration-500 ease-in-out ${isSidebarOpen ? "" : "lg:-ml-[260px] md:-ml-[195px] max-md:-mt-[580px]"}`}
       >
         <TokenUI
           deployedContractData={deployedContractData}

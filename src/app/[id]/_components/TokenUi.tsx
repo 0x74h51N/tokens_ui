@@ -27,7 +27,7 @@ const TokenUI = ({
   const globalTransactions = useGlobalState(state => state.transactions[address]);
 
   useEffect(() => {
-    if (data && data.length > 2 && isLoggedIn && data !== globalTransactions) {
+    if (data && data.length > 2 && isLoggedIn && !globalTransactions) {
       setTransactions(address, data);
     }
   }, [data, isLoggedIn, address, globalTransactions, setTransactions]);
@@ -53,19 +53,6 @@ const TokenUI = ({
           </div>
         </div>
         <div className="col-span-1 xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full">
-          <h1 className="w-full font-bold lg:text-4xl md:text-2xl text-xl card-title bg-base-300 p-4 pl-4 antialiased rounded-t-xl m-0">
-            <span className="relative">
-              {contractName.toUpperCase()}
-
-              {" Transactions"}
-              <span
-                data-tip="Contract transactions (max 30s delay)"
-                className="absolute tooltip tooltip-info tooltip-right top-0 -right-2 text-[0.35em] text-xs cursor-help text-center before:max-w-[120px] before:top-4"
-              >
-                ?
-              </span>
-            </span>
-          </h1>
           {pending ? (
             <div className="w-full h-full flex justify-center items-center">
               <span className="loading loading-spinner loading-lg"></span>

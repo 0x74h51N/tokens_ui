@@ -1,10 +1,5 @@
 import { revalidatePath } from "next/cache";
-import { TransactionBase } from "viem";
-
-export interface ExtendedTransaction extends TransactionBase {
-  timeStamp: string;
-  tokenSymbol: string;
-}
+import { ExtendedTransaction } from "~~/types/utils";
 
 async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
   const response = await fetch(url, {
@@ -34,7 +29,7 @@ export async function getBscTransactions(
   let transactions: ExtendedTransaction[] = [];
 
   if (all === "true") {
-    const maxOffset = 600;
+    const maxOffset = 510;
     const revalidateTime = 60 * 60 * 24;
     let page = 1;
     const maxRetries = 5;

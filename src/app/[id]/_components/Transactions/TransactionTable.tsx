@@ -1,4 +1,4 @@
-import { SetStateAction, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import HandlePages from "./HandlePages";
 import TableHead from "./TableHead";
 import { TransactionHash } from "./TransactionHash";
@@ -12,6 +12,7 @@ import { formatPrice } from "~~/utils/formatPrice";
 import formatTime from "~~/utils/formatTime";
 import getMethodName from "~~/utils/getMethodName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
+import TransactionFilterHead from "./TransactionFilterHead";
 
 export const TransactionsTable = ({
   deployedContractData,
@@ -30,7 +31,6 @@ export const TransactionsTable = ({
   const transactionsPerPage = 17;
   const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
   const [sortedTransactions, setSortedTransactions] = useState<ExtendedTransaction[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const testnet = targetNetwork.testnet || false;
   const allTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
   const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
@@ -50,36 +50,16 @@ export const TransactionsTable = ({
       }
     }
   }, [data, transactions]);
-
-  const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
-    setSearchTerm(e.target.value);
-  };
-
   useEffect(() => {
-    let filteredTransactions = transactions;
-    if (searchTerm) {
-      filteredTransactions = transactions.filter(
-        tx =>
-          tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-    setSortedTransactions(filteredTransactions);
-  }, [transactions, searchTerm]);
-
+    setSortedTransactions(transactions);
+  }, [transactions]);
   return (
-    <div className="flex flex-col justify-start px-0 overflow-hidden h-full ">
-      {isLoggedIn && (
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={handleSearch}
-          className="input input-primary w-32 md:w-40 md:focus-within:w-60 focus-within:w-[200px] rounded-md absolute 2xl:h-12 h-10 top-2.5 right-2 truncate p-2 transition-all ease-in-out duration-500"
-        />
-      )}
+    <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
+      <TransactionFilterHead
+        setSortedTransactions={setSortedTransactions}
+        transactions={transactions}
+        contractName={contractName}
+      />
       <div className={`overflow-x-auto w-full ${currentTransactions.length > 10 || !isLoggedIn ? "flex-1" : ""}`}>
         {isLoggedIn ? (
           <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">

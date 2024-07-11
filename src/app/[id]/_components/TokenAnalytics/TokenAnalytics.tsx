@@ -1,24 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Chart } from "react-chartjs-2";
-import { formatEther } from "viem";
 import { useGlobalState } from "~~/services/store/store";
 import getMethodName from "~~/utils/getMethodName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 import { Chart as ChartJS, ChartOptions, registerables } from "chart.js";
-import chartOptions, { ChartData } from "./_utils/chartOptions";
+import chartOptions, { ChartData, ChartDataType } from "./_utils/chartOptions";
 import verticalLinePlugin from "./_utils/verticalLinePlugin";
 import { useTheme } from "next-themes";
 import { color, Colors, getThemeColors, initialColors } from "./_utils/colors";
 import "chartjs-adapter-date-fns";
 import { ExtendedTransaction } from "~~/types/utils";
-import TokenAnalyticsHead from "./TokenAnalyticsHead";
+import { dailyGroupedData, twoDaysGroupedData, weeklyGroupedData } from "./_utils/dataGroupFuncs";
+import DateFilterTransactions from "../DateFilterTransactions";
 ChartJS.register(...registerables);
-
-export type ChartDataType = {
-  date: string;
-  amount: number;
-  count: number;
-};
 
 const TokenAnalytics = ({
   deployedContractData,
@@ -30,85 +24,53 @@ const TokenAnalytics = ({
   const sessionStart = useGlobalState(state => state.sessionStart);
   const isLoggedIn = sessionStart || false;
   const { resolvedTheme } = useTheme();
-  const [chartData, setChartData] = useState<ChartData | null>(null);
+
   const [colors, setColors] = useState<Colors>(initialColors);
-  const globalTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
   const [options, setOptions] = useState<ChartOptions | null>(null);
-  const [allTransfers, setAllTransfers] = useState<ExtendedTransaction[]>([]);
-  const [filteredTransfers, setFilteredTransfers] = useState<Record<string, ChartDataType>>({});
-  const [dataToUse, setDataToUse] = useState<Record<string, ChartDataType>>({});
   const [maxDateTicks, setDateTicks] = useState<number>(10);
+
+  /**Data states*/
+  const globalTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
+  const [allTransfers, setAllTransfers] = useState<ExtendedTransaction[]>([]);
+  const [dateRangeTxs, setDateRangeTxs] = useState<ExtendedTransaction[]>([]);
+  const [dataToUse, setDataToUse] = useState<Record<string, ChartDataType>>({});
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+
   useEffect(() => {
     if (resolvedTheme) {
       setColors(getThemeColors(resolvedTheme));
     }
   }, [resolvedTheme]);
 
+  /**Filter transactions to only include valid transfer transactions */
   useEffect(() => {
     if (globalTransactions && globalTransactions.length > 0) {
       const transferTransactions = globalTransactions.filter(
-        tx => getMethodName(tx.from, tx.to).toLocaleLowerCase() === "transfer",
+        tx => getMethodName(tx.from, tx.to).toLowerCase() === "transfer",
       );
       setAllTransfers(transferTransactions);
     }
   }, [globalTransactions]);
 
-  const dailyTransferStats = useMemo(() => {
-    return allTransfers.reduce<Record<string, ChartDataType>>((acc, tx) => {
-      const date = new Date(parseInt(tx.timeStamp, 10) * 1000).toISOString().split("T")[0];
-      const amount = parseFloat(formatEther(tx.value));
-      if (!acc[date]) {
-        acc[date] = { date: date, amount: 0, count: 0 };
-      }
-      acc[date].amount += amount;
-      acc[date].count += 1;
-      return acc;
-    }, {});
-  }, [allTransfers]);
-  useEffect(() => setFilteredTransfers(dailyTransferStats), [dailyTransferStats]);
-  const groupedData = useMemo(() => {
-    return Object.entries(filteredTransfers).reduce<Record<string, ChartDataType>>((acc, [date, { amount, count }]) => {
-      const week = Math.floor(new Date(date).getTime() / (7 * 24 * 60 * 60 * 1000));
-
-      if (!acc[week]) {
-        acc[week] = { date: date, amount: 0, count: 0 };
-      }
-      acc[week].amount += amount;
-      acc[week].count += count;
-
-      return acc;
-    }, {});
-  }, [filteredTransfers]);
-
-  const groupByTwoDays = (data: ChartDataType[]) => {
-    const result: Record<string, ChartDataType> = {};
-    data.forEach(({ date, amount, count }, index) => {
-      const groupIndex = Math.floor(index / 2).toString();
-      if (!result[groupIndex]) {
-        result[groupIndex] = { date, amount: 0, count: 0 };
-      }
-      result[groupIndex].amount += amount;
-      result[groupIndex].count += count;
-    });
-    return result;
-  };
-
+  /**Select appropriate data grouping based on the number of days in filteredTransfers */
   useEffect(() => {
+    const dailyGrouped = dailyGroupedData(dateRangeTxs);
     let selectedData: Record<string, ChartDataType> = {};
-    const dataLength = Object.keys(filteredTransfers).length;
-
+    const dataLength = Object.keys(dailyGrouped).length;
     if (dataLength > 365) {
-      selectedData = groupedData;
+      selectedData = weeklyGroupedData(dailyGrouped);
       setDateTicks(12);
     } else if (dataLength > 182) {
-      selectedData = groupByTwoDays(Object.values(filteredTransfers));
+      selectedData = twoDaysGroupedData(dailyGrouped);
       setDateTicks(16);
     } else {
-      selectedData = filteredTransfers;
+      selectedData = dailyGrouped;
       setDateTicks(30);
     }
+
     setDataToUse(selectedData);
-  }, [filteredTransfers, groupedData]);
+    console.log(dateRangeTxs);
+  }, [dateRangeTxs]);
 
   useEffect(() => {
     const labels = Object.values(dataToUse).map(group => group.date);
@@ -142,20 +104,23 @@ const TokenAnalytics = ({
     ChartJS.unregister(plugin);
     ChartJS.register(plugin);
   }, [colors, dataToUse]);
+
   useEffect(() => {
     if (chartData) {
       setOptions(chartOptions(chartData, colors, maxDateTicks));
     }
   }, [chartData, colors]);
+
   return (
-    <div className="w-full justify-center items-center h-auto max-md:px-2 relative flex-grow pb-3">
-      <TokenAnalyticsHead
-        contractName={contractName}
-        setFilteredTransfers={setFilteredTransfers}
-        transfers={dailyTransferStats}
-      />
+    <div className="w-full justify-center items-center h-auto max-md:px-1 relative flex-grow pb-3">
+      <div className="pt-4 px-8">
+        <h1 className="font-bold lg:text-4xl md:text-2xl text-xl card-title m-0 mb-4">
+          {contractName.toUpperCase() + " Analytics"}
+        </h1>
+        {isLoggedIn && <DateFilterTransactions setDateRangeTxs={setDateRangeTxs} transactions={allTransfers} />}
+      </div>
       {isLoggedIn ? (
-        <div className="flex h-full min-h-[650px]  max-h-[60vh]">
+        <div className="flex h-full md:min-h-[650px] md:max-h-[60vh] max-h-[400px]">
           {chartData && options ? (
             <Chart type="bar" data={chartData} options={options} />
           ) : (

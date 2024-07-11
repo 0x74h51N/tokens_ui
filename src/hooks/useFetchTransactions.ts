@@ -59,7 +59,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
-  }, [all, testnet, address, sessionStart, globalTransactions, fetchTransactions]);
+  }, [all, sessionStart, globalTransactions, fetchTransactions]);
 
   return { data, pending, error };
 };

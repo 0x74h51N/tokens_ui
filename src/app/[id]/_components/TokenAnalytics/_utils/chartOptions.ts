@@ -106,3 +106,9 @@ export interface ChartData {
     yAxisID?: string;
   }[];
 }
+
+export type ChartDataType = {
+  date: string;
+  amount: number;
+  count: number;
+};

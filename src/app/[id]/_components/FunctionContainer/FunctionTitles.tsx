@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import SearchDropdown from "../SearchDropdown";
+import SearchDropdown from "./SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { createToken, tokenVerify } from "~~/utils/jwt-token";

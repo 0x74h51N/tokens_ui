@@ -1,7 +1,7 @@
-import { ExtendedTransaction } from "../web3/getBscTransactions";
 import { Address } from "viem";
 import { create } from "zustand";
 import scaffoldConfig from "~~/scaffold.config";
+import { ExtendedTransaction } from "~~/types/utils";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
 /**

@@ -9891,7 +9891,7 @@ __metadata:
     type-fest: ^4.6.0
     typescript: 5.5.3
     use-debounce: ^10.0.1
-    usehooks-ts: ^2.13.0
+    usehooks-ts: ^3.1.0
     vercel: ^34.3.0
     viem: ^2.17.3
     wagmi: ^2.10.9
@@ -10422,14 +10422,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"usehooks-ts@npm:^2.13.0":
-  version: 2.16.0
-  resolution: "usehooks-ts@npm:2.16.0"
+"usehooks-ts@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "usehooks-ts@npm:3.1.0"
   dependencies:
     lodash.debounce: ^4.0.8
   peerDependencies:
     react: ^16.8.0  || ^17 || ^18
-  checksum: 43f23923dd0ea4bf4401cada035301572ea3f251ec045a48640180255437c0c5424edf71a24666ff9ceafbc6adc39b0faf7000eab673e84411868165740f0906
+  checksum: 4f850c0c5ab408afa52fa2ea2c93c488cd7065c82679eb1fb62cba12ca4c57ff62d52375acc6738823421fe6579ce3adcea1e2dc345ce4f549c593d2e51455b3
   languageName: node
   linkType: hard
 

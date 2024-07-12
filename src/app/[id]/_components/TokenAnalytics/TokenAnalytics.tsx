@@ -7,7 +7,7 @@ import { Chart as ChartJS, ChartOptions, registerables } from "chart.js";
 import chartOptions, { ChartData, ChartDataType } from "./_utils/chartOptions";
 import verticalLinePlugin from "./_utils/verticalLinePlugin";
 import { useTheme } from "next-themes";
-import { color, Colors, getThemeColors, initialColors } from "./_utils/colors";
+import { Colors, getThemeColors, initialColors } from "./_utils/colors";
 import "chartjs-adapter-date-fns";
 import { ExtendedTransaction } from "~~/types/utils";
 import { dailyGroupedData, twoDaysGroupedData, weeklyGroupedData } from "./_utils/dataGroupFuncs";

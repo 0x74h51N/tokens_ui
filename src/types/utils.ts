@@ -7,4 +7,5 @@ export type Tuple<T, MaxLength extends number = 10, Current extends T[] = []> = 
 export interface ExtendedTransaction extends TransactionBase {
   timeStamp: string;
   tokenSymbol: string;
+  method?: string;
 }

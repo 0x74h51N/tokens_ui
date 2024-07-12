@@ -1,0 +1,109 @@
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { useGlobalState } from "~~/services/store/store";
+import { ExtendedTransaction } from "~~/types/utils";
+import getMethodName from "~~/utils/getMethodName";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
+import DateFilterTransactions from "../DateFilterTransactions";
+import { downloadCSV } from "~~/utils/downloadCSV";
+import { FunnelIcon } from "@heroicons/react/24/outline";
+
+interface TransactionFilterHeadProps {
+  setSortedTransactions: Dispatch<SetStateAction<ExtendedTransaction[]>>;
+  transactions: ExtendedTransaction[];
+  contractName: ContractName;
+}
+
+const TransactionFilterHead = ({ setSortedTransactions, transactions, contractName }: TransactionFilterHeadProps) => {
+  const [dateRangeTxs, setDateRangeTxs] = useState<ExtendedTransaction[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const sessionStart = useGlobalState(state => state.sessionStart);
+  const isLoggedIn = sessionStart || false;
+  const [filteredTransactions, setFiltered] = useState<ExtendedTransaction[]>([]);
+  const [filter, setFilter] = useState<boolean>(false);
+  const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
+    setSearchTerm(e.target.value);
+  };
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      filter && setFilter(false);
+    }
+  };
+
+  useEffect(() => {
+    if (filter) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [filter]);
+  useEffect(() => {
+    setFiltered(dateRangeTxs);
+    if (searchTerm) {
+      setFiltered(
+        dateRangeTxs.filter(
+          tx =>
+            tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()),
+        ),
+      );
+    }
+  }, [dateRangeTxs, searchTerm]);
+  useEffect(() => {
+    if (filteredTransactions.length > 1) setSortedTransactions(filteredTransactions);
+  }, [filteredTransactions]);
+  return (
+    <div className="p-4 bg-base-300 rounded-t-xl">
+      <h1 className="w-full font-bold lg:text-4xl md:text-2xl text-xl card-title  antialiased m-0">
+        <span className="relative">
+          {contractName.toUpperCase()} Transactions
+          <span
+            data-tip="All transactions (max 30s delay)"
+            className="absolute tooltip tooltip-info tooltip-right top-0 -right-2 text-[0.35em] text-xs cursor-help text-center before:max-w-[130px] before:top-6"
+          >
+            ?
+          </span>
+        </span>
+      </h1>
+      {isLoggedIn && (
+        <div className="flex justify-between w-full h-8 mt-3">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="input input-primary w-32 2xl:w-40 lg:w-36 md:focus-within:w-60 focus-within:w-[200px] rounded-md h-full truncate p-2 transition-all ease-in-out duration-500"
+          />
+          <div className="flex relative" ref={menuRef}>
+            <button
+              className="btn btn-ghost btn-xs h-full rounded-md tooltip tooltip-top tooltip-primary"
+              onClick={() => setFilter(!filter)}
+              data-tip="Filter"
+            >
+              <FunnelIcon className="w-6 h-6 text-primary-content" />
+            </button>
+            {filter && (
+              <div className="absolute border-[1px] border-base-100 h-auto right-0 -bottom-24 z-30 bg-base-200 p-2 py-3 rounded-md">
+                <DateFilterTransactions col setDateRangeTxs={setDateRangeTxs} transactions={transactions} />
+              </div>
+            )}
+            <button
+              className="btn btn-primary btn-xs h-full rounded-md text-xs px-2 ml-2"
+              onClick={() => downloadCSV(filteredTransactions, "transactions")}
+            >
+              Download CSV
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TransactionFilterHead;

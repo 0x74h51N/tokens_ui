@@ -206,6 +206,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-io/core@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/core@npm:3.0.0"
+  checksum: 5fdecfb1c6bfe30864096c3ce3f9e73a359a6a12f34a5829504eea7a0327122e361a95d9501ad0eaaf02b2e45322913985d9f47e1c667f3c0a4f7d792c116884
+  languageName: node
+  linkType: hard
+
+"@date-io/date-fns@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@date-io/date-fns@npm:3.0.0"
+  dependencies:
+    "@date-io/core": ^3.0.0
+  peerDependencies:
+    date-fns: ^3.2.0
+  peerDependenciesMeta:
+    date-fns:
+      optional: true
+  checksum: bf9c3bbcd5466d4e4d1847921c5b2e4e3b6166c0e27d601be292384ab7ba26fc0fa3934382b71a7c70d42e781955ac47280b2834d6a70d242618a044c4f098fb
+  languageName: node
+  linkType: hard
+
 "@edge-runtime/format@npm:2.2.1":
   version: 2.2.1
   resolution: "@edge-runtime/format@npm:2.2.1"
@@ -543,6 +564,13 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.1.0
     "@jridgewell/sourcemap-codec": ^1.4.14
   checksum: 9d3c40d225e139987b50c48988f8717a54a8c994d8a948ee42e1412e08988761d0754d7d10b803061cc3aebf35f92a5dbbab493bd0e1a9ef9e89a2130e83ba34
+  languageName: node
+  linkType: hard
+
+"@kurkle/color@npm:^0.3.0":
+  version: 0.3.2
+  resolution: "@kurkle/color@npm:0.3.2"
+  checksum: 79e97b31f8f6efb28c69d373f94b0c7480226fe8ec95221f518ac998e156444a496727ce47de6d728eb5c3369288e794cba82cae34253deb0d472d3bfe080e49
   languageName: node
   linkType: hard
 
@@ -1658,6 +1686,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/date-fns@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@types/date-fns@npm:2.6.0"
+  dependencies:
+    date-fns: "*"
+  checksum: 6839db1d12d6586cd572e8aa77efc2ea88fd6566b7902641cf3efe2e22518aff067df2ba433539a275a3ab1169612b54d007ddcc2800d846be4f7e629cd7bfb3
+  languageName: node
+  linkType: hard
+
 "@types/debug@npm:^4.1.7":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
@@ -1724,6 +1761,15 @@ __metadata:
   version: 0.2.3
   resolution: "@types/nprogress@npm:0.2.3"
   checksum: 2bd96ba1167f548e8f898ae8a790b6501a5422217621c9b8ea75962f3e8473f0e371058b79d83e04e80a6bfee2d66fc6612cdb28296648007b35d3c2a6d64e5c
+  languageName: node
+  linkType: hard
+
+"@types/papaparse@npm:^5":
+  version: 5.3.14
+  resolution: "@types/papaparse@npm:5.3.14"
+  dependencies:
+    "@types/node": "*"
+  checksum: fbf942ed92179eeb824d4e544cc701468157a4ce3f6f668f8b17692d9886fea92ccff5e56965615ff64f049efa01ff95ddb7d30c67e0186bc802a6cc8ef26e63
   languageName: node
   linkType: hard
 
@@ -3420,6 +3466,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chart.js@npm:^4.4.3":
+  version: 4.4.3
+  resolution: "chart.js@npm:4.4.3"
+  dependencies:
+    "@kurkle/color": ^0.3.0
+  checksum: 94c8d174b0d3414d50f145d4faa00bd12417bc48b18f96ac6c56f6225ec23cdc085038dddf45f77e472c5034d97e44cc23fbe35beb70d906addddd632a8c2ada
+  languageName: node
+  linkType: hard
+
+"chartjs-adapter-date-fns@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "chartjs-adapter-date-fns@npm:3.0.0"
+  peerDependencies:
+    chart.js: ">=2.8.0"
+    date-fns: ">=2.0.0"
+  checksum: c39bfdf490749faa589fba6e0dc0a2c5a467a5f06aaa52c5180e10fd9c83414807a064f6950538448bffee354c8064c0ce9d957bccbf2048e7ee2257aa95f138
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:3.3.1":
   version: 3.3.1
   resolution: "chokidar@npm:3.3.1"
@@ -3868,12 +3933,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:*, date-fns@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "date-fns@npm:3.6.0"
+  checksum: 0daa1e9a436cf99f9f2ae9232b55e11f3dd46132bee10987164f3eebd29f245b2e066d7d7db40782627411ecf18551d8f4c9fcdf2226e48bb66545407d448ab7
+  languageName: node
+  linkType: hard
+
 "date-fns@npm:^2.29.3":
   version: 2.30.0
   resolution: "date-fns@npm:2.30.0"
   dependencies:
     "@babel/runtime": ^7.21.0
   checksum: f7be01523282e9bb06c0cd2693d34f245247a29098527d4420628966a2d9aad154bd0e90a6b1cf66d37adcb769cd108cf8a7bd49d76db0fb119af5cdd13644f4
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.11":
+  version: 1.11.11
+  resolution: "dayjs@npm:1.11.11"
+  checksum: 84788275aad8a87fee4f1ce4be08861df29687aae6b7b43dd65350118a37dda56772a3902f802cb2dc651dfed447a5a8df62d88f0fb900dba8333e411190a5d5
   languageName: node
   linkType: hard
 
@@ -7967,6 +8046,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"papaparse@npm:^5.4.1":
+  version: 5.4.1
+  resolution: "papaparse@npm:5.4.1"
+  checksum: fc9e52f7158dca3517c229e3309065b1ab5da6c7194572fba4f31ff138bc43e3c91182cc40365cc828f97fe10d0aca416068fd731661058bea0f69ddb84a411a
+  languageName: node
+  linkType: hard
+
 "parent-module@npm:^1.0.0":
   version: 1.0.1
   resolution: "parent-module@npm:1.0.1"
@@ -8527,6 +8613,16 @@ __metadata:
     iconv-lite: 0.4.24
     unpipe: 1.0.0
   checksum: d5e9179d2f1f0a652cd107c080f25d165c724f546124d620c8df7fb80322df42bff547a8b310e55e1f7952556d013716a21b30162192eb0b3332d7efcba75883
+  languageName: node
+  linkType: hard
+
+"react-chartjs-2@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "react-chartjs-2@npm:5.2.0"
+  peerDependencies:
+    chart.js: ^4.1.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: ace702185be1450e5888a8bcd8b5fc1995067e3b11d236764a67f5567a3d7c32ff16923b8d48d3d39bda6e45135da6c044c9b43fbe8e1978f95aca9d2c0ce348
   languageName: node
   linkType: hard
 
@@ -9746,13 +9842,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "tokens-ui@workspace:."
   dependencies:
+    "@date-io/date-fns": ^3.0.0
     "@heroicons/react": ^2.0.11
     "@rainbow-me/rainbowkit": ^2.1.3
     "@tanstack/react-query": ^5.28.6
     "@trivago/prettier-plugin-sort-imports": ^4.1.1
+    "@types/date-fns": ^2.6.0
     "@types/jsonwebtoken": ^9
     "@types/node": ^20.14.9
     "@types/nprogress": ^0
+    "@types/papaparse": ^5
     "@types/react": ^18.0.9
     "@types/react-copy-to-clipboard": ^5.0.4
     "@typescript-eslint/eslint-plugin": ^5.39.0
@@ -9762,8 +9861,12 @@ __metadata:
     autoprefixer: ^10.4.12
     blo: ^1.0.1
     burner-connector: ^0.0.8
+    chart.js: ^4.4.3
+    chartjs-adapter-date-fns: ^3.0.0
     cookies-next: ^4.2.1
     daisyui: 4.5.0
+    date-fns: ^3.6.0
+    dayjs: ^1.11.11
     eslint: ^8.15.0
     eslint-config-next: ^14.0.4
     eslint-config-prettier: ^9.1.0
@@ -9775,10 +9878,12 @@ __metadata:
     next: ^14.0.4
     next-themes: ^0.3.0
     nprogress: ^0.2.0
+    papaparse: ^5.4.1
     postcss: ^8.4.16
     prettier: 3.3.2
     qrcode.react: ^3.1.0
     react: ^18.2.0
+    react-chartjs-2: ^5.2.0
     react-copy-to-clipboard: ^5.1.0
     react-dom: ^18.2.0
     react-hot-toast: ^2.4.0

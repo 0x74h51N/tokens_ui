@@ -1,10 +1,8 @@
 import { Address } from "viem";
-import { useDisconnect } from "wagmi";
 import { useGlobalState } from "~~/services/store/store";
 
 export const useAuth = () => {
   const setSessionStart = useGlobalState(state => state.setSessionStart);
-  const { disconnect } = useDisconnect();
 
   const handleLogin = async (address: Address) => {
     const response = await fetch("/api/login", {
@@ -25,7 +23,6 @@ export const useAuth = () => {
   };
 
   const handleLogout = async () => {
-    disconnect();
     const response = await fetch("/api/logout", {
       method: "POST",
     });

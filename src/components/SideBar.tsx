@@ -14,8 +14,8 @@ interface SideBarProps {
 const SideBar = ({ deployedContractData, contractName, refreshDisplayVariables }: SideBarProps) => {
   const { targetNetwork } = useTargetNetwork();
   return (
-    <div className="flex flex-col md:w-[200px] lg:w-[260px] max-md:mb-10">
-      <div className="bg-base-100 border-base-300 border shadow-md shadow-secondary px-4 lg:px-7 space-y-1 py-4">
+    <div className="flex flex-col md:w-[200px] lg:w-[260px] max-md:mb-10 h-full">
+      <div className="bg-base-100 border-base-300 border shadow-md shadow-base-300 px-4 lg:px-7 space-y-1 py-4">
         <div className="flex flex-col gap-1">
           <span className="font-bold lg:text-lg text-sm">{contractName.toUpperCase() + " Token"}</span>
           <Address address={deployedContractData.address} />

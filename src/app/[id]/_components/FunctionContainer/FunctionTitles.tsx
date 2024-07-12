@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import SearchDropdown from "../SearchDropdown";
+import SearchDropdown from "./SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
 import { createToken, tokenVerify } from "~~/utils/jwt-token";
@@ -69,7 +69,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
 
   return (
     <>
-      <div className="flex w-full -z-10 -mt-20 overflow-hidden">
+      <div className="flex w-full -z-10 -mt-2 overflow-hidden relative">
         <div className="flex overflow-x-auto overflow-y-hidden rounded-t-lg pt-20 h-[8rem] max-w-[91%] pr-3 z-10 scrollbar-thumb-custom">
           {loading ? (
             <span className="loading loading-spinner loading-lg"></span>
@@ -77,7 +77,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
             displayedFunctions.map((functionName, i) => (
               <div
                 key={functionName + " button " + i}
-                className="flex relative max-w-[10rem] h-[4.2rem] w-[10rem] min-w-[8rem]"
+                className="flex max-w-[10rem] h-[4.2rem] w-[10rem] min-w-[8rem]"
                 style={{
                   zIndex: functionName === activeFunction ? 2 : -1 * i,
                   marginLeft: i === 0 ? 0 : -48 + i,
@@ -136,7 +136,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
         </div>
       </div>
       {showSearch && availableFunctions && (
-        <div onBlur={() => setShowSearch(false)} className="absolute top-0 right-0 z-50">
+        <div onBlur={() => setShowSearch(false)} className="absolute top-[70px] right-0 z-50">
           <SearchDropdown options={availableFunctions} handleSelect={handleSelect} />{" "}
         </div>
       )}

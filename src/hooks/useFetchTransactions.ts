@@ -49,8 +49,9 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
   useEffect(() => {
     if (sessionStart) {
       if (all && !globalTransactions) {
-        setTimeout(() => fetchTransactions(), 500);
+        fetchTransactions();
       } else if (!all) {
+        setTimeout(() => fetchTransactions(), 500);
         const interval = setInterval(() => {
           fetchTransactions();
         }, 30000);
@@ -58,7 +59,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
-  }, [all, testnet, address, sessionStart, globalTransactions, fetchTransactions]);
+  }, [all, sessionStart, globalTransactions, fetchTransactions]);
 
   return { data, pending, error };
 };

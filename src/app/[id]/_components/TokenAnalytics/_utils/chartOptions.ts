@@ -141,6 +141,7 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
     },
     datasets: {
       bar: {
+        maxBarThickness: 20,
         barThickness: "flex",
         borderWidth: 1,
       },

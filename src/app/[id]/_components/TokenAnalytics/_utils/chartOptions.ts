@@ -1,7 +1,13 @@
 import { ChartOptions } from "chart.js";
 import { Colors, color } from "./colors";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
 
-const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number): ChartOptions => {
+const chartOptions = (
+  chartData: ChartData,
+  colors: Colors,
+  maxDateTicks: number,
+  contractName: ContractName,
+): ChartOptions => {
   const datasetsWithColors = chartData.datasets.map(dataset => {
     const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
     const color = colors[colorKey as keyof Colors] as color;
@@ -45,7 +51,7 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
         position: "left",
         title: {
           display: true,
-          text: `Amount (NNN, thousand)`,
+          text: `Amount (${contractName.toUpperCase()}, thousand)`,
         },
         ticks: {
           color: colors.yTicks as string,

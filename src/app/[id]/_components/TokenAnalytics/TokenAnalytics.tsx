@@ -113,7 +113,7 @@ const TokenAnalytics = ({
 
   return (
     <div className="w-full justify-center items-center h-auto max-md:px-1 relative flex-grow pb-3">
-      <div className="pt-4 px-8">
+      <div className="pt-4 px-8 h-auto">
         <h1 className="font-bold lg:text-4xl md:text-2xl text-xl card-title m-0 mb-4">
           {contractName.toUpperCase() + " Analytics"}
         </h1>

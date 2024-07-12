@@ -36,7 +36,17 @@ export const TransactionsTable = ({
   const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
 
   useEffect(() => {
-    allTransactions && setTransactions(allTransactions);
+    if (allTransactions) {
+      const transactionsWithMethod: ExtendedTransaction[] = allTransactions.map(tx => {
+        const methodName = getMethodName(tx.from, tx.to);
+        return {
+          ...tx,
+          method: methodName,
+        };
+      });
+
+      setTransactions(transactionsWithMethod);
+    }
   }, [allTransactions]);
 
   useEffect(() => {
@@ -46,7 +56,15 @@ export const TransactionsTable = ({
         (newTx: { hash: string }) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
       );
       if (newTxs.length > 0) {
-        setTransactions(prevTransactions => [...newTxs, ...prevTransactions]);
+        const newTxsWithMethod = newTxs.map(tx => {
+          const methodName = getMethodName(tx.from, tx.to);
+          return {
+            ...tx,
+            method: methodName,
+          };
+        });
+
+        setTransactions(prevTransactions => [...newTxsWithMethod, ...prevTransactions]);
       }
     }
   }, [data, transactions]);
@@ -86,7 +104,7 @@ export const TransactionsTable = ({
                     <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
                       <TransactionHash hash={tx.hash} />
                     </td>
-                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{getMethodName(tx.from, tx.to)}</td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
                       <Address address={tx.from} size="sm" />
                     </td>

@@ -6,6 +6,7 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
     maintainAspectRatio: false,
     scales: {
       x: {
+        offset: false,
         type: "time",
         ticks: {
           color: colors.xTicks as string,
@@ -26,12 +27,16 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
         position: "left",
         title: {
           display: true,
-          text: `Amount (NNN)`,
+          text: `Amount (NNN, thousand)`,
         },
         ticks: {
           color: colors.yTicks as string,
           callback: function (value) {
-            return value.toLocaleString();
+            const numericValue = typeof value === "string" ? parseFloat(value) : value;
+            return (numericValue / 1000).toLocaleString();
+          },
+          font: {
+            size: 12,
           },
         },
         grid: {
@@ -51,6 +56,9 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
           color: colors.yTicks as string,
           callback: function (value) {
             return value.toLocaleString();
+          },
+          font: {
+            size: 12,
           },
         },
         grid: {

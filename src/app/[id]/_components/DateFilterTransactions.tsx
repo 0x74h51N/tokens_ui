@@ -6,9 +6,10 @@ import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
 interface DateFilterTransactionsProps {
   setDateRangeTxs: Dispatch<SetStateAction<ExtendedTransaction[]>>;
   transactions: ExtendedTransaction[];
+  col?: boolean | false;
 }
 
-const DateFilterTransactions = ({ setDateRangeTxs, transactions }: DateFilterTransactionsProps) => {
+const DateFilterTransactions = ({ setDateRangeTxs, transactions, col }: DateFilterTransactionsProps) => {
   const [selectedButton, setSelectedButton] = useState<string | null>("all");
 
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -37,11 +38,13 @@ const DateFilterTransactions = ({ setDateRangeTxs, transactions }: DateFilterTra
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value ? new Date(e.target.value) : null;
     setStartDate(date);
+    startDate && setSelectedButton("date");
   };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value ? new Date(e.target.value) : null;
     setEndDate(date);
+    startDate && setSelectedButton("date");
   };
 
   useEffect(() => {
@@ -99,43 +102,42 @@ const DateFilterTransactions = ({ setDateRangeTxs, transactions }: DateFilterTra
     { label: "All", type: "all" },
   ];
 
-  const dateInputClass = `input input-primary h-full rounded-md truncate max-w-20 p-1 px-1.5 focus:max-w-60 transition-all duration-500 ease-in-out text-sm ${selectedButton === "date" ? "bg-base-300" : "bg-base-100"}`;
+  const dateInputClass = `input input-primary h-full rounded-md truncate p-1 px-1.5 transition-all duration-500 ease-in-out text-sm ${selectedButton === "date" ? "bg-base-300" : "bg-base-100"}`;
 
   return (
-    <div className="flex items-center">
-      {buttons.map(button => (
-        <button
-          key={button.type}
-          onClick={() => handleClick(button.type)}
-          className={`btn btn-primary btn-xs text-xs rounded-md w-8 !h-full p-0 mr-1 ${selectedButton === button.type ? "bg-base-300" : "bg-base-100"}`}
-        >
-          {button.label}
-        </button>
-      ))}
-      <input
-        type="date"
-        value={startDate ? dayjs(startDate).format("YYYY-MM-DD") : ""}
-        onChange={handleStartDateChange}
-        min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
-        max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
-        className={dateInputClass}
-      />
-      <span className="text-primary-content">-</span>
-      <input
-        type="date"
-        value={endDate ? dayjs(endDate).format("YYYY-MM-DD") : ""}
-        onChange={handleEndDateChange}
-        min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
-        max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
-        className={dateInputClass}
-      />
-      {startDate && endDate && (
-        <div className="absolute top-7 flex right-6 antialiased italic">
-          <span>{startDate.toLocaleDateString()}</span>
-          <ArrowLongRightIcon className="w-5 mx-1 self-end" />
-          <span>{endDate.toLocaleDateString()}</span>
-        </div>
-      )}
+    <div
+      className={`flex  ${col ? "flex-col gap-2 items-end" : "sm:flex-row flex-col items-center max-sm:gap-3 max-sm:justify-center max-sm:mb-1 sm:h-[30px]"}`}
+    >
+      <div className=" flex h-full">
+        {buttons.map(button => (
+          <button
+            key={button.type}
+            onClick={() => handleClick(button.type)}
+            className={`btn btn-primary btn-xs text-xs rounded-md w-8 !h-full p-0 mr-1 ${selectedButton === button.type ? "bg-base-300" : "bg-base-100"}`}
+          >
+            {button.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex">
+        <input
+          type="date"
+          value={startDate ? dayjs(startDate).format("YYYY-MM-DD") : ""}
+          onChange={handleStartDateChange}
+          min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
+          max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
+          className={dateInputClass}
+        />
+        <ArrowLongRightIcon className="w-5 mx-1 " />
+        <input
+          type="date"
+          value={endDate ? dayjs(endDate).format("YYYY-MM-DD") : ""}
+          onChange={handleEndDateChange}
+          min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
+          max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
+          className={dateInputClass}
+        />
+      </div>
     </div>
   );
 };

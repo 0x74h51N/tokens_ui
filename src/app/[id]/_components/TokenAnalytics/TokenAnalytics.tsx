@@ -127,7 +127,7 @@ const TokenAnalytics = ({
 
   useEffect(() => {
     if (chartData) {
-      setOptions(chartOptions(chartData, colors, maxDateTicks));
+      setOptions(chartOptions(chartData, colors, maxDateTicks, contractName));
     }
   }, [chartData, colors]);
 

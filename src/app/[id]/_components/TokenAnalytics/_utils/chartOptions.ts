@@ -1,7 +1,25 @@
 import { ChartOptions } from "chart.js";
-import { Colors } from "./colors";
+import { Colors, color } from "./colors";
 
 const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number): ChartOptions => {
+  const datasetsWithColors = chartData.datasets.map(dataset => {
+    const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
+    const color = colors[colorKey as keyof Colors] as color;
+
+    if (color) {
+      return {
+        ...dataset,
+        backgroundColor: color.backgroundColor,
+        borderColor: color.borderColor,
+      };
+    } else {
+      console.warn(`Color not found for key: ${colorKey}`);
+      return dataset;
+    }
+  });
+
+  chartData.datasets = datasetsWithColors;
+
   return {
     maintainAspectRatio: false,
     scales: {
@@ -67,6 +85,38 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
       },
     },
     plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          usePointStyle: true,
+        },
+        onHover: (event: any, legendItem: any, legend: any) => {
+          const chart = legend.chart;
+          const index = legendItem.datasetIndex;
+          if (chart.isDatasetVisible(index)) {
+            chart.data.datasets.forEach((dataset: any, i: number) => {
+              if (i !== index) {
+                dataset.borderColor = "rgba(200, 200, 200, 0.2)";
+                dataset.backgroundColor = "rgba(200, 200, 200, 0.2)";
+              }
+            });
+            chart.update();
+          }
+        },
+        onLeave: (event: any, legendItem: any, legend: any) => {
+          const chart = legend.chart;
+          chart.data.datasets.forEach((dataset: any) => {
+            const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
+            const color = colors[colorKey as keyof Colors] as color;
+
+            if (color) {
+              dataset.borderColor = color.borderColor;
+              dataset.backgroundColor = color.backgroundColor;
+            }
+          });
+          chart.update();
+        },
+      },
       tooltip: {
         mode: "index",
         axis: "x",
@@ -95,7 +145,7 @@ const chartOptions = (chartData: ChartData, colors: Colors, maxDateTicks: number
         borderWidth: 1,
       },
       line: {
-        borderWidth: 1,
+        borderWidth: 2,
       },
     },
   };
@@ -108,10 +158,11 @@ export interface ChartData {
   datasets: {
     label: string;
     data: number[];
-    backgroundColor: string;
-    borderColor: string;
+    backgroundColor?: string;
+    borderColor?: string;
     type?: "line" | "bar";
     yAxisID?: string;
+    pointStyle?: string;
   }[];
 }
 
@@ -119,4 +170,7 @@ export type ChartDataType = {
   date: string;
   amount: number;
   count: number;
+  uniqueReceivers: number;
+  uniqueSenders: number;
+  totalUniqueUsers: number;
 };

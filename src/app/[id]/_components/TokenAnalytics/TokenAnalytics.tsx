@@ -76,6 +76,9 @@ const TokenAnalytics = ({
     const labels = Object.values(dataToUse).map(group => group.date);
     const data = Object.values(dataToUse).map(group => group.amount);
     const countData = Object.values(dataToUse).map(group => group.count);
+    const uniqueReceivers = Object.values(dataToUse).map(group => group.uniqueReceivers);
+    const uniqueSenders = Object.values(dataToUse).map(group => group.uniqueSenders);
+    const uniqueTotal = Object.values(dataToUse).map(group => group.totalUniqueUsers);
 
     if (data && countData && labels) {
       setChartData({
@@ -84,17 +87,34 @@ const TokenAnalytics = ({
           {
             label: "Transfer Amount",
             data: data,
-            backgroundColor: (colors.amountBar as color).backgroundColor,
-            borderColor: (colors.amountBar as color).borderColor,
             yAxisID: "y1",
           },
           {
             label: "Transfer Count",
             data: countData,
-            backgroundColor: (colors.countLine as color).backgroundColor,
-            borderColor: (colors.countLine as color).borderColor,
             type: "line",
             yAxisID: "y2",
+          },
+          {
+            label: "Unique Receivers",
+            data: uniqueReceivers,
+            type: "line",
+            yAxisID: "y2",
+            pointStyle: "triangle",
+          },
+          {
+            label: "Unique Senders",
+            data: uniqueSenders,
+            type: "line",
+            yAxisID: "y2",
+            pointStyle: "cross",
+          },
+          {
+            label: "Unique Total",
+            data: uniqueTotal,
+            type: "line",
+            yAxisID: "y2",
+            pointStyle: "rect",
           },
         ],
       });

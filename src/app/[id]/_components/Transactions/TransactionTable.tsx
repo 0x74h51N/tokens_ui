@@ -44,7 +44,6 @@ export const TransactionsTable = ({
           method: methodName,
         };
       });
-
       setTransactions(transactionsWithMethod);
     }
   }, [allTransactions]);
@@ -106,10 +105,14 @@ export const TransactionsTable = ({
                     </td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
-                      <Address address={tx.from} size="sm" />
+                      <Address address={tx.from} contractAdress={deployedContractData.address} size="sm" />
                     </td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-                      {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
+                      {tx.to ? (
+                        <Address address={tx.to} contractAdress={deployedContractData.address} size="sm" />
+                      ) : (
+                        <span>(Contract Creation)</span>
+                      )}
                     </td>
                     <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
                       <div

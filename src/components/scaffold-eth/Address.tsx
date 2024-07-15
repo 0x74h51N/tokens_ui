@@ -11,12 +11,14 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outl
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
+import AddTag from "../AddTag";
 
 type AddressProps = {
   address?: AddressType;
   disableAddressLink?: boolean;
   format?: "short" | "long";
   size?: "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl";
+  contractAdress?: AddressType;
 };
 
 const blockieSizeMap = {
@@ -32,7 +34,7 @@ const blockieSizeMap = {
 /**
  * Displays an address (or ENS) with a Blockie image and option to copy address.
  */
-export const Address = ({ address, disableAddressLink, format, size = "base" }: AddressProps) => {
+export const Address = ({ address, disableAddressLink, format, size = "base", contractAdress }: AddressProps) => {
   const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
   const [addressCopied, setAddressCopied] = useState(false);
@@ -136,6 +138,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           />
         </CopyToClipboard>
       )}
+      {checkSumAddress && contractAdress && <AddTag address={checkSumAddress} contractAddress={contractAdress} />}
     </div>
   );
 };

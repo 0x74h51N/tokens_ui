@@ -69,7 +69,6 @@ const TokenAnalytics = ({
     }
 
     setDataToUse(selectedData);
-    console.log(dateRangeTxs);
   }, [dateRangeTxs]);
 
   useEffect(() => {

@@ -2,11 +2,12 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "r
 import SearchDropdown from "./SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
-import { createToken, tokenVerify } from "~~/utils/jwt-token";
+import { createFunctionToken, FunctionTokenResponse, tokenVerify } from "~~/utils/jwt-token";
+import { Address } from "viem";
 
 interface FunctionTitlesProps {
   initialFunctions: string[];
-  contractAddress: `0x${string}`;
+  contractAddress: Address;
   activeFunction: string;
   setActiveFunc: Dispatch<SetStateAction<string>>;
 }
@@ -22,12 +23,14 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const cookieFunctions = await tokenVerify(contractAddress);
+      const cookieFunctions = (await tokenVerify(contractAddress, "function_titles")) as FunctionTokenResponse;
+      console.log(cookieFunctions);
       if (cookieFunctions && cookieFunctions.data) {
-        setDisplayedFunctions(cookieFunctions.data.data);
+        setDisplayedFunctions(cookieFunctions.data as string[]);
       }
       setLoading(false);
     };
+    console.log;
     fetchData();
   }, [contractAddress]);
 
@@ -41,7 +44,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
       setInitial(false);
     }
     if (!loading) {
-      createToken(displayedFunctions, contractAddress);
+      createFunctionToken(displayedFunctions, contractAddress, "function_titles");
     }
   }, [displayedFunctions, loading, initial, contractAddress, setActiveFunc]);
 

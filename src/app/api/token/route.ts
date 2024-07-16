@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
       httpOnly: true,
       secure: true,
       path: "/",
-      maxAge: 30 * 24 * 3600,
+      maxAge: 360 * 24 * 3600,
     });
 
     return response;

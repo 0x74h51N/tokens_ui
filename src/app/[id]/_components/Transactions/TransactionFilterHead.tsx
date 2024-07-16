@@ -54,7 +54,7 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
       setFiltered(dateRangeTxs);
       if (searchTerm) {
         const matchingAddresses = Array.from(tags.entries())
-          .filter(([address, tag]) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          .filter(([, tag]) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
           .map(([address]) => address.toLowerCase());
 
         setFiltered(

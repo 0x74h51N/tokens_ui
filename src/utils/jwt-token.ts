@@ -14,15 +14,18 @@ export interface TagsTokenResponse {
   exp: number;
 }
 export const tokenVerify = async (
-  contractAddress: Address,
   cookieName: "tags" | "function_titles",
+  contractAddress?: Address,
 ): Promise<FunctionTokenResponse | TagsTokenResponse | null> => {
-  const response = await fetch(`/api/token?contractAddress=${contractAddress}&cookieName=${cookieName}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+  const response = await fetch(
+    `/api/token?${contractAddress ? `contractAddress=${contractAddress}` : ""}&cookieName=${cookieName}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   const data = await response.json();
 
@@ -36,7 +39,7 @@ export const tokenVerify = async (
 
 export const createFunctionToken = async (data: string[], contractAddress: Address, cookieName: "function_titles") => {
   try {
-    await PostHandler(data, contractAddress, cookieName);
+    await PostHandler(data, cookieName, contractAddress);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error in createToken:", error.message);
@@ -44,9 +47,9 @@ export const createFunctionToken = async (data: string[], contractAddress: Addre
   }
 };
 
-export const createTagsToken = async (data: TagsType, contractAddress: Address, cookieName: "tags") => {
+export const createTagsToken = async (data: TagsType, cookieName: "tags") => {
   try {
-    const existingToken = await tokenVerify(contractAddress, "tags");
+    const existingToken = await tokenVerify((cookieName = "tags"));
     const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
 
     console.log("Existing Data before update:", existingData);
@@ -62,7 +65,7 @@ export const createTagsToken = async (data: TagsType, contractAddress: Address, 
 
     console.log("Updated Data after adding new tags:", existingData);
 
-    await PostHandler(existingData, contractAddress, cookieName);
+    await PostHandler((data = existingData), (cookieName = cookieName));
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error in createTagsToken:", error.message);
@@ -70,7 +73,7 @@ export const createTagsToken = async (data: TagsType, contractAddress: Address, 
   }
 };
 
-const PostHandler = async (data: TagsType | string[], contractAddress: Address, cookieName: string) => {
+const PostHandler = async (data: TagsType | string[], cookieName: string, contractAddress?: Address) => {
   try {
     const response = await fetch("/api/token", {
       method: "POST",

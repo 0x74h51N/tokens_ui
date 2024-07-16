@@ -12,13 +12,13 @@ import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
 import AddTag from "../AddTag";
+import { useGlobalState } from "~~/services/store/store";
 
 type AddressProps = {
   address?: AddressType;
   disableAddressLink?: boolean;
   format?: "short" | "long";
   size?: "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl";
-  contractAdress?: AddressType;
 };
 
 const blockieSizeMap = {
@@ -34,14 +34,16 @@ const blockieSizeMap = {
 /**
  * Displays an address (or ENS) with a Blockie image and option to copy address.
  */
-export const Address = ({ address, disableAddressLink, format, size = "base", contractAdress }: AddressProps) => {
+export const Address = ({ address, disableAddressLink, format, size = "base" }: AddressProps) => {
   const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
   const [addressCopied, setAddressCopied] = useState(false);
   const checkSumAddress = address ? getAddress(address) : undefined;
-
   const { targetNetwork } = useTargetNetwork();
-
+  const { tags } = useGlobalState(state => ({
+    tags: state.tags,
+  }));
+  const [tag, setTag] = useState<string>("");
   const { data: fetchedEns } = useEnsName({
     address: checkSumAddress,
     chainId: 1,
@@ -66,6 +68,12 @@ export const Address = ({ address, disableAddressLink, format, size = "base", co
   useEffect(() => {
     setEnsAvatar(fetchedEnsAvatar);
   }, [fetchedEnsAvatar]);
+  useEffect(() => {
+    if (checkSumAddress) {
+      const globalTag = tags.get(checkSumAddress);
+      globalTag ? setTag(globalTag) : setTag("");
+    }
+  }, [tags]);
 
   // Skeleton UI
   if (!checkSumAddress) {
@@ -109,12 +117,13 @@ export const Address = ({ address, disableAddressLink, format, size = "base", co
         </span>
       ) : (
         <a
-          className={`ml-1.5 text-${size} font-normal`}
+          data-tip={displayAddress}
+          className={`ml-1.5 text-${size} font-normal ${tag ? " tooltip tooltip-top tooltip-primary before:left-0" : ""}`}
           target="_blank"
           href={blockExplorerAddressLink}
           rel="noopener noreferrer"
         >
-          {displayAddress}
+          {tag && tag !== "" ? <span className="!min-w-[86px] flex truncate">{tag}</span> : displayAddress}
         </a>
       )}
       {addressCopied ? (
@@ -138,7 +147,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base", co
           />
         </CopyToClipboard>
       )}
-      {checkSumAddress && contractAdress && <AddTag address={checkSumAddress} contractAddress={contractAdress} />}
+      {checkSumAddress && <AddTag address={checkSumAddress} />}
     </div>
   );
 };

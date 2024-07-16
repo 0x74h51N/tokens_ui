@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCookie, setCookie } from "cookies-next";
 import jwt from "jsonwebtoken";
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 
 export async function POST(req: NextRequest) {
   const secretKey = process.env.JWT_SECRET_KEY;
@@ -10,15 +10,15 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { data, contractAddress, cookieName }: { data: string[]; contractAddress: Address; cookieName: string } =
+    const { data, contractAddress, cookieName }: { data: string[]; contractAddress?: Address; cookieName: string } =
       await req.json();
 
     if (!data) {
       return NextResponse.json({ error: "Data not provided" }, { status: 469 });
     }
 
-    if (!contractAddress) {
-      return NextResponse.json({ error: "Contract address not provided" }, { status: 470 });
+    if (contractAddress && !getAddress(contractAddress)) {
+      return NextResponse.json({ error: "Contract address not valid" }, { status: 470 });
     }
 
     if (!cookieName) {
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign(payload, secretKey, { expiresIn: "30d" });
     const response = NextResponse.json({ message: "Token set successfully" });
 
-    setCookie(`${cookieName}_token_${contractAddress}`, token, {
+    setCookie(`${cookieName}_token_${contractAddress ? contractAddress : ""}`, token, {
       req,
       res: response,
       httpOnly: true,
@@ -60,14 +60,14 @@ export async function GET(req: NextRequest) {
     const contractAddress = req.nextUrl.searchParams.get("contractAddress");
     const cookieName = req.nextUrl.searchParams.get("cookieName");
 
-    if (!contractAddress) {
-      return NextResponse.json({ error: "Contract address not provided" }, { status: 470 });
+    if (contractAddress && !getAddress(contractAddress)) {
+      return NextResponse.json({ error: "Contract address not valid" }, { status: 470 });
     }
     if (!cookieName) {
       return NextResponse.json({ error: "Cookie name not provided" }, { status: 471 });
     }
 
-    const token = getCookie(`${cookieName}_token_${contractAddress}`, { req });
+    const token = getCookie(`${cookieName}_token_${contractAddress ? contractAddress : ""}`, { req });
 
     if (!token) {
       return NextResponse.json({ error: "Token not provided" }, { status: 400 });

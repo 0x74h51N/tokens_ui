@@ -23,14 +23,12 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const cookieFunctions = (await tokenVerify(contractAddress, "function_titles")) as FunctionTokenResponse;
-      console.log(cookieFunctions);
+      const cookieFunctions = (await tokenVerify("function_titles", contractAddress)) as FunctionTokenResponse;
       if (cookieFunctions && cookieFunctions.data) {
         setDisplayedFunctions(cookieFunctions.data as string[]);
       }
       setLoading(false);
     };
-    console.log;
     fetchData();
   }, [contractAddress]);
 

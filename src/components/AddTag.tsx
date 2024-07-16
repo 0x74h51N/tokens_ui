@@ -1,12 +1,13 @@
 import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useRef, useState } from "react";
 import { Address } from "viem";
+import { useGlobalState } from "~~/services/store/store";
 import { createTagsToken } from "~~/utils/jwt-token";
 
-const AddTag = ({ address, contractAddress }: { address: Address; contractAddress: Address }) => {
+const AddTag = ({ address }: { address: Address }) => {
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLDivElement>(null);
-  const [tag, setTag] = useState<string>("");
+  const [tag, setInputTag] = useState<string>("");
   const handleOnClick = () => {
     setShowInput(!showInput);
   };
@@ -16,12 +17,15 @@ const AddTag = ({ address, contractAddress }: { address: Address; contractAddres
       showInput && setShowInput(false);
     }
   };
-
+  const { setTag } = useGlobalState(state => ({
+    setTag: state.setTag,
+  }));
   const addTag = async (_address: Address) => {
     const newTag = { address: _address, tag };
-    await createTagsToken({ addressTags: [newTag] }, contractAddress, cookieName);
-    setTag("");
+    setTag(address, tag);
     setShowInput(false);
+    await createTagsToken({ addressTags: [newTag] }, cookieName);
+    setInputTag("");
   };
 
   useEffect(() => {
@@ -36,7 +40,12 @@ const AddTag = ({ address, contractAddress }: { address: Address; contractAddres
   }, [showInput]);
 
   const handleOnChange = (e: { target: { value: string } }) => {
-    setTag(e.target.value);
+    setInputTag(e.target.value);
+  };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      addTag(address);
+    }
   };
 
   return (
@@ -51,6 +60,8 @@ const AddTag = ({ address, contractAddress }: { address: Address; contractAddres
             type="text"
             placeholder="Tag name..."
             value={tag}
+            autoFocus
+            onKeyDown={handleKeyDown}
             onChange={handleOnChange}
             className="input input-bordered focus:outline-offset-1 input-xs md:w-40 w-32 rounded-lg"
           />

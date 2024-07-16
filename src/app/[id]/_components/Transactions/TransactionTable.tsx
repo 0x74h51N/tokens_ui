@@ -13,6 +13,7 @@ import formatTime from "~~/utils/formatTime";
 import getMethodName from "~~/utils/getMethodName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 import TransactionFilterHead from "./TransactionFilterHead";
+import { TagsTokenResponse, tokenVerify } from "~~/utils/jwt-token";
 
 export const TransactionsTable = ({
   deployedContractData,
@@ -34,6 +35,10 @@ export const TransactionsTable = ({
   const testnet = targetNetwork.testnet || false;
   const allTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
   const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
+  const [loading, setLoading] = useState<boolean>(true);
+  const { setTags } = useGlobalState(state => ({
+    setTags: state.setTags,
+  }));
 
   useEffect(() => {
     if (allTransactions) {
@@ -70,6 +75,19 @@ export const TransactionsTable = ({
   useEffect(() => {
     setSortedTransactions(transactions);
   }, [transactions]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const tags = (await tokenVerify("tags")) as TagsTokenResponse;
+      if (tags && tags.data) {
+        setTags(tags.data.addressTags);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [deployedContractData]);
+
   return (
     <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
       <TransactionFilterHead
@@ -105,14 +123,10 @@ export const TransactionsTable = ({
                     </td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
-                      <Address address={tx.from} contractAdress={deployedContractData.address} size="sm" />
+                      <Address address={tx.from} size="sm" />
                     </td>
                     <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-                      {tx.to ? (
-                        <Address address={tx.to} contractAdress={deployedContractData.address} size="sm" />
-                      ) : (
-                        <span>(Contract Creation)</span>
-                      )}
+                      {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
                     </td>
                     <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
                       <div

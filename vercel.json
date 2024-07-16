@@ -2,7 +2,7 @@
   "installCommand": "yarn install",
   "crons": [
     {
-      "path": "/api/run-cron-jobs",
+      "path": "/api/cron-jobs",
       "schedule": "31 0 * * *"
     }
   ]

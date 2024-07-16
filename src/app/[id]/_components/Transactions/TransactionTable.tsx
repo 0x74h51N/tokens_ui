@@ -13,6 +13,7 @@ import formatTime from "~~/utils/formatTime";
 import getMethodName from "~~/utils/getMethodName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 import TransactionFilterHead from "./TransactionFilterHead";
+import { TagsTokenResponse, tokenVerify } from "~~/utils/jwt-token";
 
 export const TransactionsTable = ({
   deployedContractData,
@@ -34,6 +35,9 @@ export const TransactionsTable = ({
   const testnet = targetNetwork.testnet || false;
   const allTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
   const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
+  const { setTags } = useGlobalState(state => ({
+    setTags: state.setTags,
+  }));
 
   useEffect(() => {
     if (allTransactions) {
@@ -44,7 +48,6 @@ export const TransactionsTable = ({
           method: methodName,
         };
       });
-
       setTransactions(transactionsWithMethod);
     }
   }, [allTransactions]);
@@ -71,6 +74,17 @@ export const TransactionsTable = ({
   useEffect(() => {
     setSortedTransactions(transactions);
   }, [transactions]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tags = (await tokenVerify("tags")) as TagsTokenResponse;
+      if (tags && tags.data) {
+        setTags(tags.data.addressTags);
+      }
+    };
+    fetchData();
+  }, [deployedContractData]);
+
   return (
     <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
       <TransactionFilterHead

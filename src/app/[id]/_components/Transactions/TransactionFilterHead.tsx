@@ -23,6 +23,9 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
   const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
     setSearchTerm(e.target.value);
   };
+  const { tags } = useGlobalState(state => ({
+    tags: state.tags,
+  }));
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -30,6 +33,10 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
       filter && setFilter(false);
     }
   };
+
+  useEffect(() => {
+    setDateRangeTxs(transactions);
+  }, [transactions]);
 
   useEffect(() => {
     if (filter) {
@@ -41,22 +48,32 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [filter]);
+
   useEffect(() => {
-    setFiltered(dateRangeTxs);
-    if (searchTerm) {
-      setFiltered(
-        dateRangeTxs.filter(
-          tx =>
-            tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()),
-        ),
-      );
+    if (dateRangeTxs) {
+      setFiltered(dateRangeTxs);
+      if (searchTerm) {
+        const matchingAddresses = Array.from(tags.entries())
+          .filter(([, tag]) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+          .map(([address]) => address.toLowerCase());
+
+        setFiltered(
+          dateRangeTxs.filter(tx => {
+            return (
+              tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
+              getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()) ||
+              matchingAddresses.includes(tx.from.toLowerCase()) ||
+              (tx.to && matchingAddresses.includes(tx.to.toLowerCase()))
+            );
+          }),
+        );
+      }
     }
-  }, [dateRangeTxs, searchTerm]);
+  }, [dateRangeTxs, searchTerm, tags]);
   useEffect(() => {
-    if (filteredTransactions.length > 1) setSortedTransactions(filteredTransactions);
+    setSortedTransactions(filteredTransactions);
   }, [filteredTransactions]);
   return (
     <div className="p-4 bg-base-300 rounded-t-xl">

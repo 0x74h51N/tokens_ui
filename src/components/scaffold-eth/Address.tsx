@@ -116,15 +116,19 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           <Link href={blockExplorerAddressLink}>{displayAddress}</Link>
         </span>
       ) : (
-        <a
+        <div
           data-tip={displayAddress}
-          className={`ml-1.5 text-${size} font-normal ${tag ? " tooltip tooltip-top tooltip-primary before:left-0" : ""}`}
-          target="_blank"
-          href={blockExplorerAddressLink}
-          rel="noopener noreferrer"
+          className={`flex min-w-[86px] max-w-[95px] ${tag ? " tooltip tooltip-top tooltip-primary before:right-0" : ""}`}
         >
-          {tag && tag !== "" ? <span className="!min-w-[86px] flex truncate">{tag}</span> : displayAddress}
-        </a>
+          <a
+            className={`ml-1.5 text-${size} font-normal text-start truncate`}
+            target="_blank"
+            href={blockExplorerAddressLink}
+            rel="noopener noreferrer"
+          >
+            {tag && tag !== "" ? tag : displayAddress}
+          </a>
+        </div>
       )}
       {addressCopied ? (
         <CheckCircleIcon

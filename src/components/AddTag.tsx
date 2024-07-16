@@ -17,8 +17,9 @@ const AddTag = ({ address }: { address: Address }) => {
       showInput && setShowInput(false);
     }
   };
-  const { setTag } = useGlobalState(state => ({
+  const { setTag, tags } = useGlobalState(state => ({
     setTag: state.setTag,
+    tags: state.tags,
   }));
   const addTag = async (_address: Address) => {
     const newTag = { address: _address, tag };
@@ -51,7 +52,7 @@ const AddTag = ({ address }: { address: Address }) => {
   return (
     <div
       ref={inputRef}
-      data-tip="Add tag on this address"
+      data-tip={tags.get(address) ? "Change this tag" : "Add tag on this address"}
       className="relative flex items-end tooltip tooltip-top tooltip-primary"
     >
       {showInput && (

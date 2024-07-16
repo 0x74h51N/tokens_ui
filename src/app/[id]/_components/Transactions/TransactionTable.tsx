@@ -35,7 +35,6 @@ export const TransactionsTable = ({
   const testnet = targetNetwork.testnet || false;
   const allTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
   const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
-  const [loading, setLoading] = useState<boolean>(true);
   const { setTags } = useGlobalState(state => ({
     setTags: state.setTags,
   }));
@@ -78,12 +77,10 @@ export const TransactionsTable = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       const tags = (await tokenVerify("tags")) as TagsTokenResponse;
       if (tags && tags.data) {
         setTags(tags.data.addressTags);
       }
-      setLoading(false);
     };
     fetchData();
   }, [deployedContractData]);
@@ -102,52 +99,48 @@ export const TransactionsTable = ({
               contractName={contractName}
               sortTransactions={setSortedTransactions}
               sortedTransactions={sortedTransactions}
-            />{" "}
-            {loading ? (
-              <span className="loading loading-spinner loading-lg"></span>
-            ) : (
-              <tbody className="overflow-y-auto">
-                {currentTransactions.map((tx, i) => {
-                  const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
-                  const timeMinedFormatted = formatTime(tx.timeStamp, false);
-                  const length = formatEther(tx.value).length;
-                  return (
-                    <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
-                      <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
-                        <div
-                          data-tip={timeMined}
-                          className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
-                        >
-                          {timeMinedFormatted}
-                        </div>
-                      </td>
-                      <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
-                        <TransactionHash hash={tx.hash} />
-                      </td>
-                      <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
-                      <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
-                        <Address address={tx.from} size="sm" />
-                      </td>
-                      <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-                        {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
-                      </td>
-                      <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
-                        <div
-                          data-tip={formatEther(tx.value)}
-                          className={`${
-                            length > 4 && "tooltip"
-                          } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
-                            length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
-                          }`}
-                        >
-                          {formatPrice(Number(formatEther(tx.value)))}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            )}
+            />
+            <tbody className="overflow-y-auto">
+              {currentTransactions.map((tx, i) => {
+                const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
+                const timeMinedFormatted = formatTime(tx.timeStamp, false);
+                const length = formatEther(tx.value).length;
+                return (
+                  <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
+                    <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
+                      <div
+                        data-tip={timeMined}
+                        className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
+                      >
+                        {timeMinedFormatted}
+                      </div>
+                    </td>
+                    <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
+                      <TransactionHash hash={tx.hash} />
+                    </td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
+                      <Address address={tx.from} size="sm" />
+                    </td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
+                      {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
+                    </td>
+                    <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
+                      <div
+                        data-tip={formatEther(tx.value)}
+                        className={`${
+                          length > 4 && "tooltip"
+                        } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
+                          length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
+                        }`}
+                      >
+                        {formatPrice(Number(formatEther(tx.value)))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         ) : (
           <div className="h-full flex items-center justify-center text-xl italic bg-base-100 max-md:min-h-40">

@@ -52,8 +52,6 @@ export const createTagsToken = async (data: TagsType, cookieName: "tags") => {
     const existingToken = await tokenVerify((cookieName = "tags"));
     const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
 
-    console.log("Existing Data before update:", existingData);
-
     data.addressTags.forEach(newTag => {
       const index = existingData.addressTags.findIndex(tag => tag.address === newTag.address);
       if (index !== -1) {
@@ -63,7 +61,7 @@ export const createTagsToken = async (data: TagsType, cookieName: "tags") => {
       }
     });
 
-    console.log("Updated Data after adding new tags:", existingData);
+    console.log("Updated tags");
 
     await PostHandler((data = existingData), (cookieName = cookieName));
   } catch (error) {

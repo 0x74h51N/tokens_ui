@@ -22,7 +22,6 @@ const AddTag = ({ address }: { address: Address }) => {
   };
 
   useEffect(() => setInputTag(tags.get(address.toLocaleLowerCase()) || ""), [tags]);
-  const cookieName = "tags";
   const handleClickOutside = (event: MouseEvent) => {
     if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
       showInput && setShowInput(false);

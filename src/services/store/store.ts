@@ -34,6 +34,7 @@ type GlobalState = {
   tags: Map<Address, string>;
   setTag: (address: Address, tag: string) => void;
   setTags: (newTags: TagType[]) => void;
+  deleteTag: (address: Address) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -87,5 +88,11 @@ export const useGlobalState = create<GlobalState>(set => ({
         tags.set(address, tag);
       });
       return { tags };
+    }),
+  deleteTag: address =>
+    set(state => {
+      const newTags = new Map(state.tags);
+      newTags.delete(address);
+      return { tags: newTags };
     }),
 }));

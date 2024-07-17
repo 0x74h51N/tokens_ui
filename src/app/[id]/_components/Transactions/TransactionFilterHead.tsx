@@ -4,8 +4,8 @@ import { ExtendedTransaction } from "~~/types/utils";
 import getMethodName from "~~/utils/getMethodName";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 import DateFilterTransactions from "../DateFilterTransactions";
-import { downloadCSV } from "~~/utils/downloadCSV";
 import { FunnelIcon } from "@heroicons/react/24/outline";
+import DownloadCSVButton from "./DownloadCSVButton";
 
 interface TransactionFilterHeadProps {
   setSortedTransactions: Dispatch<SetStateAction<ExtendedTransaction[]>>;
@@ -110,12 +110,7 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
                 <DateFilterTransactions col setDateRangeTxs={setDateRangeTxs} transactions={transactions} />
               </div>
             )}
-            <button
-              className="btn btn-primary btn-xs h-full rounded-md text-xs px-2 ml-2"
-              onClick={() => downloadCSV(filteredTransactions, "transactions")}
-            >
-              Download CSV
-            </button>
+            <DownloadCSVButton data={transactions} fileName={"transactions"} />
           </div>
         </div>
       )}

@@ -47,9 +47,11 @@ export const createFunctionToken = async (data: string[], contractAddress: Addre
   }
 };
 
-export const createTagsToken = async (data: TagsType, cookieName: "tags") => {
+export const createTagsToken = async (data: TagsType) => {
+  const cookieName = "tags";
+
   try {
-    const existingToken = await tokenVerify((cookieName = "tags"));
+    const existingToken = await tokenVerify(cookieName);
     const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
 
     data.addressTags.forEach(newTag => {
@@ -63,10 +65,25 @@ export const createTagsToken = async (data: TagsType, cookieName: "tags") => {
 
     console.log("Updated tags");
 
-    await PostHandler((data = existingData), (cookieName = cookieName));
+    await PostHandler((data = existingData), cookieName);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error in createTagsToken:", error.message);
+    }
+  }
+};
+export const removeTagFromCookie = async (data: TagsType) => {
+  const cookieName = "tags";
+  try {
+    const existingToken = await tokenVerify(cookieName);
+    const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
+
+    existingData.addressTags = existingData.addressTags.filter(tag => tag.address !== data.addressTags[0].address);
+
+    await PostHandler((data = existingData), cookieName);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error in removeTagFromCookie:", error.message);
     }
   }
 };

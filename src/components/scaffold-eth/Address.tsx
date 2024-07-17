@@ -70,7 +70,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
   }, [fetchedEnsAvatar]);
   useEffect(() => {
     if (checkSumAddress) {
-      const globalTag = tags.get(checkSumAddress);
+      const globalTag = tags.get(checkSumAddress.toLowerCase());
       globalTag ? setTag(globalTag) : setTag("");
     }
   }, [tags]);

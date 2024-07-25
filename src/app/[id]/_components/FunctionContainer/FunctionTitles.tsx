@@ -2,11 +2,12 @@ import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "r
 import SearchDropdown from "./SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
-import { createToken, tokenVerify } from "~~/utils/jwt-token";
+import { createFunctionToken, FunctionTokenResponse, tokenVerify } from "~~/utils/jwt-token";
+import { Address } from "viem";
 
 interface FunctionTitlesProps {
   initialFunctions: string[];
-  contractAddress: `0x${string}`;
+  contractAddress: Address;
   activeFunction: string;
   setActiveFunc: Dispatch<SetStateAction<string>>;
 }
@@ -22,14 +23,17 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const cookieFunctions = await tokenVerify(contractAddress);
+      const cookieFunctions = (await tokenVerify("function_titles", contractAddress)) as FunctionTokenResponse;
       if (cookieFunctions && cookieFunctions.data) {
-        setDisplayedFunctions(cookieFunctions.data.data);
+        setDisplayedFunctions(cookieFunctions.data as string[]);
+        if (cookieFunctions.data.length > 0) {
+          setActiveFunc(cookieFunctions.data[0]);
+        }
       }
       setLoading(false);
     };
     fetchData();
-  }, [contractAddress]);
+  }, [contractAddress, setActiveFunc]);
 
   useEffect(() => {
     if (!loading && initial) {
@@ -41,7 +45,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
       setInitial(false);
     }
     if (!loading) {
-      createToken(displayedFunctions, contractAddress);
+      createFunctionToken(displayedFunctions, contractAddress, "function_titles");
     }
   }, [displayedFunctions, loading, initial, contractAddress, setActiveFunc]);
 
@@ -100,7 +104,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
                 </div>
 
                 <div
-                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-24 before:content-[attr(data-tip)] before:right-6 before:left-auto before:transform-none"
+                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-32 before:right-6 before:left-auto before:transform-none"
                   data-tip={getCoolDisplayName(functionName)}
                 >
                   <button
@@ -119,7 +123,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
           )}
         </div>
         <div
-          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:right-0 before:left-auto before:transform-none"
+          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:-right-2 before:left-auto before:transform-none"
           style={{
             filter: "drop-shadow(.25em 0em 4px rgba(0, 0, 0, 0.5))",
           }}

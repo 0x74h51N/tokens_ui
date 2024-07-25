@@ -69,7 +69,6 @@ const TokenAnalytics = ({
     }
 
     setDataToUse(selectedData);
-    console.log(dateRangeTxs);
   }, [dateRangeTxs]);
 
   useEffect(() => {
@@ -127,7 +126,7 @@ const TokenAnalytics = ({
 
   useEffect(() => {
     if (chartData) {
-      setOptions(chartOptions(chartData, colors, maxDateTicks));
+      setOptions(chartOptions(chartData, colors, maxDateTicks, contractName));
     }
   }, [chartData, colors]);
 

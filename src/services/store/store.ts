@@ -2,6 +2,7 @@ import { Address } from "viem";
 import { create } from "zustand";
 import scaffoldConfig from "~~/scaffold.config";
 import { ExtendedTransaction } from "~~/types/utils";
+import { TagType } from "~~/utils/jwt-token";
 import { ChainWithAttributes } from "~~/utils/scaffold-eth";
 
 /**
@@ -30,6 +31,10 @@ type GlobalState = {
   setSessionStart: (isLogin: boolean) => void;
   sidebarOpen: { [contractName: string]: boolean };
   setSidebarOpen: (contractName: string, sidebarOpen: boolean) => void;
+  tags: Map<Address, string>;
+  setTag: (address: Address, tag: string) => void;
+  setTags: (newTags: TagType[]) => void;
+  deleteTag: (address: Address) => void;
 };
 
 export const useGlobalState = create<GlobalState>(set => ({
@@ -69,4 +74,25 @@ export const useGlobalState = create<GlobalState>(set => ({
         [contractName]: sidebarOpen,
       },
     })),
+  tags: new Map<Address, string>(),
+  setTag: (address, tag) =>
+    set(state => {
+      const newTags = new Map(state.tags);
+      newTags.set(address, tag);
+      return { tags: newTags };
+    }),
+  setTags: (newTags: TagType[]) =>
+    set(state => {
+      const tags = new Map(state.tags);
+      newTags.forEach(({ address, tag }) => {
+        tags.set(address, tag);
+      });
+      return { tags };
+    }),
+  deleteTag: address =>
+    set(state => {
+      const newTags = new Map(state.tags);
+      newTags.delete(address);
+      return { tags: newTags };
+    }),
 }));

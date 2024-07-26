@@ -12,6 +12,8 @@ import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { useGlobalState } from "~~/services/store/store";
+import Login from "~~/app/login/page";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
@@ -38,6 +40,7 @@ export const queryClient = new QueryClient({
 
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useTheme();
+  const isLoggedIn = useGlobalState(state => state.sessionStart);
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
 
@@ -53,7 +56,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           avatar={BlockieAvatar}
           theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
         >
-          <ScaffoldEthApp>{children}</ScaffoldEthApp>
+          {isLoggedIn ? <ScaffoldEthApp>{children}</ScaffoldEthApp> : <Login />}
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

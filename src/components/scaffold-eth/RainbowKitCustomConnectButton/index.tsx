@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 // @refresh reset
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
@@ -8,30 +7,14 @@ import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
-import { useAuth } from "~~/hooks/useAuth";
 
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
-  const { address, isConnected } = useAccount();
-  const setSessionStart = useGlobalState(state => state.setSessionStart);
-  const { handleLogin, handleLogout } = useAuth();
-
-  useEffect(() => {
-    if (isConnected && address) {
-      handleLogin(address);
-    } else {
-      setSessionStart(false);
-      handleLogout();
-    }
-  }, [isConnected, address]);
-
   return (
     <ConnectButton.Custom>
       {({ account, chain, openConnectModal, mounted }) => {
@@ -49,7 +32,6 @@ export const RainbowKitCustomConnectButton = () => {
                   </button>
                 );
               }
-
               if (chain.unsupported || chain.id !== targetNetwork.id) {
                 return <WrongNetworkDropdown />;
               }
@@ -65,7 +47,7 @@ export const RainbowKitCustomConnectButton = () => {
                     >
                       {chain.name === "BSC"
                         ? "BNB Smart Chain"
-                        : "Binance Smart Chain Testnet"
+                        : chain.name === "Binance Smart Chain Testnet"
                           ? "BSC Testnet"
                           : chain.name}
                     </span>

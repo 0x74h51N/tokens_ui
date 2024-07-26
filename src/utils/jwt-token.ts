@@ -101,7 +101,7 @@ const PostHandler = async (data: TagsType | string[], cookieName: string, contra
     const result = await response.json();
 
     if (response.ok) {
-      console.log(result.message);
+      console.log("Post Request Success");
     } else {
       console.error("Error setting token:", result.message);
     }

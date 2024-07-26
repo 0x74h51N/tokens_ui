@@ -1,24 +1,52 @@
-import { Address } from "viem";
 import { useGlobalState } from "~~/services/store/store";
+import { useSignMessage } from "wagmi";
+import { useState } from "react";
 
 export const useAuth = () => {
   const setSessionStart = useGlobalState(state => state.setSessionStart);
+  const { signMessageAsync } = useSignMessage();
+  const [isSigning, setIsSigning] = useState(false);
+  const validateSession = async () => {
+    try {
+      const response = await fetch("/api/validate-session");
+      if (response.ok) {
+        const data = await response.json();
+        return data.isValid;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.error("Error validating session:", error);
+      return false;
+    }
+  };
+  const handleLogin = async (address: string) => {
+    if (isSigning) return;
 
-  const handleLogin = async (address: Address) => {
-    const response = await fetch("/api/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ address }),
-    });
+    setIsSigning(true);
+    const message = `Please sign this message for a secure connection (no gas fee) with your wallet address: ${address}`;
+    try {
+      const signature = await signMessageAsync({ message });
 
-    if (response.ok) {
-      console.log("Logged in");
-      setSessionStart(true);
-    } else {
-      console.log("Login failed");
-      setSessionStart(false);
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ address, signature }),
+      });
+
+      if (response.ok) {
+        console.log("Logged in");
+        setSessionStart(true);
+      } else {
+        console.log("Login failed");
+        setSessionStart(false);
+      }
+    } catch (error) {
+      console.error("Error signing message:", error);
+    } finally {
+      setIsSigning(false);
     }
   };
 
@@ -34,5 +62,5 @@ export const useAuth = () => {
     }
   };
 
-  return { handleLogin, handleLogout };
+  return { handleLogin, handleLogout, validateSession };
 };

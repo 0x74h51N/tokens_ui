@@ -17,6 +17,7 @@ import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { getTargetNetworks } from "~~/utils/scaffold-eth";
 import { useAuth } from "~~/hooks/useAuth";
 import { useDisconnect } from "wagmi";
+import { useRouter } from "next/navigation";
 
 const allowedNetworks = getTargetNetworks();
 
@@ -34,6 +35,7 @@ export const AddressInfoDropdown = ({
   blockExplorerAddressLink,
 }: AddressInfoDropdownProps) => {
   const { disconnect } = useDisconnect();
+  const router = useRouter();
   const checkSumAddress = getAddress(address);
   const [addressCopied, setAddressCopied] = useState(false);
   const [selectingNetwork, setSelectingNetwork] = useState(false);
@@ -128,6 +130,7 @@ export const AddressInfoDropdown = ({
               onClick={() => {
                 handleLogout();
                 disconnect();
+                router.push("/login");
               }}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>

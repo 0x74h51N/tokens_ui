@@ -1,10 +1,11 @@
 import { useGlobalState } from "~~/services/store/store";
 import { useSignMessage } from "wagmi";
+import { useState } from "react";
 
 export const useAuth = () => {
   const setSessionStart = useGlobalState(state => state.setSessionStart);
   const { signMessageAsync } = useSignMessage();
-
+  const [isSigning, setIsSigning] = useState(false);
   const validateSession = async () => {
     try {
       const response = await fetch("/api/validate-session");
@@ -19,8 +20,10 @@ export const useAuth = () => {
       return false;
     }
   };
-
   const handleLogin = async (address: string) => {
+    if (isSigning) return;
+
+    setIsSigning(true);
     const message = `Please sign this message for a secure connection (no gas fee) with your wallet address: ${address}`;
     try {
       const signature = await signMessageAsync({ message });
@@ -42,6 +45,8 @@ export const useAuth = () => {
       }
     } catch (error) {
       console.error("Error signing message:", error);
+    } finally {
+      setIsSigning(false);
     }
   };
 

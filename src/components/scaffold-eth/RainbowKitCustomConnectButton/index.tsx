@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 // @refresh reset
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
@@ -8,41 +7,14 @@ import { AddressQRCodeModal } from "./AddressQRCodeModal";
 import { WrongNetworkDropdown } from "./WrongNetworkDropdown";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { useGlobalState } from "~~/services/store/store";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
-import { useAuth } from "~~/hooks/useAuth";
 
 /**
  * Custom Wagmi Connect Button (watch balance + custom design)
  */
 export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
-  const { address, isConnected } = useAccount();
-  const setSessionStart = useGlobalState(state => state.setSessionStart);
-  const { handleLogin, handleLogout, validateSession } = useAuth();
-
-  useEffect(() => {
-    const login = async () => {
-      try {
-        const validate = await validateSession();
-        if (!validate) {
-          if (isConnected && address) {
-            await handleLogin(address);
-          } else {
-            setSessionStart(false);
-            console.log("index logout excecuted");
-            handleLogout();
-          }
-        } else setSessionStart(true);
-      } catch (error) {
-        console.error("Error during login process:", error);
-      }
-    };
-
-    setTimeout(() => login(), 100);
-  }, [isConnected, address]);
   return (
     <ConnectButton.Custom>
       {({ account, chain, openConnectModal, mounted }) => {
@@ -60,7 +32,6 @@ export const RainbowKitCustomConnectButton = () => {
                   </button>
                 );
               }
-
               if (chain.unsupported || chain.id !== targetNetwork.id) {
                 return <WrongNetworkDropdown />;
               }

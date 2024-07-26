@@ -130,7 +130,7 @@ export const AddressInfoDropdown = ({
               onClick={() => {
                 handleLogout();
                 disconnect();
-                router.push("/login");
+                setTimeout(() => router.push("/login"), 400);
               }}
             >
               <ArrowLeftOnRectangleIcon className="h-6 w-4 ml-2 sm:ml-0" /> <span>Disconnect</span>

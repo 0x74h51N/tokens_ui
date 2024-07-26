@@ -24,7 +24,7 @@ const Login = () => {
         } else if (isConnected && address) {
           await handleLogin(address);
           setSessionStart(true);
-          router.push("/nnn");
+          router.push("/");
         }
       } catch (error) {
         console.error("Error during login process:", error);
@@ -32,7 +32,7 @@ const Login = () => {
     };
 
     login();
-  }, [isConnected, address, router, setSessionStart, validateSession, handleLogin]);
+  }, [isConnected, address, router]);
 
   useEffect(() => {
     if (openConnectModal) {

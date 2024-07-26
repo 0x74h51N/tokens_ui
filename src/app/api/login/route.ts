@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "iron-session";
-import { isAddress } from "viem";
+import { Address, isAddress, recoverMessageAddress, Signature } from "viem";
 import { SessionData, sessionOptions } from "~~/lib/sessionOptions";
 
 export async function POST(req: NextRequest) {
@@ -9,15 +9,24 @@ export async function POST(req: NextRequest) {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
 
   try {
-    const { address } = await req.json();
+    const { address, signature }: { address: Address; signature: Signature } = await req.json();
 
-    if (!address) {
-      console.error("Wallet address is required");
-      return NextResponse.json({ error: "Wallet address is required" }, { status: 400 });
+    if (!address || !signature) {
+      console.error("Address and signature are required");
+      return NextResponse.json({ error: "Address and signature are required" }, { status: 400 });
     }
+
     if (!isAddress(address)) {
       console.error("Invalid wallet address");
-      return NextResponse.json({ error: "Invalid wallet address" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid wallet address" }, { status: 408 });
+    }
+
+    const message = `Please sign this message for a secure connection (no gas fee) with your wallet address: ${address}`;
+    const recoveredAddress = await recoverMessageAddress({ message, signature });
+
+    if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+      console.error("Invalid signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     session.isLoggedIn = true;

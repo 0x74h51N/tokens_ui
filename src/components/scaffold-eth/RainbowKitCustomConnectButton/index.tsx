@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 // @refresh reset
 import { Balance } from "../Balance";
 import { AddressInfoDropdown } from "./AddressInfoDropdown";
@@ -21,17 +21,28 @@ export const RainbowKitCustomConnectButton = () => {
   const { targetNetwork } = useTargetNetwork();
   const { address, isConnected } = useAccount();
   const setSessionStart = useGlobalState(state => state.setSessionStart);
-  const { handleLogin, handleLogout } = useAuth();
+  const { handleLogin, handleLogout, validateSession } = useAuth();
 
   useEffect(() => {
-    if (isConnected && address) {
-      handleLogin(address);
-    } else {
-      setSessionStart(false);
-      handleLogout();
-    }
-  }, [isConnected, address]);
+    const login = async () => {
+      try {
+        const validate = await validateSession();
+        if (!validate) {
+          if (isConnected && address) {
+            await handleLogin(address);
+          } else {
+            setSessionStart(false);
+            console.log("index logout excecuted");
+            handleLogout();
+          }
+        } else setSessionStart(true);
+      } catch (error) {
+        console.error("Error during login process:", error);
+      }
+    };
 
+    setTimeout(() => login(), 100);
+  }, [isConnected, address]);
   return (
     <ConnectButton.Custom>
       {({ account, chain, openConnectModal, mounted }) => {
@@ -65,7 +76,7 @@ export const RainbowKitCustomConnectButton = () => {
                     >
                       {chain.name === "BSC"
                         ? "BNB Smart Chain"
-                        : "Binance Smart Chain Testnet"
+                        : chain.name === "Binance Smart Chain Testnet"
                           ? "BSC Testnet"
                           : chain.name}
                     </span>

@@ -9,7 +9,7 @@ const DownloadCSVButton = ({ data, fileName }: { data: ExtendedTransaction[]; fi
   const { tags } = useGlobalState(state => ({
     tags: state.tags,
   }));
-  console.log(tags);
+
   const downloadCSV = () => {
     const parseReadyTx = data.map(tx => {
       const formattedValue = formatEther(tx.value);

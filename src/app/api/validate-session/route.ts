@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getIronSession } from "iron-session";
 import { SessionData, sessionOptions } from "~~/lib/sessionOptions";
 

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "iron-session";
 import { SessionData, sessionOptions } from "~~/lib/sessionOptions";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);
 
   if (session.isLoggedIn && session.walletAddress) {

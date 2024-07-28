@@ -14,7 +14,7 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  const authHeader = req.headers.get("Authorization");
+  const authHeader = req.headers.get("authorization");
   if (authHeader && authHeader === `Bearer ${cronSecret}`) {
     console.log("Authorization successful");
     return res;

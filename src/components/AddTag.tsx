@@ -1,6 +1,7 @@
 import { PencilIcon } from "@heroicons/react/24/outline";
 import React, { useEffect, useRef, useState } from "react";
 import { Address } from "viem";
+import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import { createTagsToken, removeTagFromCookie } from "~~/utils/jwt-token";
 import { notification } from "~~/utils/scaffold-eth";
@@ -20,13 +21,9 @@ const AddTag = ({ address }: { address: Address }) => {
     setShowInput(!showInput);
     setError(false);
   };
+  useOutsideClick(inputRef, () => showInput && setShowInput(false));
 
   useEffect(() => setInputTag(tags.get(address.toLocaleLowerCase()) || ""), [tags]);
-  const handleClickOutside = (event: MouseEvent) => {
-    if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-      showInput && setShowInput(false);
-    }
-  };
 
   const addTag = async (_address: Address) => {
     const lowerCaseAddress = _address.toLowerCase();
@@ -45,17 +42,6 @@ const AddTag = ({ address }: { address: Address }) => {
     }
     setError(false);
   };
-
-  useEffect(() => {
-    if (showInput) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showInput]);
 
   const handleOnChange = (e: { target: { value: string } }) => {
     const newTag = e.target.value;

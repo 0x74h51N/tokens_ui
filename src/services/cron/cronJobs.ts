@@ -1,7 +1,9 @@
 const cronSecret = process.env.CRON_SECRET;
 const testnetAddresses = JSON.parse(process.env.TESTNET_CONTRACT_ADDRESS_LIST || "[]");
 const mainnetAddresses = JSON.parse(process.env.CONTRACT_ADDRESS_LIST || "[]");
-const baseUrl = process.env.VERCEL_URL || "https://tokens-ui.vercel.app";
+const vercelEnv = process.env.VERCEL_ENV;
+const vercelProject = process.env.VERCEL_GIT_REPO_SLUG;
+const baseUrl = vercelEnv && vercelProject ? `https://${vercelProject}.vercel.app` : "https://tokens-ui.vercel.app";
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
@@ -20,16 +22,23 @@ async function fetchTransactions(contractAddress: string, testnet: boolean) {
 }
 
 export async function runCronJobs() {
-  try {
-    for (const address of testnetAddresses) {
+  for (const address of testnetAddresses) {
+    try {
       await fetchTransactions(address, true);
+      console.log(`Successfully fetched transactions for testnet address: ${address}`);
+    } catch (error) {
+      console.error(`Error fetching transactions for testnet address ${address}:`, error);
     }
-    for (const address of mainnetAddresses) {
-      await fetchTransactions(address, false);
-    }
-
-    console.log("Cron jobs completed successfully");
-  } catch (error) {
-    console.error("Error running cron jobs:", error);
   }
+
+  for (const address of mainnetAddresses) {
+    try {
+      await fetchTransactions(address, false);
+      console.log(`Successfully fetched transactions for mainnet address: ${address}`);
+    } catch (error) {
+      console.error(`Error fetching transactions for mainnet address ${address}:`, error);
+    }
+  }
+
+  console.log("Cron jobs completed with some possible errors");
 }

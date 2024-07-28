@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import scaffoldConfig from "~~/scaffold.config";
 import { ExtendedTransaction } from "~~/types/utils";
 
 async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
@@ -75,14 +76,14 @@ export async function getBscTransactions(
   } else {
     const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
-    const revalidateTime = 29;
+    const revalidateTime = scaffoldConfig.pollingInterval / 1000;
 
     if (cleanCache === "true") {
       await revalidatePaths(url);
     }
 
     try {
-      transactions = await fetchData(url, revalidateTime);
+      transactions = await fetchData(url, revalidateTime - 1);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }

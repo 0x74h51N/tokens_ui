@@ -6,6 +6,7 @@ import { ContractName } from "~~/utils/scaffold-eth/contract";
 import DateFilterTransactions from "../DateFilterTransactions";
 import { FunnelIcon } from "@heroicons/react/24/outline";
 import DownloadCSVButton from "./DownloadCSVButton";
+import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 interface TransactionFilterHeadProps {
   setSortedTransactions: Dispatch<SetStateAction<ExtendedTransaction[]>>;
@@ -28,26 +29,10 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
   }));
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const handleClickOutside = (event: MouseEvent) => {
-    if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-      filter && setFilter(false);
-    }
-  };
-
   useEffect(() => {
     setDateRangeTxs(transactions);
   }, [transactions]);
-
-  useEffect(() => {
-    if (filter) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [filter]);
+  useOutsideClick(menuRef, () => filter && setFilter(false));
 
   useEffect(() => {
     if (dateRangeTxs) {

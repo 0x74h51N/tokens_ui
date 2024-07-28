@@ -3,7 +3,7 @@ import { getIronSession } from "iron-session";
 import { SessionData, sessionOptions } from "./lib/sessionOptions";
 import { cookies } from "next/headers";
 
-const publicPaths = ["/api/login", "/api/validate-session", "/api/logout", "/login", "/api/cron-jobs"];
+const publicPaths = ["/api/login", "/api/validate-session", "/api/logout", "/login"];
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const authHeader = req.headers.get("authorization");
-  if (authHeader && authHeader === `Bearer ${cronSecret}`) {
+  if (pathname === "/api/cron-jobs" && authHeader === `Bearer ${cronSecret}`) {
     console.log("Authorization successful");
     return res;
   }

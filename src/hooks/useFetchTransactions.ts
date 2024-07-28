@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Address } from "viem";
+import scaffoldConfig from "~~/scaffold.config";
 import { useGlobalState } from "~~/services/store/store";
 import { ExtendedTransaction } from "~~/types/utils";
 
@@ -54,7 +55,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         setTimeout(() => fetchTransactions(), 500);
         const interval = setInterval(() => {
           fetchTransactions();
-        }, 30000);
+        }, scaffoldConfig.pollingInterval);
 
         return () => clearInterval(interval);
       }

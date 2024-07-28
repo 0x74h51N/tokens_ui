@@ -37,7 +37,7 @@ export const wagmiConnectors = connectorsForWallets(
   ],
 
   {
-    appName: "scaffold-eth-2",
+    appName: "Novem Gold Blockchain",
     projectId: scaffoldConfig.walletConnectProjectId,
   },
 );

@@ -1,7 +1,7 @@
 const cronSecret = process.env.CRON_SECRET;
 const testnetAddresses = JSON.parse(process.env.TESTNET_CONTRACT_ADDRESS_LIST || "[]");
 const mainnetAddresses = JSON.parse(process.env.CONTRACT_ADDRESS_LIST || "[]");
-const baseUrl = process.env.VERCEL_URL || "https://tokens-ui.vercel.app";
+const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;

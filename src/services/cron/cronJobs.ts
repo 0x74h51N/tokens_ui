@@ -1,13 +1,18 @@
 "use server";
 import scaffoldConfig from "~~/scaffold.config";
+import fetch, { Response } from "node-fetch";
 
+interface FetchTransactionsResponse {
+  message: string;
+}
 const cronSecret = process.env.CRON_SECRET;
-const testnetAddresses = scaffoldConfig.testnetContractAddressList || "[]";
-const mainnetAddresses = scaffoldConfig.contractAddressList || "[]";
+const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
+const mainnetAddresses = scaffoldConfig.contractAddressList || [];
 const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
+
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
-  const response = await fetch(url, {
+  const response: Response = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${cronSecret}`,
@@ -18,7 +23,7 @@ async function fetchTransactions(contractAddress: string, testnet: boolean) {
     throw new Error(`Failed to fetch transactions for ${contractAddress}`);
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as FetchTransactionsResponse;
   return data.message;
 }
 
@@ -51,5 +56,6 @@ export async function runCronJobs() {
     }
   }
 
+  console.log(resultMessage);
   return resultMessage;
 }

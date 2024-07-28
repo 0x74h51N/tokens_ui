@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const authHeader = req.headers.get("authorization");
-  if (pathname === "/api/cron-jobs" && authHeader === `Bearer ${cronSecret}`) {
+  if (authHeader === `Bearer ${cronSecret}`) {
     console.log("Authorization successful");
     return res;
   }

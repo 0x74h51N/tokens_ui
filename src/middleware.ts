@@ -18,8 +18,6 @@ export async function middleware(req: NextRequest) {
   if (authHeader && authHeader === `Bearer ${cronSecret}`) {
     console.log("Authorization successful");
     return res;
-  } else {
-    console.log("Authorization failed");
   }
 
   const session = await getIronSession<SessionData>(cookies(), sessionOptions);

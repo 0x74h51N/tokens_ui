@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { runCronJobs } from "~~/services/cron/cronJobs";
 
 export async function GET() {

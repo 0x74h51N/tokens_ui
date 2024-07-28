@@ -1,6 +1,8 @@
+import scaffoldConfig from "~~/scaffold.config";
+
 const cronSecret = process.env.CRON_SECRET;
-const testnetAddresses = JSON.parse(process.env.TESTNET_CONTRACT_ADDRESS_LIST || "[]");
-const mainnetAddresses = JSON.parse(process.env.CONTRACT_ADDRESS_LIST || "[]");
+const testnetAddresses = scaffoldConfig.testnetContractAddressList || "[]";
+const mainnetAddresses = scaffoldConfig.contractAddressList || "[]";
 const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {

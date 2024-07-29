@@ -5,24 +5,27 @@ interface FetchTransactionsResponse {
   message: string;
 }
 const cronSecret = process.env.CRON_SECRET;
+const vercelByPass = process.env.VERCEL_BYPASS;
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
 const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
-
-console.log(`Base URL: ${baseUrl}`);
-console.log(`CRON_SECRET: ${cronSecret}`);
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
   console.log(`Fetching transactions from URL: ${url}`);
 
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${cronSecret}`,
+  };
+
+  if (vercelByPass) {
+    headers["x-vercel-protection-bypass"] = vercelByPass;
+  }
+
   const response = await fetch(url, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${cronSecret}`,
-    },
+    headers,
   });
-
   console.log(`Response status: ${response.status}`);
 
   if (!response.ok) {

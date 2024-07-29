@@ -9,7 +9,6 @@ const cronSecret = process.env.CRON_SECRET;
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
 const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
-console.log(`Base URL: ${baseUrl}`);
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;

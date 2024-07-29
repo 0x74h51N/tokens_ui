@@ -1,6 +1,5 @@
 "use server";
 import scaffoldConfig from "~~/scaffold.config";
-import fetch, { Response } from "node-fetch";
 
 interface FetchTransactionsResponse {
   message: string;
@@ -10,15 +9,21 @@ const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
 const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
 
+console.log(`Base URL: ${baseUrl}`);
+console.log(`CRON_SECRET: ${cronSecret}`);
+
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
   console.log(`Fetching transactions from URL: ${url}`);
-  const response: Response = await fetch(url, {
+
+  const response = await fetch(url, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${cronSecret}`,
     },
   });
+
+  console.log(`Response status: ${response.status}`);
 
   if (!response.ok) {
     console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
@@ -35,6 +40,7 @@ async function delay(ms: number) {
 }
 
 export async function runCronJobs() {
+  console.log("Cron job started");
   let resultMessage = "Cron jobs completed with the following results:\n";
 
   await delay(500);
@@ -70,5 +76,6 @@ export async function runCronJobs() {
   }
 
   console.log(resultMessage);
+  console.log("Cron job finished");
   return resultMessage;
 }

@@ -6,8 +6,8 @@ export async function GET() {
   try {
     const response = await runCronJobs();
     if (response) {
-      console.log("Cron job completed successfully");
-      return NextResponse.json({ message: "Cron jobs completed successfully" }, { status: 200 });
+      console.log("Cron job completed successfully: ", response);
+      return NextResponse.json({ message: "Cron jobs completed successfully: ", response }, { status: 200 });
     } else {
       console.log("No response from runCronJobs");
       return NextResponse.json({ error: "No response from runCronJobs" }, { status: 500 });

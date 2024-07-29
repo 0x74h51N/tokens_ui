@@ -1,9 +1,6 @@
 "use server";
 import scaffoldConfig from "~~/scaffold.config";
 
-interface FetchTransactionsResponse {
-  message: string;
-}
 const cronSecret = process.env.CRON_SECRET;
 const vercelByPass = process.env.VERCEL_BYPASS;
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
@@ -33,9 +30,8 @@ async function fetchTransactions(contractAddress: string, testnet: boolean) {
     throw new Error(`Failed to fetch transactions for ${contractAddress}`);
   }
 
-  const data = (await response.json()) as FetchTransactionsResponse;
-  console.log(`Transactions fetched for ${contractAddress}: ${JSON.stringify(data)}`);
-  return data.message;
+  console.log(`Transactions fetched for ${contractAddress}`);
+  return `Transactions fetched for ${contractAddress}`;
 }
 
 async function delay(ms: number) {
@@ -77,8 +73,6 @@ export async function runCronJobs() {
     }
     await delay(500);
   }
-
-  console.log(resultMessage);
   console.log("Cron job finished");
   return resultMessage;
 }

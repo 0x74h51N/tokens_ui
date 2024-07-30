@@ -9,11 +9,13 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const { pathname } = req.nextUrl;
 
-  const allowedOrigins = [process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"];
-  const origin = req.headers.get("origin");
+  if (pathname.startsWith("/api/")) {
+    const allowedOrigins = [process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000"];
+    const origin = req.headers.get("origin");
 
-  if (!origin || !allowedOrigins.includes(origin)) {
-    return new NextResponse("CORS policy error", { status: 403 });
+    if (!origin || !allowedOrigins.includes(origin)) {
+      return new NextResponse("CORS policy error", { status: 403 });
+    }
   }
 
   if (publicPaths.includes(pathname)) {

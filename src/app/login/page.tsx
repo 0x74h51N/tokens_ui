@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useRouter } from "next/navigation";
 import { useGlobalState } from "~~/services/store/store";
 import { useAuth } from "~~/hooks/useAuth";
@@ -10,6 +10,7 @@ import { useConnectModal } from "@rainbow-me/rainbowkit";
 const Login = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const setSessionStart = useGlobalState(state => state.setSessionStart);
   const { handleLogin, validateSession } = useAuth();
   const { openConnectModal } = useConnectModal();
@@ -22,9 +23,11 @@ const Login = () => {
           setSessionStart(true);
           router.push("/");
         } else if (isConnected && address) {
-          await handleLogin(address);
-          setSessionStart(true);
-          router.push("/");
+          const login = await handleLogin(address);
+          if (login?.isLogin) {
+            setSessionStart(true);
+            router.push("/");
+          } else disconnect();
         }
       } catch (error) {
         console.error("Error during login process:", error);

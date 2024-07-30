@@ -1,6 +1,7 @@
 import { useGlobalState } from "~~/services/store/store";
 import { useSignMessage } from "wagmi";
 import { useState } from "react";
+import { loginAction, logoutAction, validateSessionAction } from "~~/actions";
 
 export const useAuth = () => {
   const setSessionStart = useGlobalState(state => state.setSessionStart);
@@ -8,10 +9,9 @@ export const useAuth = () => {
   const [isSigning, setIsSigning] = useState(false);
   const validateSession = async () => {
     try {
-      const response = await fetch("/api/validate-session");
-      if (response.ok) {
-        const data = await response.json();
-        return data.isValid;
+      const response = await validateSessionAction();
+      if (response.isValid) {
+        return true;
       } else {
         return false;
       }
@@ -24,25 +24,21 @@ export const useAuth = () => {
     if (isSigning) return;
 
     setIsSigning(true);
-    const message = `Please sign this message for a secure connection (no gas fee) with your wallet address: ${address}`;
+    const message = `Please sign to connection of Novem Gold Tokens Interface with, ${address}`;
     try {
       const signature = await signMessageAsync({ message });
+      if (signature) {
+        const login = await loginAction(address, signature, message);
 
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ address, signature }),
-      });
-
-      if (response.ok) {
-        console.log("Logged in");
-        setSessionStart(true);
-      } else {
-        console.log("Login failed");
-        setSessionStart(false);
-      }
+        if (login?.error) {
+          console.log("Login failed: ", login.error);
+          setSessionStart(false);
+          return { isLogin: false };
+        } else {
+          console.log("Logged in");
+          return { isLogin: true };
+        }
+      } else return { isLogin: false };
     } catch (error) {
       console.error("Error signing message:", error);
     } finally {
@@ -51,11 +47,9 @@ export const useAuth = () => {
   };
 
   const handleLogout = async () => {
-    const response = await fetch("/api/logout", {
-      method: "POST",
-    });
-    if (response.ok) {
-      console.log("Logout");
+    const response = await logoutAction();
+    if (response?.success) {
+      console.log("Logout successful");
       setSessionStart(false);
     } else {
       console.log("Logout failed");

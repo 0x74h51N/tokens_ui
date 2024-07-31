@@ -51,7 +51,7 @@ export const ContractWriteMethods = ({
   }
 
   return (
-    <>
+    <div className="w-full">
       {functionsToDisplay.map(({ fn, inheritedFrom }, idx) => (
         <WriteOnlyFunctionForm
           abi={deployedContractData.abi as Abi}
@@ -64,6 +64,6 @@ export const ContractWriteMethods = ({
           debug={debug}
         />
       ))}
-    </>
+    </div>
   );
 };

@@ -7,9 +7,14 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const { pathname } = req.nextUrl;
   const cronSecret = process.env.CRON_SECRET;
+  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
 
-  if ("/login".includes(pathname)) {
-    return res;
+  if (session.isLoggedIn && pathname.startsWith("/login")) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
+  if (!session.isLoggedIn && !pathname.startsWith("/login")) {
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   const authHeader = req.headers.get("Authorization");
@@ -18,17 +23,9 @@ export async function middleware(req: NextRequest) {
     return res;
   }
 
-  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
-
-  if (!session.isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-
   return res;
 }
 
 export const config = {
-  matcher: [
-    "/((?!api/login|api/validate-session|api/logout|_next/static|_next/image|favicon.ico|logo.png|.*\\.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|.*\\.ico|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.svg).*)", "/api/:path*"],
 };

@@ -14,19 +14,44 @@ import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { useGlobalState } from "~~/services/store/store";
 import Login from "~~/app/login/page";
+import { useAuth } from "~~/hooks/useAuth";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
+  const { setSessionStart, sessionStart } = useGlobalState(state => ({
+    setSessionStart: state.setSessionStart,
+    sessionStart: state.sessionStart,
+  }));
+  const { validateSession } = useAuth();
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    const validate = async () => {
+      const sessionValid = await validateSession();
+      setSessionStart(sessionValid);
+      setIsPending(false);
+    };
+
+    validate();
+  }, []);
 
   return (
-    <>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="relative flex flex-col flex-1">{children}</main>
-        <Footer />
-      </div>
+    <div className="flex flex-col min-h-screen">
+      {sessionStart ? (
+        <>
+          <Header />
+          <main className="relative flex flex-col flex-1">{children}</main>
+        </>
+      ) : isPending ? (
+        <div className="flex items-center justify-center min-h-screen bg-base-300">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      ) : (
+        <Login />
+      )}
+      <Footer />
       <Toaster />
-    </>
+    </div>
   );
 };
 
@@ -40,7 +65,6 @@ export const queryClient = new QueryClient({
 
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useTheme();
-  const isLoggedIn = useGlobalState(state => state.sessionStart);
   const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
 
@@ -56,7 +80,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
           avatar={BlockieAvatar}
           theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
         >
-          {isLoggedIn ? <ScaffoldEthApp>{children}</ScaffoldEthApp> : <Login />}
+          <ScaffoldEthApp>{children}</ScaffoldEthApp>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

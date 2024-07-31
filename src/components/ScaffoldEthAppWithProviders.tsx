@@ -15,9 +15,11 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { useGlobalState } from "~~/services/store/store";
 import Login from "~~/app/login/page";
 import { useAuth } from "~~/hooks/useAuth";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
+  const { user, isLoading } = useUser();
   const { setSessionStart, sessionStart } = useGlobalState(state => ({
     setSessionStart: state.setSessionStart,
     sessionStart: state.sessionStart,
@@ -28,12 +30,16 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const validate = async () => {
       const sessionValid = await validateSession();
-      setSessionStart(sessionValid);
-      setIsPending(false);
+      if (sessionValid || user) {
+        setSessionStart(true);
+      } else {
+        setSessionStart(false);
+      }
+      setIsPending(isLoading);
     };
 
     validate();
-  }, []);
+  }, [user, isLoading, setSessionStart]);
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">

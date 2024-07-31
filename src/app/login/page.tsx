@@ -7,16 +7,18 @@ import { useGlobalState } from "~~/services/store/store";
 import { useAuth } from "~~/hooks/useAuth";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
+import SignBtn from "./_components/SignBtn";
 const Login = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-  const { setSessionStart, sessionStart } = useGlobalState(state => ({
+  const { setSessionStart } = useGlobalState(state => ({
     setSessionStart: state.setSessionStart,
     sessionStart: state.sessionStart,
   }));
   const { handleLogin, validateSession } = useAuth();
-  const { openConnectModal, connectModalOpen } = useConnectModal();
+  const { connectModalOpen, openConnectModal } = useConnectModal();
+  const [walletPending, setWalletPending] = useState(false);
   const [pending, setPending] = useState(false);
   useEffect(() => {
     const login = async () => {
@@ -39,13 +41,13 @@ const Login = () => {
         console.error("Error during login process:", error);
       }
     };
-    !connectModalOpen && !isConnected && setPending(false);
+    !connectModalOpen && !isConnected && setWalletPending(false);
     login();
   }, [isConnected, address, router, connectModalOpen]);
 
   return (
     <div className="flex flex-1 items-center justify-center bg-base-300">
-      <div className="flex max-md:flex-col md:gap-5 justify-end items-center relative max-xs:w-full bg-base-100 md:rounded-xl md:h-[320px] shadow-md overflow-y-hidden shadow-black">
+      <div className="flex max-md:flex-col md:gap-5 justify-end items-center relative max-xs:w-full bg-base-100 md:rounded-xl md:h-[350px] shadow-md overflow-y-hidden shadow-black">
         <div className="md:h-full sm:h-[200px] h-[150px] md:w-[500px] w-full relative">
           <Image
             fill
@@ -61,21 +63,25 @@ const Login = () => {
               Access and manage to NNN, NVM, NXAG and NPT tokens.
             </p>
           </div>
-          <button
-            className="btn btn-primary bg-[#091e39] hover:bg-[#ae8c34] text-white rounded-md"
-            onClick={() => {
-              setPending(true);
-              openConnectModal && openConnectModal();
-            }}
-          >
-            {pending ? (
-              <span className="loading loading-spinner loading-lg"></span>
-            ) : sessionStart ? (
-              "Wallet Connected"
-            ) : (
-              "Sign in with Wallet"
-            )}
-          </button>
+          <div className="flex flex-col gap-2">
+            <SignBtn
+              setPending={setPending}
+              pending={pending}
+              signText={"Sign in"}
+              signedText={"Logged in"}
+              onClick={() => {
+                window.location.href = "/api/auth/login";
+              }}
+            ></SignBtn>
+            <SignBtn
+              setPending={setWalletPending}
+              pending={walletPending}
+              signText={"Sign in with Wallet"}
+              signedText={"Wallet Connected"}
+              onClick={() => openConnectModal && openConnectModal()}
+              wallet
+            />
+          </div>
         </div>
       </div>
     </div>

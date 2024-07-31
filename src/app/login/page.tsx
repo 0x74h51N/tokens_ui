@@ -45,12 +45,12 @@ const Login = () => {
 
   return (
     <div className="flex flex-1 items-center justify-center bg-base-300">
-      <div className="flex max-md:flex-col md:gap-5 justify-end items-center relative min-w-[800px] max-sm:w-full bg-base-100 md:rounded-xl md:h-[320px] shadow-md overflow-y-hidden shadow-black">
-        <div className="md:h-full h-[150px] max-md:w-[450px] w-full relative">
+      <div className="flex max-md:flex-col md:gap-5 justify-end items-center relative max-xs:w-full bg-base-100 md:rounded-xl md:h-[320px] shadow-md overflow-y-hidden shadow-black">
+        <div className="md:h-full sm:h-[200px] h-[150px] md:w-[500px] w-full relative">
           <Image
             fill
             src="/thumbnail.jpg"
-            className="h-full w-full object-cover max-md:object-[-10px,-65px] shadow-lg shadow-black"
+            className="h-full w-full object-cover shadow-lg shadow-black"
             alt={"Novem Gold"}
           />
         </div>

@@ -45,24 +45,24 @@ const Login = () => {
 
   return (
     <div className="flex flex-1 items-center justify-center bg-base-300">
-      <div className="flex flex-row gap-5 justify-end items-center relative min-w-[800px] max-sm:min-w-[350px]  bg-base-100 rounded-xl h-[320px] shadow-md overflow-y-hidden shadow-black">
-        <div className="h-full w-[450px] relative">
+      <div className="flex max-md:flex-col md:gap-5 justify-end items-center relative min-w-[800px] max-sm:w-full bg-base-100 md:rounded-xl md:h-[320px] shadow-md overflow-y-hidden shadow-black">
+        <div className="md:h-full h-[150px] max-md:w-[450px] w-full relative">
           <Image
             fill
             src="/thumbnail.jpg"
-            className="h-full w-full object-cover shadow-lg shadow-black"
+            className="h-full w-full object-cover max-md:object-[-10px,-65px] shadow-lg shadow-black"
             alt={"Novem Gold"}
           />
         </div>
-        <div className="flex flex-col justify-between max-w-[400px] h-full p-7">
+        <div className="flex flex-col justify-between max-md:gap-10 max-w-[400px] md:h-full p-7 max-md:px-10">
           <div>
             <h1 className="text-2xl font-bold whitespace-pre-wrap card-title">{`Welcome to\nNovem Gold Blockchain\nDashboard`}</h1>
             <p className="text-md stat-title whitespace-break-spaces m-0">
-              Access and manage to NNN, NVM, NPT and NXAG tokens.
+              Access and manage to NNN, NVM, NXAG and NPT tokens.
             </p>
           </div>
           <button
-            className="btn btn-primary rounded-md"
+            className="btn btn-primary bg-[#091e39] hover:bg-[#ae8c34] text-white rounded-md"
             onClick={() => {
               setPending(true);
               openConnectModal && openConnectModal();

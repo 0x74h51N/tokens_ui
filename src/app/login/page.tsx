@@ -8,6 +8,8 @@ import { useAuth } from "~~/hooks/useAuth";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import SignBtn from "./_components/SignBtn";
+import AuthLogin from "~~/components/AuthLogin";
+
 const Login = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
@@ -19,7 +21,7 @@ const Login = () => {
   const { handleLogin, validateSession } = useAuth();
   const { connectModalOpen, openConnectModal } = useConnectModal();
   const [walletPending, setWalletPending] = useState(false);
-  const [pending, setPending] = useState(false);
+
   useEffect(() => {
     const login = async () => {
       try {
@@ -34,7 +36,7 @@ const Login = () => {
             router.push("/");
           } else {
             disconnect();
-            setPending(false);
+            setWalletPending(false);
           }
         }
       } catch (error) {
@@ -64,15 +66,7 @@ const Login = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <SignBtn
-              setPending={setPending}
-              pending={pending}
-              signText={"Sign in"}
-              signedText={"Logged in"}
-              onClick={() => {
-                window.location.href = "/api/auth/login";
-              }}
-            ></SignBtn>
+            <AuthLogin />
             <SignBtn
               setPending={setWalletPending}
               pending={walletPending}

@@ -29,15 +29,9 @@ const SignBtn = ({ setPending, pending, signText, signedText, onClick, wallet = 
       {pending ? (
         <span className="loading loading-spinner loading-lg"></span>
       ) : (
-        <>
-          <span className="text-start">{sessionStart ? signedText : signText}</span>
-          {wallet ? (
-            <WalletIcon className="h-8 w-6 ml-2 sm:ml-0" />
-          ) : (
-            <UserCircleIcon className="h-8 w-6 ml-2 sm:ml-0" />
-          )}
-        </>
+        <span className="text-start">{sessionStart ? signedText : signText}</span>
       )}
+      {wallet ? <WalletIcon className="h-8 w-6 ml-2 sm:ml-0" /> : <UserCircleIcon className="h-8 w-6 ml-2 sm:ml-0" />}
     </button>
   );
 };

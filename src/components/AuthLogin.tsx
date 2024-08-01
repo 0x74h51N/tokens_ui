@@ -1,74 +1,83 @@
 import React, { useEffect, useState } from "react";
-import Modal from "react-modal";
 import { Session } from "@auth0/nextjs-auth0";
 import { useGlobalState } from "~~/services/store/store";
 import SignBtn from "~~/app/login/_components/SignBtn";
 
 const AuthLogin = () => {
+  const [pending, setPending] = useState(false);
   const { setSessionStart } = useGlobalState(state => ({
     setSessionStart: state.setSessionStart,
   }));
   const [session, setSession] = useState<Session | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  useEffect(() => {
-    Modal.setAppElement("#__next");
-  }, []);
+  const [authWindow, setAuthWindow] = useState<Window | null>(null);
   const handleAuth = () => {
-    setIsModalOpen(true);
+    const width = 600;
+    const height = 600;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    const newAuthWindow = window.open(
+      "/api/auth/login",
+      "AuthWindow",
+      `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`,
+    );
+    setAuthWindow(newAuthWindow);
   };
-
   useEffect(() => {
-    const authWindowInterval = setInterval(async () => {
-      try {
-        if (isModalOpen) {
+    if (authWindow) {
+      const authWindowInterval = setInterval(async () => {
+        if (authWindow.closed) {
+          clearInterval(authWindowInterval);
+          clearTimeout(authWindowTimeout);
+          setPending(false);
+          setAuthWindow(null);
+          return;
+        }
+
+        try {
           const response = await fetch("/api/auth/me");
           if (response.ok) {
             const session = await response.json();
             setSession(session);
             clearInterval(authWindowInterval);
+            clearTimeout(authWindowTimeout);
           }
+        } catch (error) {
+          console.error("Error checking session:", error);
         }
-      } catch (error) {
-        console.error("Error checking session:", error);
-      }
-    }, 1500);
+      }, 1500);
 
-    const authWindowTimeout = setTimeout(() => {
-      setIsModalOpen(false);
-    }, 20000);
+      const authWindowTimeout = setTimeout(() => {
+        if (authWindow && !authWindow.closed) {
+          authWindow.close();
+          setPending(false);
+          setAuthWindow(null);
+        }
+      }, 20000);
 
-    return () => {
-      clearInterval(authWindowInterval);
-      clearTimeout(authWindowTimeout);
-    };
-  }, [isModalOpen]);
+      return () => {
+        clearInterval(authWindowInterval);
+        clearTimeout(authWindowTimeout);
+      };
+    }
+  }, [authWindow]);
 
   useEffect(() => {
     if (session) {
-      setIsModalOpen(false);
-
+      authWindow?.close();
+      setPending(false);
+      setAuthWindow(null);
       setSessionStart(true);
       window.location.reload();
     }
-  }, [session]);
-
+  }, [session, authWindow]);
   return (
-    <>
-      <SignBtn signText={"Sign in with Auth0"} signedText={"Logged in"} onClick={handleAuth} />
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={() => setIsModalOpen(false)}
-        className="p-10 bg-base-300 w-[400px] h-[450px] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-        overlayClassName="fixed inset-0 bg-base-300  bg-opacity-75"
-        contentLabel="Auth0 Login"
-      >
-        <iframe
-          src="/api/auth/login"
-          style={{ width: "100%", height: "100%", border: "none" }}
-          title="Auth0 Login"
-        ></iframe>
-      </Modal>
-    </>
+    <SignBtn
+      setPending={setPending}
+      pending={pending}
+      signText={"Sign in with Auth0"}
+      signedText={"Logged in"}
+      onClick={handleAuth}
+    />
   );
 };
 

@@ -8,8 +8,11 @@ import { useAuth } from "~~/hooks/useAuth";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import SignBtn from "./_components/SignBtn";
-import AuthLogin from "~~/components/AuthLogin";
+import dynamic from "next/dynamic";
 
+const AuthLogin = dynamic(() => import("~~/components/AuthLogin"), {
+  ssr: false,
+});
 const Login = () => {
   const router = useRouter();
   const { address, isConnected } = useAccount();
@@ -66,7 +69,9 @@ const Login = () => {
             </p>
           </div>
           <div className="flex flex-col gap-2">
-            <AuthLogin />
+            <div id="__next">
+              <AuthLogin />
+            </div>
             <SignBtn
               setPending={setWalletPending}
               pending={walletPending}

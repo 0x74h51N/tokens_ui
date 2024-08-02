@@ -22,6 +22,7 @@ async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const response = await fetch(url, {
     method: "GET",
     headers,
+    cache: "no-store",
   });
   console.log(`Response status: ${response.status}`);
 

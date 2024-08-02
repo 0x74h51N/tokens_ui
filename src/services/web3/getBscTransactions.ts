@@ -5,7 +5,6 @@ import { ExtendedTransaction } from "~~/types/utils";
 async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
   const response = await fetch(url, {
     next: { revalidate: revalidateTime },
-    cache: "no-store",
   });
   const data = await response.json();
 
@@ -97,6 +96,7 @@ export async function getBscTransactions(
 async function revalidatePaths(path: string) {
   try {
     await revalidatePath(path);
+    console.log(`Path revalidated: ${path}`);
   } catch (error) {
     console.error("Error revalidating path:", error);
     throw error;

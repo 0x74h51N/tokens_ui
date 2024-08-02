@@ -5,6 +5,7 @@ import { ExtendedTransaction } from "~~/types/utils";
 async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
   const response = await fetch(url, {
     next: { revalidate: revalidateTime },
+    cache: "no-store",
   });
   const data = await response.json();
 

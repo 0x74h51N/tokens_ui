@@ -1,6 +1,5 @@
 import { UserProfile } from "@auth0/nextjs-auth0/client";
 import { ArrowLeftOnRectangleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
 import React, { ReactNode, useEffect, useRef, useState } from "react";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { useRouter } from "next/navigation";

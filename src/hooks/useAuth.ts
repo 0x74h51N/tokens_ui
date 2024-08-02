@@ -20,7 +20,7 @@ export const useAuth = () => {
       return false;
     }
   };
-  const handleLogin = async (address: string) => {
+  const handleLogin = async (address: string): Promise<{ isLogin: boolean } | undefined> => {
     if (isSigning) return;
 
     setIsSigning(true);
@@ -41,6 +41,7 @@ export const useAuth = () => {
       } else return { isLogin: false };
     } catch (error) {
       console.error("Error signing message:", error);
+      return { isLogin: false };
     } finally {
       setIsSigning(false);
     }
@@ -51,8 +52,10 @@ export const useAuth = () => {
     if (response?.success) {
       console.log("Logout successful");
       setSessionStart(false);
+      return;
     } else {
       console.log("Logout failed");
+      return;
     }
   };
 

@@ -10,17 +10,25 @@ const AuthLogin = () => {
   }));
   const [session, setSession] = useState<Session | null>(null);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(
+    navigator.userAgent,
+  );
+
   const handleAuth = () => {
-    const width = 600;
+    const width = 410;
     const height = 600;
     const left = (window.innerWidth - width) / 2;
     const top = (window.innerHeight - height) / 2;
-    const newAuthWindow = window.open(
-      "/api/auth/login",
-      "AuthWindow",
-      `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`,
-    );
-    setAuthWindow(newAuthWindow);
+    if (isMobile) {
+      window.location.href = "/api/auth/login";
+    } else {
+      const newAuthWindow = window.open(
+        "/api/auth/login",
+        "AuthWindow",
+        `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=no,status=no,menubar=no,toolbar=no,location=no`,
+      );
+      setAuthWindow(newAuthWindow);
+    }
   };
   useEffect(() => {
     if (authWindow) {
@@ -52,7 +60,7 @@ const AuthLogin = () => {
           setPending(false);
           setAuthWindow(null);
         }
-      }, 20000);
+      }, 50000);
 
       return () => {
         clearInterval(authWindowInterval);

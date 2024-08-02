@@ -8,7 +8,7 @@ import { useAuth } from "~~/hooks/useAuth";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import SignBtn from "./_components/SignBtn";
-import AuthLogin from "~~/components/AuthLogin";
+import AuthLogin from "~~/app/login/_components/AuthLogin";
 
 const Login = () => {
   const router = useRouter();
@@ -16,7 +16,6 @@ const Login = () => {
   const { disconnect } = useDisconnect();
   const { setSessionStart } = useGlobalState(state => ({
     setSessionStart: state.setSessionStart,
-    sessionStart: state.sessionStart,
   }));
   const { handleLogin, validateSession } = useAuth();
   const { connectModalOpen, openConnectModal } = useConnectModal();

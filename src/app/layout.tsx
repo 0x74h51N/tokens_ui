@@ -4,9 +4,10 @@ import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+
 export const metadata = getMetadata({
-  title: "Novem Gold Tokens UI",
-  description: "Novem Gold Tokens Minting & Burning UI",
+  title: "BSC Tokens UI Demo",
+  description: "Tokens Functions & Analytics Demo - 0x74h51N",
   imageRelativePath: "/thumbnail.jpg",
 });
 

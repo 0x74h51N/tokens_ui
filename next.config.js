@@ -30,25 +30,6 @@ const nextConfig = {
       },
     ];
   },
-  images: {
-    domains: [
-      "avatars.githubusercontent.com",
-      "lh3.googleusercontent.com",
-      "lh4.googleusercontent.com",
-      "appleid.apple.com",
-      "graph.microsoft.com",
-    ],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.googleusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.microsoft.com",
-      },
-    ],
-  },
   env: {
     AUTH0_BASE_URL: process.env.VERCEL_URL || "http://localhost:3000",
   },

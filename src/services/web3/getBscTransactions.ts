@@ -80,7 +80,6 @@ export async function getBscTransactions(
   } else {
     const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
-
     try {
       transactions = await fetchData(url);
     } catch (error) {

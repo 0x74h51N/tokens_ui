@@ -1,4 +1,3 @@
-import { revalidatePath } from "next/cache";
 import { ExtendedTransaction } from "~~/types/utils";
 
 async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
@@ -26,7 +25,6 @@ export async function getBscTransactions(
   contractAddress: string,
   testnet: string,
   all: string,
-  cleanCache: string,
 ): Promise<ExtendedTransaction[]> {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -35,9 +33,6 @@ export async function getBscTransactions(
   const apiKey = process.env.BSC_SCAN_API_KEY;
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   let transactions: ExtendedTransaction[] = [];
-  if (cleanCache === "true") {
-    await revalidatePath("/");
-  }
   if (all === "true") {
     const maxOffset = 450;
     const revalidateTime = 60 * 60 * 24;

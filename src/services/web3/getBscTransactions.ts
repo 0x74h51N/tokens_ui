@@ -1,3 +1,4 @@
+"use server";
 import { ExtendedTransaction } from "~~/types/utils";
 
 async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
@@ -20,7 +21,9 @@ async function fetchData(url: string, revalidateTime?: number): Promise<Extended
     throw new Error(data.message || "Failed to fetch data");
   }
 }
-
+async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 export async function getBscTransactions(
   contractAddress: string,
   testnet: string,
@@ -34,8 +37,8 @@ export async function getBscTransactions(
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   let transactions: ExtendedTransaction[] = [];
   if (all === "true") {
-    const maxOffset = 450;
-    const revalidateTime = 60 * 60 * 24;
+    const maxOffset = 350;
+    const revalidateTime = 86200;
     let page = 1;
     const maxRetries = 5;
 
@@ -46,6 +49,7 @@ export async function getBscTransactions(
       while (!success && retries < maxRetries) {
         try {
           const fetchedTransactions = await fetchData(url, revalidateTime);
+          await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
           if (fetchedTransactions.length === 0) {

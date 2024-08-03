@@ -1,4 +1,5 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import scaffoldConfig from "~~/scaffold.config";
 
 const cronSecret = process.env.CRON_SECRET;
@@ -41,7 +42,7 @@ async function delay(ms: number) {
 
 export async function runCronJobs() {
   console.log("Cron job started");
-
+  revalidatePath("/api/fetch-transactions");
   let resultMessage = "Cron jobs completed with the following results:\n";
 
   await delay(500);

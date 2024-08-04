@@ -1,4 +1,5 @@
 "use server";
+import { Address } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
 
 async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
@@ -25,7 +26,7 @@ async function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 export async function getBscTransactions(
-  contractAddress: string,
+  contractAddress: Address,
   testnet: string,
   all: string,
 ): Promise<ExtendedTransaction[]> {

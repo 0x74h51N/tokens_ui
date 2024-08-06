@@ -12,6 +12,14 @@ export async function middleware(req: NextRequest) {
   const auth0Session = await getSession(req, res);
   const isLoggedIn = session.isLoggedIn || auth0Session?.user;
 
+  if (pathname.startsWith("/api/cron-jobs")) {
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader === `Bearer ${cronSecret}`) {
+      console.log("Authorization successful for cron job");
+      return res;
+    }
+  }
+
   if (isLoggedIn && pathname.startsWith("/login")) {
     return NextResponse.redirect(new URL("/", req.url));
   }
@@ -20,12 +28,6 @@ export async function middleware(req: NextRequest) {
   }
   if (!isLoggedIn && !pathname.startsWith("/login") && !pathname.startsWith("/api/auth")) {
     return NextResponse.redirect(new URL("/login", req.url));
-  }
-
-  const authHeader = req.headers.get("Authorization");
-  if (authHeader === `Bearer ${cronSecret}`) {
-    console.log("Authorization successful");
-    return res;
   }
 
   return res;

@@ -1,11 +1,19 @@
-import { revalidatePath } from "next/cache";
-import scaffoldConfig from "~~/scaffold.config";
+"use server";
+import { Address } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
 
-async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
-  const response = await fetch(url, {
-    next: { revalidate: revalidateTime },
-  });
+async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
+  const response = await fetch(
+    url,
+    revalidateTime
+      ? {
+          next: { revalidate: revalidateTime },
+        }
+      : {
+          method: "GET",
+          cache: "no-store",
+        },
+  );
   const data = await response.json();
 
   if (data.status === "1") {
@@ -14,12 +22,13 @@ async function fetchData(url: string, revalidateTime: number): Promise<ExtendedT
     throw new Error(data.message || "Failed to fetch data");
   }
 }
-
+async function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 export async function getBscTransactions(
-  contractAddress: string,
+  contractAddress: Address,
   testnet: string,
   all: string,
-  cleanCache: string,
 ): Promise<ExtendedTransaction[]> {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -28,25 +37,20 @@ export async function getBscTransactions(
   const apiKey = process.env.BSC_SCAN_API_KEY;
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   let transactions: ExtendedTransaction[] = [];
-
   if (all === "true") {
-    const maxOffset = 450;
-    const revalidateTime = 60 * 60 * 24;
+    const maxOffset = 350;
+    const revalidateTime = 86200;
     let page = 1;
     const maxRetries = 5;
 
     while (true) {
       const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=${page}&offset=${maxOffset}&sort=desc&apikey=${apiKey}`;
-
-      if (cleanCache === "true") {
-        await revalidatePaths(url);
-      }
-
       let success = false;
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
           const fetchedTransactions = await fetchData(url, revalidateTime);
+          await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
           if (fetchedTransactions.length === 0) {
@@ -76,14 +80,8 @@ export async function getBscTransactions(
   } else {
     const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
-    const revalidateTime = scaffoldConfig.pollingInterval / 1000;
-
-    if (cleanCache === "true") {
-      await revalidatePaths(url);
-    }
-
     try {
-      transactions = await fetchData(url, revalidateTime - 1);
+      transactions = await fetchData(url);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }
@@ -91,13 +89,4 @@ export async function getBscTransactions(
 
   console.log(`Total transactions fetched: ${transactions.length}`);
   return transactions;
-}
-
-async function revalidatePaths(path: string) {
-  try {
-    await revalidatePath(path);
-  } catch (error) {
-    console.error("Error revalidating path:", error);
-    throw error;
-  }
 }

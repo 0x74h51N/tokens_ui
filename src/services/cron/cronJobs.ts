@@ -1,14 +1,15 @@
 "use server";
+import { revalidatePath } from "next/cache";
 import scaffoldConfig from "~~/scaffold.config";
 
 const cronSecret = process.env.CRON_SECRET;
 const vercelByPass = process.env.VERCEL_BYPASS;
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
-const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://tokens-ui.vercel.app";
+const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000/";
 
 async function fetchTransactions(contractAddress: string, testnet: boolean) {
-  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&cleanCache=true`;
+  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true`;
   console.log(`Fetching transactions from URL: ${url}`);
 
   const headers: Record<string, string> = {
@@ -22,6 +23,7 @@ async function fetchTransactions(contractAddress: string, testnet: boolean) {
   const response = await fetch(url, {
     method: "GET",
     headers,
+    cache: "no-store",
   });
   console.log(`Response status: ${response.status}`);
 
@@ -40,6 +42,7 @@ async function delay(ms: number) {
 
 export async function runCronJobs() {
   console.log("Cron job started");
+  revalidatePath("/api/fetch-transactions");
   let resultMessage = "Cron jobs completed with the following results:\n";
 
   await delay(500);

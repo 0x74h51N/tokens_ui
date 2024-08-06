@@ -22,7 +22,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
     setPending(true);
     setError(null);
 
-    const url = `/api/fetch-transactions?contractaddress=${address}&testnet=${testnet}&allTx=${all}&cleanCache=false`;
+    const url = `/api/fetch-transactions?contractaddress=${address}&testnet=${testnet}&allTx=${all}`;
 
     try {
       const response = await fetch(url);

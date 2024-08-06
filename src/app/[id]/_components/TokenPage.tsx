@@ -12,11 +12,13 @@ interface TokenPageProps {
 }
 
 /**
- * FunctionContainer component
+ * This component integrates the TokenUI and SideBar components, manages the opening and closing of the sidebar,
+ * and uses useDeployedContractInfo hook to fetch the ABI and deployedContractData for the relevant contract,
+ * passing this data to TokenUI.
+ *
  * @param contractName - Contract name should be same as deployed contract name.
- * @returns
+ * @returns JSX.Element
  */
-
 const TokenPage = ({ contractName }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
   const sidebarOpenState = useGlobalState(state => state.sidebarOpen[contractName]);
@@ -44,6 +46,7 @@ const TokenPage = ({ contractName }: TokenPageProps) => {
   }
   return (
     <div className="flex md:flex-row flex-col min-h-[95vh]">
+      {/* Sidebar component with toggle button */}
       <div
         className={`transition-transform duration-500 z-50 ${isSidebarOpen ? "md:translate-x-0 translate-y-0" : "md:-translate-x-full max-md:-translate-y-full"} ease-in-out relative`}
       >

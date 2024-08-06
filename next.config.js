@@ -30,6 +30,9 @@ const nextConfig = {
       },
     ];
   },
+  env: {
+    AUTH0_BASE_URL: process.env.VERCEL_URL || "http://localhost:3000",
+  },
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",
   },

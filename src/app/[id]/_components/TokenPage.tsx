@@ -1,87 +1,81 @@
 "use client";
 
-import { useReducer } from "react";
-import SideBar from "../../../components/SideBar";
-import FunctionContainer from "./FunctionContainer/FunctionContainer";
-import { TransactionsTable } from "./Transactions/TransactionTable";
-import { useDeployedContractInfo, useTargetNetwork } from "~~/hooks/scaffold-eth";
-import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
+import { useEffect, useReducer } from "react";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+import { ContractName } from "~~/utils/scaffold-eth/contract";
+import SideBar from "~~/components/SideBar";
+import { useGlobalState } from "~~/services/store/store";
+import TokenUI from "./TokenUi";
 
 interface TokenPageProps {
   contractName: ContractName;
 }
 
 /**
- * FunctionContainer component
+ * This component integrates the TokenUI and SideBar components, manages the opening and closing of the sidebar,
+ * and uses useDeployedContractInfo hook to fetch the ABI and deployedContractData for the relevant contract,
+ * passing this data to TokenUI.
+ *
  * @param contractName - Contract name should be same as deployed contract name.
- * @returns
+ * @returns JSX.Element
  */
-
 const TokenPage = ({ contractName }: TokenPageProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const { targetNetwork } = useTargetNetwork();
-  const initialFunctions = ["mint", "burn"];
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName) as {
-    data: Contract<ContractName>;
-    isLoading: boolean;
+  const sidebarOpenState = useGlobalState(state => state.sidebarOpen[contractName]);
+  const setSidebarOpen = useGlobalState(state => state.setSidebarOpen);
+  const isSidebarOpen = sidebarOpenState !== undefined ? sidebarOpenState : true;
+
+  const toggleSidebar = () => {
+    setSidebarOpen(contractName, !isSidebarOpen);
   };
-  const bscUrl =
-    deployedContractData &&
-    `https://${targetNetwork.testnet ? "testnet." : ""}bscscan.com/token/${deployedContractData.address}`;
-  if (deployedContractLoading) {
+
+  useEffect(() => {
+    if (sidebarOpenState === undefined) {
+      setSidebarOpen(contractName, true);
+    }
+  }, [contractName, sidebarOpenState, setSidebarOpen]);
+
+  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName);
+
+  if (deployedContractLoading || !deployedContractData) {
     return (
-      <div className="mt-[15rem] w-full min-h-full flex flex-col justify-center items-center">
+      <div className="w-full h-full flex justify-center items-center">
         <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
-
-  if (!deployedContractData) {
-    return null;
-  }
   return (
-    <div className="flex md:flex-row flex-col flex-1">
-      <SideBar
-        contractName={contractName}
-        refreshDisplayVariables={refreshDisplayVariables}
-        deployedContractData={deployedContractData}
-      />
-      <div className={`2xl:px-4 lg:px-2 px-0 lg:gap-10 2xl:gap-12 my-0 mt-2 flex-1`}>
-        <div className="h-full grid grid-cols-1 xl:grid-cols-7 2xl:grid-cols-9 gap-3 lg:gap-5 2xl:gap-10">
-          <div className="col-span-1  xl:col-span-4 2xl:col-span-5 flex flex-col">
-            <div className="flex flex-1"></div>
-            <div className="w-full flex flex-col relative z-50">
-              <FunctionContainer
-                functionNames={initialFunctions}
-                contractName={contractName}
-                deployedContractData={deployedContractData}
-                onChange={triggerRefreshDisplayVariables}
-              />
-            </div>
+    <div className="flex md:flex-row flex-col min-h-[95vh]">
+      {/* Sidebar component with toggle button */}
+      <div
+        className={`transition-transform duration-500 z-50 ${isSidebarOpen ? "md:translate-x-0 translate-y-0" : "md:-translate-x-full max-md:-translate-y-full"} ease-in-out relative`}
+      >
+        <button
+          className={`absolute btn btn-secondary md:top-12 text-start p-2 md:bg-base-300 bg-base-100 w-10 h-10 transition-all duration-500 ease-in-out before:max-md:hidden tooltip md:tooltip-secondary before:z-50 tooltip-right
+            ${isSidebarOpen ? "md:right-0 max-md:right-10 max-md:bottom-10 md:rounded-r-full max-md:rounded-b-full pt-2" : "md:-right-10 max-md:-bottom-10 max-md:right-10 md:rounded-l-full max-md:rounded-t-full md:pt-1 max-md:pl-3 pt-3"}`}
+          onClick={toggleSidebar}
+          data-tip={isSidebarOpen ? "Close" : contractName.toUpperCase() + " Info"}
+        >
+          <div
+            className={`transition-all duration-500 ease-in-out ${isSidebarOpen ? "md:rotate-180 max-md:-rotate-90" : "max-md:rotate-90"}`}
+          >
+            {"➥"}
           </div>
-          <div className="col-span-1  xl:col-span-3 2xl:col-span-4 flex flex-col relative h-full mt-2">
-            <h1 className="w-full lg:text-3xl text-xl bg-base-300 p-4 pl-4 antialiased font-semibold rounded-t-xl m-0">
-              <span className="relative">
-                <a
-                  data-tip={bscUrl}
-                  className="hover:text-amber-400 tooltip tooltip-info before:truncate"
-                  target="_blank"
-                  href={bscUrl}
-                >
-                  {contractName.toUpperCase()}
-                </a>
-                {" Transactions"}
-                <span
-                  data-tip="Contract transactions (max 30s delay)"
-                  className="absolute tooltip tooltip-info tooltip-right top-0 -right-2 text-[0.35em] text-xs cursor-help text-center before:max-w-[120px] before:top-4"
-                >
-                  ?
-                </span>
-              </span>
-            </h1>
-            <TransactionsTable deployedContractData={deployedContractData} contractName={contractName} />
-          </div>
-        </div>
+        </button>
+        <SideBar
+          contractName={contractName}
+          refreshDisplayVariables={refreshDisplayVariables}
+          deployedContractData={deployedContractData}
+        />
+      </div>
+      <div
+        className={`flex w-full transition-all duration-500 ease-in-out ${isSidebarOpen ? "max-md:-mt-6" : "lg:-ml-[260px] md:-ml-[195px] max-md:-mt-[580px]"}`}
+      >
+        <TokenUI
+          deployedContractData={deployedContractData}
+          contractName={contractName}
+          trigger={triggerRefreshDisplayVariables}
+        />
       </div>
     </div>
   );

@@ -12,19 +12,52 @@ import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { useGlobalState } from "~~/services/store/store";
+import Login from "~~/app/login/page";
+import { useAuth } from "~~/hooks/useAuth";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
+  const { user, isLoading } = useUser();
+  const { setSessionStart, sessionStart } = useGlobalState(state => ({
+    setSessionStart: state.setSessionStart,
+    sessionStart: state.sessionStart,
+  }));
+  const { validateSession } = useAuth();
+  const [isPending, setIsPending] = useState(true);
+
+  useEffect(() => {
+    const validate = async () => {
+      const sessionValid = await validateSession();
+      if (sessionValid || user) {
+        setSessionStart(true);
+      } else {
+        setSessionStart(false);
+      }
+      setIsPending(isLoading);
+    };
+
+    validate();
+  }, [user, isLoading, setSessionStart]);
 
   return (
-    <>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="relative flex flex-col flex-1">{children}</main>
-        <Footer />
-      </div>
+    <div className="flex flex-col min-h-screen overflow-hidden">
+      {sessionStart ? (
+        <>
+          <Header />
+          <main className="relative flex flex-col flex-1">{children}</main>
+        </>
+      ) : isPending ? (
+        <div className="flex items-center justify-center min-h-screen bg-base-300">
+          <div className="loading loading-spinner loading-lg"></div>
+        </div>
+      ) : (
+        <Login />
+      )}
+      <Footer />
       <Toaster />
-    </>
+    </div>
   );
 };
 

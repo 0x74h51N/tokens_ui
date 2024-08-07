@@ -1,47 +1,111 @@
-export interface TokenResponse {
-  data: { data: string[] };
+import { Address } from "viem";
+export type TagType = { address: string; tag: string };
+
+type TagsType = { addressTags: TagType[] };
+export interface FunctionTokenResponse {
+  data: string[];
   iat: number;
   exp: number;
 }
 
-export const tokenVerify = async (contractAddress: `0x${string}`): Promise<TokenResponse | null> => {
-  const response = await fetch(`/api/token?contractAddress=${contractAddress}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
+export interface TagsTokenResponse {
+  data: TagsType;
+  iat: number;
+  exp: number;
+}
+export const tokenVerify = async (
+  cookieName: "tags" | "function_titles",
+  contractAddress?: Address,
+): Promise<FunctionTokenResponse | TagsTokenResponse | null> => {
+  const response = await fetch(
+    `/api/token?${contractAddress ? `contractAddress=${contractAddress}` : ""}&cookieName=${cookieName}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
-  });
+  );
 
   const data = await response.json();
 
   if (response.ok) {
-    return data as TokenResponse;
+    return data.data;
   } else {
     console.error("Error fetching protected data:", data.message);
     return null;
   }
 };
 
-export const createToken = async (data: string[], contractAddress: `0x${string}`) => {
+export const createFunctionToken = async (data: string[], contractAddress: Address, cookieName: "function_titles") => {
+  try {
+    await PostHandler(data, cookieName, contractAddress);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error in createToken:", error.message);
+    }
+  }
+};
+
+export const createTagsToken = async (data: TagsType) => {
+  const cookieName = "tags";
+
+  try {
+    const existingToken = await tokenVerify(cookieName);
+    const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
+
+    data.addressTags.forEach(newTag => {
+      const index = existingData.addressTags.findIndex(tag => tag.address === newTag.address);
+      if (index !== -1) {
+        existingData.addressTags[index].tag = newTag.tag;
+      } else {
+        existingData.addressTags.push(newTag);
+      }
+    });
+
+    console.log("Updated tags");
+
+    await PostHandler((data = existingData), cookieName);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error in createTagsToken:", error.message);
+    }
+  }
+};
+export const removeTagFromCookie = async (data: TagsType) => {
+  const cookieName = "tags";
+  try {
+    const existingToken = await tokenVerify(cookieName);
+    const existingData = ((existingToken && existingToken.data) as TagsType) || { addressTags: [] };
+
+    existingData.addressTags = existingData.addressTags.filter(tag => tag.address !== data.addressTags[0].address);
+
+    await PostHandler((data = existingData), cookieName);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error in removeTagFromCookie:", error.message);
+    }
+  }
+};
+
+const PostHandler = async (data: TagsType | string[], cookieName: string, contractAddress?: Address) => {
   try {
     const response = await fetch("/api/token", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ data, contractAddress }),
+      body: JSON.stringify({ data, contractAddress, cookieName }),
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      console.log(result.message);
+      console.log("Post Request Success");
     } else {
       console.error("Error setting token:", result.message);
     }
   } catch (error) {
-    if (error instanceof Error) {
-      console.error("Error in createToken:", error.message);
-    }
+    console.error("Error in PostHandler:", error);
   }
 };

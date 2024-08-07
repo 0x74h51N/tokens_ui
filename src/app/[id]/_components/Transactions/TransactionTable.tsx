@@ -1,20 +1,19 @@
-import { SetStateAction, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
-import getMethodName from "../../../../utils/getMethodName";
+import { useEffect, useReducer, useState } from "react";
 import HandlePages from "./HandlePages";
 import TableHead from "./TableHead";
 import { TransactionHash } from "./TransactionHash";
-import { TransactionBase, formatEther } from "viem";
-import { useAccount } from "wagmi";
+import { formatEther } from "viem";
 import { Address } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import useFetchTransactions from "~~/hooks/useFetchTransactions";
+import { useGlobalState } from "~~/services/store/store";
+import { ExtendedTransaction } from "~~/types/utils";
 import { formatPrice } from "~~/utils/formatPrice";
 import formatTime from "~~/utils/formatTime";
+import getMethodName from "~~/utils/getMethodName";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
-
-export interface ExtendedTransaction extends TransactionBase {
-  timeStamp: string;
-  tokenSymbol: string;
-}
+import TransactionFilterHead from "./TransactionFilterHead";
+import { TagsTokenResponse, tokenVerify } from "~~/utils/jwt-token";
 
 export const TransactionsTable = ({
   deployedContractData,
@@ -24,7 +23,8 @@ export const TransactionsTable = ({
   contractName: ContractName;
 }) => {
   const { targetNetwork } = useTargetNetwork();
-  const { isConnected } = useAccount();
+  const sessionStart = useGlobalState(state => state.sessionStart);
+  const isLoggedIn = sessionStart || false;
   const [currentTransactions, setCurrentTransactions] = useReducer(
     (state: ExtendedTransaction[], action: ExtendedTransaction[]) => action,
     [],
@@ -32,181 +32,129 @@ export const TransactionsTable = ({
   const transactionsPerPage = 17;
   const [transactions, setTransactions] = useState<ExtendedTransaction[]>([]);
   const [sortedTransactions, setSortedTransactions] = useState<ExtendedTransaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const initialLoad = useRef(true);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const fetchTransactions = useCallback(
-    async (all: boolean, testnet: boolean) => {
-      if (!targetNetwork) return console.log("target error");
-      if (!deployedContractData.address) return;
-
-      if (initialLoad.current) {
-        setLoading(true);
-      }
-      const url = `/api/fetch-transactions?contractaddress=${deployedContractData.address}&testnet=${testnet}&allTx=${all}&cleanCache=false`;
-      const response = await fetch(url);
-      const data = await response.json();
-
-      try {
-        if (response.ok) {
-          setTransactions(prevTransactions => {
-            if (!all) {
-              const recentPrevTransactions = prevTransactions.slice(0, 120);
-              const newTransactions = data.filter(
-                (newTx: { hash: string }) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
-              );
-              if (newTransactions.length === 0) {
-                return prevTransactions;
-              }
-              return [...newTransactions, ...prevTransactions];
-            } else {
-              return data;
-            }
-          });
-        } else {
-          throw new Error(data.error || "Failed to fetch transactions");
-        }
-      } catch (error) {
-        console.error(error);
-      }
-
-      if (initialLoad.current) {
-        setLoading(false);
-        initialLoad.current = false;
-      }
-    },
-    [deployedContractData.address, targetNetwork],
-  );
-
-  const handleSearch = (e: { target: { value: SetStateAction<string> } }) => {
-    setSearchTerm(e.target.value);
-  };
+  const testnet = targetNetwork.testnet || false;
+  const allTransactions = useGlobalState(state => state.transactions[deployedContractData.address]);
+  const { data, error } = useFetchTransactions(false, testnet, deployedContractData.address);
+  const { setTags } = useGlobalState(state => ({
+    setTags: state.setTags,
+  }));
 
   useEffect(() => {
-    if (!isConnected) {
-      setTransactions([]);
+    if (allTransactions) {
+      const transactionsWithMethod: ExtendedTransaction[] = allTransactions.map(tx => {
+        const methodName = getMethodName(tx.from, tx.to);
+        return {
+          ...tx,
+          method: methodName,
+        };
+      });
+      setTransactions(transactionsWithMethod);
     }
-    const testnet = targetNetwork.testnet || false;
-    const fetchTransactionsWithDelay = async () => {
-      if (transactions.length < 150) {
-        await fetchTransactions(true, testnet);
+  }, [allTransactions]);
+
+  useEffect(() => {
+    if (data && !error) {
+      const recentPrevTransactions = transactions.slice(0, 120);
+      const newTxs = data.filter(
+        (newTx: { hash: string }) => !recentPrevTransactions.some(prevTx => prevTx.hash === newTx.hash),
+      );
+      if (newTxs.length > 0) {
+        const newTxsWithMethod = newTxs.map(tx => {
+          const methodName = getMethodName(tx.from, tx.to);
+          return {
+            ...tx,
+            method: methodName,
+          };
+        });
+
+        setTransactions(prevTransactions => [...newTxsWithMethod, ...prevTransactions]);
       }
-      setLoading(false);
-      setTimeout(async () => {
-        await fetchTransactions(false, testnet);
-      }, 50);
+    }
+  }, [data, transactions]);
+  useEffect(() => {
+    setSortedTransactions(transactions);
+  }, [transactions]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const tags = (await tokenVerify("tags")) as TagsTokenResponse;
+      if (tags && tags.data) {
+        setTags(tags.data.addressTags);
+      }
     };
-
-    if (isConnected && deployedContractData.address) {
-      fetchTransactionsWithDelay();
-
-      const interval = setInterval(async () => {
-        await fetchTransactions(false, testnet);
-      }, 30000);
-
-      return () => clearInterval(interval);
-    }
-  }, [deployedContractData.address, targetNetwork.testnet, isConnected, fetchTransactions]);
-
-  useEffect(() => {
-    let filteredTransactions = transactions;
-    if (searchTerm) {
-      filteredTransactions = transactions.filter(
-        tx =>
-          tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          tx.from.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (tx.to && tx.to.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          getMethodName(tx.from, tx.to).toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
-    setSortedTransactions(filteredTransactions);
-  }, [transactions, searchTerm]);
-
-  const memoizedCurrentTransactions = useMemo(() => {
-    return currentTransactions.map((tx, i) => {
-      const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
-      const timeMinedFormatted = formatTime(tx.timeStamp, false);
-      const length = formatEther(tx.value).length;
-      return (
-        <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
-          <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
-            <div
-              data-tip={timeMined}
-              className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
-            >
-              {timeMinedFormatted}
-            </div>
-          </td>
-          <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
-            <TransactionHash hash={tx.hash} />
-          </td>
-          <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{getMethodName(tx.from, tx.to)}</td>
-          <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
-            <Address address={tx.from} size="sm" />
-          </td>
-          <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
-            {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
-          </td>
-          <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
-            <div
-              data-tip={formatEther(tx.value)}
-              className={`${
-                length > 4 && "tooltip"
-              } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
-                length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
-              }`}
-            >
-              {formatPrice(Number(formatEther(tx.value)))}
-            </div>
-          </td>
-        </tr>
-      );
-    });
-  }, [currentTransactions]);
+    fetchData();
+  }, [deployedContractData]);
 
   return (
-    <div className="flex flex-col justify-start px-4 md:px-0 overflow-hidden h-full">
-      <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={handleSearch}
-        className="input input-secondary md:w-40 w-32 rounded-md absolute lg:top-2.5 top-2 right-2 truncate p-2"
+    <div className="flex flex-col justify-start px-0 overflow-hidden h-full">
+      <TransactionFilterHead
+        setSortedTransactions={setSortedTransactions}
+        transactions={transactions}
+        contractName={contractName}
       />
-      <div
-        className={`overflow-x-auto w-full shadow-2xl ${
-          currentTransactions.length > 10 || !isConnected ? "flex-1" : ""
-        }`}
-      >
-        {isConnected ? (
-          loading ? (
-            <div className="w-full h-full flex justify-center items-center">
-              <span className="loading loading-spinner loading-lg"></span>
-            </div>
-          ) : (
-            <>
-              <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
-                <TableHead
-                  contractName={contractName}
-                  sortTransactions={setSortedTransactions}
-                  sortedTransactions={sortedTransactions}
-                />
-                <tbody className="overflow-y-auto">{memoizedCurrentTransactions}</tbody>
-              </table>
-            </>
-          )
+      <div className={`overflow-x-auto w-full ${currentTransactions.length > 10 || !isLoggedIn ? "flex-1" : ""}`}>
+        {isLoggedIn ? (
+          <table className="table text-lg bg-base-100 table-zebra-zebra w-full 2xl:table-lg lg:table-md sm:table-sm table-xs h-full rounded-none">
+            <TableHead
+              contractName={contractName}
+              sortTransactions={setSortedTransactions}
+              sortedTransactions={sortedTransactions}
+            />
+            <tbody className="overflow-y-auto">
+              {currentTransactions.map((tx, i) => {
+                const timeMined = new Date(Number(tx.timeStamp) * 1000).toLocaleString("eu-EU");
+                const timeMinedFormatted = formatTime(tx.timeStamp, false);
+                const length = formatEther(tx.value).length;
+                return (
+                  <tr key={tx.hash + " table key " + i} className="hover min-h-5 z-50">
+                    <td className="xl:w-2/12 w-1/12 md:!px-4 !p-2 text-sm">
+                      <div
+                        data-tip={timeMined}
+                        className=" tooltip tooltip-top tooltip-secondary before:left-10 before:max-w-[70px] before:text-xs"
+                      >
+                        {timeMinedFormatted}
+                      </div>
+                    </td>
+                    <td className="xl:w-2/12 w-1/12 !p-2 text-sm">
+                      <TransactionHash hash={tx.hash} />
+                    </td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">{tx.method}</td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm !pr-4">
+                      <Address address={tx.from} size="sm" />
+                    </td>
+                    <td className="xl:w-2/12 w-4/12 !p-2 text-sm">
+                      {tx.to ? <Address address={tx.to} size="sm" /> : <span>(Contract Creation)</span>}
+                    </td>
+                    <td className="xl:w-2/12 w-2/12 12 text-right !p-2 text-sm !pl-4 min-w-28">
+                      <div
+                        data-tip={formatEther(tx.value)}
+                        className={`${
+                          length > 4 && "tooltip"
+                        } tooltip-top tooltip-secondary before:max-w-[900px] before:text-xs ${
+                          length > 14 ? "before:-left-8" : "before:left-auto before:-right-3"
+                        }`}
+                      >
+                        {formatPrice(Number(formatEther(tx.value)))}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         ) : (
-          <div className="h-full flex items-center justify-center text-xl italic bg-base-100">
+          <div className="h-full flex items-center justify-center text-xl italic bg-base-100 max-md:min-h-40">
             Please connect your wallet for data request...
           </div>
         )}
       </div>
-      <HandlePages
-        transactions={sortedTransactions}
-        transactionsPerPage={transactionsPerPage}
-        setCurrentTransactions={setCurrentTransactions}
-      />
+      {isLoggedIn && (
+        <HandlePages
+          transactions={sortedTransactions}
+          transactionsPerPage={transactionsPerPage}
+          setCurrentTransactions={setCurrentTransactions}
+        />
+      )}
     </div>
   );
 };

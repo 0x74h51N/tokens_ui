@@ -1,12 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
-import SearchDropdown from "../SearchDropdown";
+import SearchDropdown from "./SearchDropdown";
 import { useGlobalState } from "~~/services/store/store";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
-import { createToken, tokenVerify } from "~~/utils/jwt-token";
+import { createFunctionToken, FunctionTokenResponse, tokenVerify } from "~~/utils/jwt-token";
+import { Address } from "viem";
 
 interface FunctionTitlesProps {
   initialFunctions: string[];
-  contractAddress: `0x${string}`;
+  contractAddress: Address;
   activeFunction: string;
   setActiveFunc: Dispatch<SetStateAction<string>>;
 }
@@ -14,7 +15,7 @@ interface FunctionTitlesProps {
 const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, setActiveFunc }: FunctionTitlesProps) => {
   const [showSearch, setShowSearch] = useState<boolean>(false);
   const contractFunctions = useGlobalState(state => state.contractFunctions);
-  const functions = contractFunctions[contractAddress];
+  const allFunctions = contractFunctions[contractAddress];
   const [initial, setInitial] = useState(() => true);
   const [loading, setLoading] = useState<boolean>(true);
   const [displayedFunctions, setDisplayedFunctions] = useState<string[]>(initialFunctions);
@@ -22,14 +23,17 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const cookieFunctions = await tokenVerify(contractAddress);
+      const cookieFunctions = (await tokenVerify("function_titles", contractAddress)) as FunctionTokenResponse;
       if (cookieFunctions && cookieFunctions.data) {
-        setDisplayedFunctions(cookieFunctions.data.data);
+        setDisplayedFunctions(cookieFunctions.data as string[]);
+        if (cookieFunctions.data.length > 0) {
+          setActiveFunc(cookieFunctions.data[0]);
+        }
       }
       setLoading(false);
     };
     fetchData();
-  }, [contractAddress]);
+  }, [contractAddress, setActiveFunc]);
 
   useEffect(() => {
     if (!loading && initial) {
@@ -41,7 +45,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
       setInitial(false);
     }
     if (!loading) {
-      createToken(displayedFunctions, contractAddress);
+      createFunctionToken(displayedFunctions, contractAddress, "function_titles");
     }
   }, [displayedFunctions, loading, initial, contractAddress, setActiveFunc]);
 
@@ -52,8 +56,8 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
   };
 
   const availableFunctions = useMemo(() => {
-    return functions ? functions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
-  }, [functions, displayedFunctions]);
+    return allFunctions ? allFunctions.filter((fn: string) => !displayedFunctions.includes(fn)) : [];
+  }, [allFunctions, displayedFunctions]);
 
   const closeFunction = (functionName: string) => {
     const index = displayedFunctions.indexOf(functionName);
@@ -69,7 +73,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
 
   return (
     <>
-      <div className="flex w-full -z-10 -mt-20 overflow-hidden">
+      <div className="flex w-full -z-10 -mt-2 overflow-hidden relative">
         <div className="flex overflow-x-auto overflow-y-hidden rounded-t-lg pt-20 h-[8rem] max-w-[91%] pr-3 z-10 scrollbar-thumb-custom">
           {loading ? (
             <span className="loading loading-spinner loading-lg"></span>
@@ -77,7 +81,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
             displayedFunctions.map((functionName, i) => (
               <div
                 key={functionName + " button " + i}
-                className="flex relative max-w-[10rem] h-[4.2rem] w-[10rem] min-w-[8rem]"
+                className="flex max-w-[10rem] h-[4.2rem] w-[10rem] min-w-[8rem]"
                 style={{
                   zIndex: functionName === activeFunction ? 2 : -1 * i,
                   marginLeft: i === 0 ? 0 : -48 + i,
@@ -100,7 +104,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
                 </div>
 
                 <div
-                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-24 before:content-[attr(data-tip)] before:right-6 before:left-auto before:transform-none"
+                  className="w-full h-full tooltip tooltip-top tooltip-secondary before:px-2 before:z-40 before:max-w-32 before:right-6 before:left-auto before:transform-none"
                   data-tip={getCoolDisplayName(functionName)}
                 >
                   <button
@@ -119,7 +123,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
           )}
         </div>
         <div
-          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:content-[attr(data-tip)] before:right-0 before:left-auto before:transform-none"
+          className="flex -ml-[90px] mt-20 -z-50 tooltip tooltip-top tooltip-info max-w-[10rem] w-[10rem] min-w-[4rem] h-[4.2rem] -mb-6 p-0 before:px-2 before:-right-2 before:left-auto before:transform-none"
           style={{
             filter: "drop-shadow(.25em 0em 4px rgba(0, 0, 0, 0.5))",
           }}
@@ -136,7 +140,7 @@ const FunctionTitles = ({ initialFunctions, contractAddress, activeFunction, set
         </div>
       </div>
       {showSearch && availableFunctions && (
-        <div onBlur={() => setShowSearch(false)} className="absolute top-0 right-0 z-50">
+        <div onBlur={() => setShowSearch(false)} className="absolute top-[70px] right-0 z-50">
           <SearchDropdown options={availableFunctions} handleSelect={handleSelect} />{" "}
         </div>
       )}

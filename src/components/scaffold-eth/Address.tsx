@@ -11,6 +11,8 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outl
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
+import AddTag from "../AddTag";
+import { useGlobalState } from "~~/services/store/store";
 
 type AddressProps = {
   address?: AddressType;
@@ -37,9 +39,11 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
   const [addressCopied, setAddressCopied] = useState(false);
   const checkSumAddress = address ? getAddress(address) : undefined;
-
   const { targetNetwork } = useTargetNetwork();
-
+  const { tags } = useGlobalState(state => ({
+    tags: state.tags,
+  }));
+  const [tag, setTag] = useState<string>("");
   const { data: fetchedEns } = useEnsName({
     address: checkSumAddress,
     chainId: 1,
@@ -64,6 +68,12 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
   useEffect(() => {
     setEnsAvatar(fetchedEnsAvatar);
   }, [fetchedEnsAvatar]);
+  useEffect(() => {
+    if (checkSumAddress) {
+      const globalTag = tags.get(checkSumAddress.toLowerCase());
+      globalTag ? setTag(globalTag) : setTag("");
+    }
+  }, [tags]);
 
   // Skeleton UI
   if (!checkSumAddress) {
@@ -106,14 +116,19 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           <Link href={blockExplorerAddressLink}>{displayAddress}</Link>
         </span>
       ) : (
-        <a
-          className={`ml-1.5 text-${size} font-normal`}
-          target="_blank"
-          href={blockExplorerAddressLink}
-          rel="noopener noreferrer"
+        <div
+          data-tip={displayAddress}
+          className={`flex min-w-[86px] max-w-[95px] ${tag ? " tooltip tooltip-top tooltip-primary before:right-0" : ""}`}
         >
-          {displayAddress}
-        </a>
+          <a
+            className={`ml-1.5 text-${size} font-normal text-start truncate`}
+            target="_blank"
+            href={blockExplorerAddressLink}
+            rel="noopener noreferrer"
+          >
+            {tag && tag !== "" ? tag : displayAddress}
+          </a>
+        </div>
       )}
       {addressCopied ? (
         <CheckCircleIcon
@@ -136,6 +151,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
           />
         </CopyToClipboard>
       )}
+      {checkSumAddress && <AddTag address={checkSumAddress} />}
     </div>
   );
 };

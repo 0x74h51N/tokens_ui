@@ -1,37 +1,33 @@
 "use server";
 import { Address } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
+import { getTransactions, setTransactions } from "../vercel-kv/getSetTransactions";
+import { delay, fetchData } from "./utils";
+import { kv } from "@vercel/kv";
 
-async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
-  const response = await fetch(
-    url,
-    revalidateTime
-      ? {
-          next: { revalidate: revalidateTime },
-        }
-      : {
-          method: "GET",
-          cache: "no-store",
-        },
-  );
-  const data = await response.json();
-
-  if (data.status === "1") {
-    return data.result as ExtendedTransaction[];
-  } else {
-    throw new Error(data.message || "Failed to fetch data");
-  }
-}
-async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 export async function getBscTransactions(
   contractAddress: Address,
   testnet: string,
   all: string,
+  offset: string,
 ): Promise<ExtendedTransaction[]> {
   if (!contractAddress) {
     throw new Error("Contract address is required");
+  }
+
+  console.log(`all: ${all}`);
+
+  if (all === "true") {
+    try {
+      const kvTransactions = await getTransactions(contractAddress, "all");
+      console.log(`KV Transactions: ${kvTransactions?.length || 0}`);
+      if (kvTransactions && kvTransactions.length > 0) {
+        console.log("Transactions fetched from KV.");
+        return kvTransactions;
+      }
+    } catch (error) {
+      console.error("Error fetching transactions from KV:", error);
+    }
   }
 
   const apiKey = process.env.BSC_SCAN_API_KEY;
@@ -39,9 +35,11 @@ export async function getBscTransactions(
   let transactions: ExtendedTransaction[] = [];
   if (all === "true") {
     const maxOffset = 350;
-    const revalidateTime = 180;
     let page = 1;
     const maxRetries = 5;
+
+    const totalPageKey = `totalPages:${contractAddress}`;
+    let totalPages = ((await kv.get(totalPageKey)) as number) || 0;
 
     while (true) {
       const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=${page}&offset=${maxOffset}&sort=desc&apikey=${apiKey}`;
@@ -49,7 +47,7 @@ export async function getBscTransactions(
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
-          const fetchedTransactions = await fetchData(url, revalidateTime);
+          const fetchedTransactions = await fetchData(url);
           await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
@@ -57,6 +55,9 @@ export async function getBscTransactions(
             console.log("No transactions found, stopping fetch.");
             return transactions;
           }
+          totalPages = page;
+          await kv.set(totalPageKey, totalPages);
+          setTransactions(contractAddress, fetchedTransactions, page);
           transactions = transactions.concat(fetchedTransactions);
           page++;
           success = true;
@@ -78,7 +79,6 @@ export async function getBscTransactions(
       }
     }
   } else {
-    const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
     try {
       transactions = await fetchData(url);

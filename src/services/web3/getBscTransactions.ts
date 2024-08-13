@@ -39,7 +39,7 @@ export async function getBscTransactions(
   let transactions: ExtendedTransaction[] = [];
   if (all === "true") {
     const maxOffset = 350;
-    const revalidateTime = 86200;
+    const revalidateTime = 180;
     let page = 1;
     const maxRetries = 5;
 

@@ -1,42 +1,15 @@
-import scaffoldConfig from "~~/scaffold.config";
+"use server";
 import { getTransactions, setTransactions } from "../vercel-kv/getSetTransactions";
 import { kv } from "@vercel/kv";
+import { getBscTransactions } from "../web3/getBscTransactions";
 
-export const cronSecret = process.env.CRON_SECRET;
-export const vercelByPass = process.env.VERCEL_BYPASS;
-export const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
-export const mainnetAddresses = scaffoldConfig.contractAddressList || [];
-export const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
-
-export async function fetchTransactions(contractAddress: string, testnet: boolean) {
-  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&offset=350`;
-  console.log(`Fetching transactions from URL: ${url}`);
-
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${cronSecret}`,
-  };
-
-  if (vercelByPass) {
-    headers["x-vercel-protection-bypass"] = vercelByPass;
-  }
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers,
-    cache: "no-store",
-  });
-  console.log(`Response status: ${response.status}`);
-  if (!response.ok) {
-    console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
-    throw new Error(`Failed to fetch transactions for ${contractAddress}`);
-  }
-  const transactions = await response.json();
-
+export async function fetchTransactions(contractAddress: string, testnet: string) {
+  const transactions = await getBscTransactions(contractAddress, testnet, "false", "350");
   const totalPageKey = `totalPages:${contractAddress}`;
   const totalPage = (await kv.get(totalPageKey)) as number;
 
   const lastPage = await getTransactions(contractAddress, totalPage);
-  const lastPageTwo = totalPage - 1 ? await getTransactions(contractAddress, totalPage - 1) : null;
+  const lastPageTwo = totalPage > 1 ? await getTransactions(contractAddress, totalPage - 1) : null;
 
   const oldTransactions = lastPageTwo ? lastPage?.concat(lastPageTwo) : lastPage;
 

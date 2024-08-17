@@ -15,8 +15,6 @@ export async function getBscTransactions(
     throw new Error("Contract address is required");
   }
 
-  console.log(`all: ${all}`);
-
   if (all === "true") {
     try {
       const kvTransactions = await getTransactions(contractAddress, "all");

@@ -9,8 +9,7 @@ export async function GET(req: NextRequest) {
   const contractAddress = searchParams.get("contractaddress");
   const testnet = searchParams.get("testnet");
   const all = searchParams.get("allTx") || "false";
-  const cleanCache = searchParams.get("cleanCache") || "false";
-
+  const offset = searchParams.get("offset") || "100";
   if (!contractAddress) {
     return NextResponse.json({ error: "Contract address is required" }, { status: 400 });
   }
@@ -26,7 +25,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const transactions = await getBscTransactions(contractAddress, testnet, all, cleanCache);
+    const transactions = await getBscTransactions(contractAddress, testnet, all, offset);
     return NextResponse.json(transactions, { status: 200 });
   } catch (error) {
     if (error instanceof Error) {

@@ -12,10 +12,13 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { useGlobalState } from "~~/services/store/store";
 import { useAuth } from "~~/hooks/useAuth";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useRouter } from "next/navigation";
+
+/**
+ * Main application component that handles user authentication and session validation.
+ * It also manages the loading state while validating the session.
+ */
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
-  const router = useRouter();
   useInitializeNativeCurrencyPrice();
   const { user, isLoading } = useUser();
   const { setSessionStart } = useGlobalState(state => ({
@@ -25,18 +28,18 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   const { validateSession } = useAuth();
   const [isPending, setIsPending] = useState(true);
 
+  /**
+   * Validates the user's session using both iron session and Auth0 session.
+   * If the session is valid, it updates the global session state.
+   */
   useEffect(() => {
     const validate = async () => {
       const sessionValid = await validateSession();
       if (sessionValid || user) {
         setSessionStart(true);
-      } else {
-        setSessionStart(false);
-        router.push("/login");
       }
-      setIsPending(isLoading);
+      setIsPending(false);
     };
-
     validate();
   }, [user, isLoading, setSessionStart]);
 
@@ -61,6 +64,11 @@ export const queryClient = new QueryClient({
   },
 });
 
+/**
+ * ScaffoldEthAppWithProviders wraps the main app component with various providers such as
+ * WagmiProvider, QueryClientProvider, and RainbowKitProvider. It ensures that the theme is
+ * applied correctly based on the user's preference.
+ */
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
   const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === "dark";

@@ -27,9 +27,6 @@ export async function GET(req: NextRequest) {
   try {
     const transactions = await getBscTransactions(contractAddress, testnet, all, offset);
     const response = NextResponse.json(transactions, { status: 200 });
-    if (all === "true") {
-      response.headers.set("Cache-Control", "s-maxage=43200, stale-while-revalidate=43190");
-    }
     return response;
   } catch (error) {
     if (error instanceof Error) {

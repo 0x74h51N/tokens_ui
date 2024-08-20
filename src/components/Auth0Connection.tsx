@@ -67,8 +67,8 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
     if (account) {
       await handleLogout();
       await disconnect();
+      router.push("/login");
     }
-    router.push("/login");
   };
 
   return (

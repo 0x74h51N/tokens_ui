@@ -1,6 +1,6 @@
 import { ExtendedTransaction } from "~~/types/utils";
 
-export async function fetchData(url: string, revalidate = 29): Promise<ExtendedTransaction[]> {
+export async function fetchData(url: string, revalidate: number): Promise<ExtendedTransaction[]> {
   const response = await fetch(url, {
     next: { revalidate: revalidate },
   });

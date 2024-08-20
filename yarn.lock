@@ -2137,15 +2137,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@upstash/redis@npm:^1.31.3":
-  version: 1.34.0
-  resolution: "@upstash/redis@npm:1.34.0"
-  dependencies:
-    crypto-js: ^4.2.0
-  checksum: 127e55e23ce65f72ad74d62cd73a716e3beb4b09ffc3806049d53c2884a2b4d649a00f6e3fd3f6a093fb8e6508d33924b68647cc3739a187adc39d8fb87877bc
-  languageName: node
-  linkType: hard
-
 "@vanilla-extract/css@npm:1.14.0":
   version: 1.14.0
   resolution: "@vanilla-extract/css@npm:1.14.0"
@@ -2269,15 +2260,6 @@ __metadata:
     "@vercel/static-config": 3.0.0
     ts-morph: 12.0.0
   checksum: 58a12e664d46ded40bba5984d29a5c47e7184d79b3177f6d2d37375e3c787ae141075bab40fb49ee76765c066f6f3a9ea803e70818d9dd2919d79e51cab7ec28
-  languageName: node
-  linkType: hard
-
-"@vercel/kv@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@vercel/kv@npm:2.0.0"
-  dependencies:
-    "@upstash/redis": ^1.31.3
-  checksum: 16519f42670efce81cea64229f34aeed271e0a9a25329f5a1a0b49aa77f87e6a71a49d5c4593571c0e07f2d68a4e4288feb773cb44d0155df494de132b8eece0
   languageName: node
   linkType: hard
 
@@ -3942,13 +3924,6 @@ __metadata:
     uWebSockets.js:
       optional: true
   checksum: dcaf730a3af32cf081ab49fdb9c31192a738d7e0585585975e581e71a3d7d14df8d3b42ba183e13e34a1fc26645f695362abf30c40369d12652bcee372a484c3
-  languageName: node
-  linkType: hard
-
-"crypto-js@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "crypto-js@npm:4.2.0"
-  checksum: f051666dbc077c8324777f44fbd3aaea2986f198fe85092535130d17026c7c2ccf2d23ee5b29b36f7a4a07312db2fae23c9094b644cc35f7858b1b4fcaf27774
   languageName: node
   linkType: hard
 
@@ -10049,7 +10024,6 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.39.0
     "@uniswap/sdk-core": ^5.3.1
     "@uniswap/v2-sdk": ^3.0.1
-    "@vercel/kv": ^2.0.0
     abitype: 1.0.2
     autoprefixer: ^10.4.12
     blo: ^1.0.1

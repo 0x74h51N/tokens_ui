@@ -9,7 +9,18 @@ interface FetchTransactionsResult {
   pending: boolean;
   error: string | null;
 }
-
+/**
+ * useFetchTransactions Hook
+ *
+ * Fetches transactions from the BSC network using a server-side API endpoint.
+ *
+ * @param all - Whether to fetch all transactions or just a subset. If all false it fetches transactions after a short delay and continues to poll the API at a
+ *   configured interval (from scaffoldConfig.pollingInterval).
+ * @param testnet - Whether to fetch from the testnet or mainnet.
+ * @param address - The contract address to fetch transactions for.
+ *
+ * @returns {FetchTransactionsResult} - The fetched transactions data, loading state, and any error encountered.
+ */
 const useFetchTransactions = (all: boolean, testnet: boolean, address: Address): FetchTransactionsResult => {
   const [data, setFetchedData] = useState<ExtendedTransaction[]>([]);
   const [pending, setPending] = useState<boolean>(false);
@@ -21,8 +32,8 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
   const fetchTransactions = useCallback(async () => {
     setPending(true);
     setError(null);
-
-    const url = `/api/fetch-transactions?contractaddress=${address}&testnet=${testnet}&allTx=${all}`;
+    const offset = all ? 300 : 100;
+    const url = `/api/fetch-transactions?contractaddress=${address}&testnet=${testnet}&allTx=${all}&offset=${offset}`;
 
     try {
       const response = await fetch(url);
@@ -47,10 +58,17 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
 
   useEffect(() => {
     if (sessionStart) {
-      if (all && !globalTransactions) {
+      if (all && !globalTransactions && !pending) {
         fetchTransactions();
-      } else if (!all) {
+      } else if (!all && !pending) {
+        /**
+         * Initial fetchTransactions call after a 500ms delay when `all` is false.
+         * This starts the process of fetching transactions at regular intervals.
+         */
         setTimeout(() => fetchTransactions(), 500);
+        /**
+         * Set up an interval to fetch live transactions at a configured polling interval.
+         */
         const interval = setInterval(() => {
           fetchTransactions();
         }, scaffoldConfig.pollingInterval);
@@ -58,7 +76,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
-  }, [all, sessionStart, globalTransactions, fetchTransactions]);
+  }, [all, sessionStart, globalTransactions]);
 
   return { data, pending, error };
 };

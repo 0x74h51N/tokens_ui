@@ -45,7 +45,7 @@ export async function getBscTransactions(
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
-          const fetchedTransactions = await fetchData(url);
+          const fetchedTransactions = await fetchData(url, 43200);
           await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 

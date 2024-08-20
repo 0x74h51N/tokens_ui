@@ -1,6 +1,6 @@
 import React from "react";
-import ExternalVariable from "../app/dashboard/_components/ExternalVariable";
-import { Address } from "./scaffold-eth";
+import ExternalVariable from "./ExternalVariable";
+import { Address } from "../../../components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 import { ContractVariables } from "~~/app/dashboard/debug/_components/contract/ContractVariables";

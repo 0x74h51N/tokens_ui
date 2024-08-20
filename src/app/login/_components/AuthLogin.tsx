@@ -10,10 +10,14 @@ const AuthLogin = () => {
   }));
   const [session, setSession] = useState<Session | null>(null);
   const [authWindow, setAuthWindow] = useState<Window | null>(null);
-  const isMobile = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(
-    navigator.userAgent,
-  );
-
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      setIsMobile(
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Windows Phone/i.test(navigator.userAgent),
+      );
+    }
+  }, []);
   const handleAuth = () => {
     const width = 410;
     const height = 600;

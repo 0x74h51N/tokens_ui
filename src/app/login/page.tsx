@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
-import { useRouter } from "next/navigation";
 import { useGlobalState } from "~~/services/store/store";
 import { useAuth } from "~~/hooks/useAuth";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
@@ -11,7 +10,6 @@ import SignBtn from "./_components/SignBtn";
 import AuthLogin from "~~/app/login/_components/AuthLogin";
 
 const Login = () => {
-  const router = useRouter();
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
   const { setSessionStart } = useGlobalState(state => ({
@@ -27,12 +25,10 @@ const Login = () => {
         const validate = await validateSession();
         if (validate) {
           setSessionStart(true);
-          router.push("/");
         } else if (isConnected && address) {
           const login = await handleLogin(address);
           if (login?.isLogin) {
             setSessionStart(true);
-            router.push("/");
           } else {
             disconnect();
             setWalletPending(false);
@@ -44,7 +40,7 @@ const Login = () => {
     };
     !connectModalOpen && !isConnected && setWalletPending(false);
     login();
-  }, [isConnected, address, router, connectModalOpen]);
+  }, [isConnected, address, connectModalOpen]);
 
   return (
     <div className="flex flex-1 items-center justify-center bg-base-300">

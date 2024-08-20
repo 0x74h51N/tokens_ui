@@ -5,13 +5,13 @@ import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import { useRouter } from "next/navigation";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useDisconnect } from "wagmi";
-import { AddressInfoDropdown } from "./scaffold-eth/RainbowKitCustomConnectButton/AddressInfoDropdown";
-import { AddressQRCodeModal } from "./scaffold-eth/RainbowKitCustomConnectButton/AddressQRCodeModal";
 import { ConnectButtonRendererProps } from "@rainbow-me/rainbowkit/dist/components/ConnectButton/ConnectButtonRenderer";
 import { Address, getAddress } from "viem";
 import { useAuth } from "~~/hooks/useAuth";
-import { BlockieAvatar, isENS } from "./scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
+import { BlockieAvatar, isENS } from "./scaffold-eth";
+import { AddressInfoDropdown } from "./scaffold-eth/RainbowKitCustomConnectButton/AddressInfoDropdown";
+import { AddressQRCodeModal } from "./scaffold-eth/RainbowKitCustomConnectButton/AddressQRCodeModal";
 
 interface Auth0ConnectionProps {
   user: UserProfile | undefined;
@@ -68,6 +68,7 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
       await handleLogout();
       await disconnect();
     }
+    router.push("/login");
   };
 
   return (

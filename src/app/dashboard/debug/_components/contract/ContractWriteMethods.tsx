@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { Abi, AbiFunction } from "abitype";
-import { WriteOnlyFunctionForm } from "~~/app/debug/_components/contract";
 import { useGlobalState } from "~~/services/store/store";
 import { Contract, ContractName, GenericContract, InheritedFunctions } from "~~/utils/scaffold-eth/contract";
+import { WriteOnlyFunctionForm } from "./WriteOnlyFunctionForm";
 
 export const ContractWriteMethods = ({
   onChange,

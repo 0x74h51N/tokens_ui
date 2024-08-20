@@ -11,7 +11,7 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outl
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
-import AddTag from "../AddTag";
+import AddTag from "~~/app/dashboard/_components/AddTag";
 import { useGlobalState } from "~~/services/store/store";
 
 type AddressProps = {

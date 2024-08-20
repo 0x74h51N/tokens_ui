@@ -4,23 +4,21 @@ import { useEffect, useState } from "react";
 import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
-import { Toaster } from "react-hot-toast";
 import { WagmiProvider } from "wagmi";
-import { Footer } from "~~/components/Footer";
-import { Header } from "~~/components/Header";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { ProgressBar } from "~~/components/scaffold-eth/ProgressBar";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { useGlobalState } from "~~/services/store/store";
-import Login from "~~/app/login/page";
 import { useAuth } from "~~/hooks/useAuth";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { useRouter } from "next/navigation";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
+  const router = useRouter();
   useInitializeNativeCurrencyPrice();
   const { user, isLoading } = useUser();
-  const { setSessionStart, sessionStart } = useGlobalState(state => ({
+  const { setSessionStart } = useGlobalState(state => ({
     setSessionStart: state.setSessionStart,
     sessionStart: state.sessionStart,
   }));
@@ -34,6 +32,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         setSessionStart(true);
       } else {
         setSessionStart(false);
+        router.push("/login");
       }
       setIsPending(isLoading);
     };
@@ -43,20 +42,13 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
-      {sessionStart ? (
-        <>
-          <Header />
-          <main className="relative flex flex-col flex-1">{children}</main>
-        </>
-      ) : isPending ? (
+      {isPending ? (
         <div className="flex items-center justify-center min-h-screen bg-base-300">
           <div className="loading loading-spinner loading-lg"></div>
         </div>
       ) : (
-        <Login />
+        children
       )}
-      <Footer />
-      <Toaster />
     </div>
   );
 };

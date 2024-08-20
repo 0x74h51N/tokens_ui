@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FunctionTitles from "./FunctionTitles";
-import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
+import { ContractWriteMethods } from "~~/app/dashboard/debug/_components/contract/ContractWriteMethods";
 
 /**
  * This component is implemented for specific functions' ui.

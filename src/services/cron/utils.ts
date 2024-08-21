@@ -5,10 +5,12 @@ const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "
 
 export async function fetchTransactions(contractAddress: string, testnet: boolean) {
   /**
-   * This function fetch transactions for daily cron-job to cache transaction's data on server.
-   * It is not fetched directly via getBscTransactions for control to and purge to cached data before fetch
-   * If data cached via getBscTransactions function directly it is hard to manage cached and revalidate to data
-   * */
+   * This function fetches transactions for the daily cron-job to cache transaction data on the server.
+   * Transactions are not fetched directly via the getBscTransactions function to allow better control
+   * and purging of cached data before fetching.
+   * If data were cached directly via the getBscTransactions function, it is not possible to revalidate the cached data.
+   * At least I couldn't manage it...
+   */
   const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true&offset=300`;
   console.log(`Fetching transactions from URL: ${url}`);
 

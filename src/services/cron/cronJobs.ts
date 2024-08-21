@@ -7,11 +7,9 @@ import { fetchTransactions } from "./utils";
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
 /**
- * This function fetches transactions for the daily cron-job to cache transaction data on the server.
- * Transactions are not fetched directly via the getBscTransactions function to allow better control
- * and purging of cached data before fetching.
- * If data were cached directly via the getBscTransactions function, it is not possible to revalidate the cached data.
- * At least I couldn't manage it...
+ * This function is designed to be executed as a daily cron job. Its primary purpose is to fetch transactions
+ * from the BNB Smart Chain (BSC) for a list of contract addresses, both on testnet and mainnet, and cache
+ * the results for efficient retrieval for client requests.
  */
 export async function runCronJobs() {
   console.log("Cron job started");

@@ -17,23 +17,23 @@ type HeaderMenuLink = {
 export const menuLinks: HeaderMenuLink[] = [
   {
     label: "NNN",
-    href: "/nnn",
+    href: "/dashboard/nnn",
   },
   {
     label: "NVM",
-    href: "/nvm",
+    href: "/dashboard/nvm",
   },
   {
     label: "NXAG",
-    href: "/nxag",
+    href: "/dashboard/nxag",
   },
   {
     label: "NPT",
-    href: "/npt",
+    href: "/dashboard/npt",
   },
   {
     label: "Debug Contracts",
-    href: "/debug",
+    href: "/dashboard/debug",
     icon: <BugAntIcon className="h-4 w-4" />,
   },
 ];

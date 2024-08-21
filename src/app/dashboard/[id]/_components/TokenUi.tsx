@@ -6,6 +6,7 @@ import useFetchTransactions from "~~/hooks/useFetchTransactions";
 import { useGlobalState } from "~~/services/store/store";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
 import TokenAnalytics from "./TokenAnalytics/TokenAnalytics";
+import { tokenVerify, TagsTokenResponse } from "~~/utils/jwt-token";
 
 const TokenUI = ({
   deployedContractData,
@@ -21,17 +22,27 @@ const TokenUI = ({
   const testnet = targetNetwork.testnet || false;
   const address = deployedContractData.address;
   const { data, pending } = useFetchTransactions(true, testnet, deployedContractData.address);
-  const sessionStart = useGlobalState(state => state.sessionStart);
-  const isLoggedIn = sessionStart || false;
   const setTransactions = useGlobalState(state => state.setTransactions);
   const globalTransactions = useGlobalState(state => state.transactions[address]);
+  const { setTags } = useGlobalState(state => ({
+    setTags: state.setTags,
+  }));
 
   useEffect(() => {
-    if (data && data.length > 2 && isLoggedIn && !globalTransactions) {
+    if (data && data.length > 2 && !globalTransactions) {
       setTransactions(address, data);
     }
-  }, [data, isLoggedIn, address, globalTransactions, setTransactions]);
+  }, [data, address, globalTransactions, setTransactions]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const tags = (await tokenVerify("tags")) as TagsTokenResponse;
+      if (tags && tags.data) {
+        setTags(tags.data.addressTags);
+      }
+    };
+    fetchData();
+  }, [deployedContractData, setTags]);
   return (
     <>
       <div className="2xl:px-4 lg:px-2 px-0 lg:gap-6 my-0 pt-2 w-full h-full grid grid-cols-1 xl:grid-cols-7 2xl:grid-cols-9 gap-3">

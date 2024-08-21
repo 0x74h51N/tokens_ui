@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Address as AddressType, getAddress, isAddress } from "viem";
@@ -11,7 +11,7 @@ import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outl
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { getBlockExplorerAddressLink } from "~~/utils/scaffold-eth";
-import AddTag from "../AddTag";
+import AddTag from "~~/app/dashboard/_components/AddTag";
 import { useGlobalState } from "~~/services/store/store";
 
 type AddressProps = {
@@ -38,7 +38,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
   const [ens, setEns] = useState<string | null>();
   const [ensAvatar, setEnsAvatar] = useState<string | null>();
   const [addressCopied, setAddressCopied] = useState(false);
-  const checkSumAddress = address ? getAddress(address) : undefined;
+  const checkSumAddress = useMemo(() => (address ? getAddress(address) : undefined), [address]);
   const { targetNetwork } = useTargetNetwork();
   const { tags } = useGlobalState(state => ({
     tags: state.tags,
@@ -73,7 +73,7 @@ export const Address = ({ address, disableAddressLink, format, size = "base" }: 
       const globalTag = tags.get(checkSumAddress.toLowerCase());
       globalTag ? setTag(globalTag) : setTag("");
     }
-  }, [tags]);
+  }, [tags, checkSumAddress]);
 
   // Skeleton UI
   if (!checkSumAddress) {

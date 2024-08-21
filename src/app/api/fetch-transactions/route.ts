@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const transactions = await getBscTransactions(contractAddress, testnet, all, offset);
-    return NextResponse.json(transactions, { status: 200 });
+    const response = NextResponse.json(transactions, { status: 200 });
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });

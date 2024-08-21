@@ -1,7 +1,7 @@
 import { useState } from "react";
 import FunctionTitles from "./FunctionTitles";
-import { ContractWriteMethods } from "~~/app/debug/_components/contract/ContractWriteMethods";
 import { Contract, ContractName } from "~~/utils/scaffold-eth/contract";
+import { ContractWriteMethods } from "~~/app/dashboard/debug/_components/contract/ContractWriteMethods";
 
 /**
  * This component is implemented for specific functions' ui.
@@ -37,7 +37,6 @@ const FunctionContainer = ({ contractName, functionNames, deployedContractData, 
       <div
         className="flex flex-col justify-center items-center w-full h-auto z-0"
         id={contractName + " " + activeFunction + " id"}
-        style={{ display: activeFunction !== activeFunction ? "none" : "block" }}
       >
         <div className="flex flex-col justify-end relative w-full min-w-[500px] max-sm:min-w-[350px] p-7 bg-base-100 rounded-b-xl border border-base-300 min-h-[305px]">
           <ContractWriteMethods

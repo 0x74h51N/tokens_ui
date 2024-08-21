@@ -6,6 +6,18 @@ import { useGlobalState } from "~~/services/store/store";
 import { createTagsToken, removeTagFromCookie } from "~~/utils/jwt-token";
 import { notification } from "~~/utils/scaffold-eth";
 
+/**
+ * AddTag Component
+ *
+ * This component allows users to add, update, or remove a tag associated with a specific smart contract address via PencilIcon.
+ * Tags are managed both in a global state and in a secure cookie, ensuring they persist across sessions.
+ *
+ * - When a tag is added or updated, the new tag is saved in the global state and a JWT token is created to store it in a cookie.
+ * - When a tag is removed, it is deleted from both the global state and the cookie.
+ * - The component validates that the tag is not already used for another address before allowing it to be saved.
+ *
+ * @param address - The smart contract address to which the tag is associated.
+ */
 const AddTag = ({ address }: { address: Address }) => {
   const [showInput, setShowInput] = useState<boolean>(false);
   const inputRef = useRef<HTMLDivElement>(null);
@@ -23,7 +35,7 @@ const AddTag = ({ address }: { address: Address }) => {
   };
   useOutsideClick(inputRef, () => showInput && setShowInput(false));
 
-  useEffect(() => setInputTag(tags.get(address.toLocaleLowerCase()) || ""), [tags]);
+  useEffect(() => setInputTag(tags.get(address.toLocaleLowerCase()) || ""), [tags, address]);
 
   const addTag = async (_address: Address) => {
     const lowerCaseAddress = _address.toLowerCase();

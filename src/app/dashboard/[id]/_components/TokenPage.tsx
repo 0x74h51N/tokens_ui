@@ -3,7 +3,7 @@
 import { useEffect, useReducer } from "react";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
-import SideBar from "~~/components/SideBar";
+import SideBar from "~~/app/dashboard/_components/SideBar";
 import { useGlobalState } from "~~/services/store/store";
 import TokenUI from "./TokenUi";
 

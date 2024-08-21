@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/outline";

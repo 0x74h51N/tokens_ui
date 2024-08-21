@@ -11,6 +11,19 @@ interface SideBarProps {
   deployedContractData: Contract<ContractName>;
 }
 
+/**
+ * SideBar Component
+ *
+ * This component displays key information about a deployed smart contract,
+ * such as its address and associated network. It also shows specific contract
+ * variables and, if applicable, external data from CoinGecko.
+ *
+ * @param deployedContractData - The data related to the deployed contract abi.
+ * @param contractName - The name of the contract being displayed.
+ * @param refreshDisplayVariables - A boolean to trigger a refresh of the displayed contract variables.
+ *
+ * @returns A sidebar UI component that provides insights and details about the smart contract.
+ */
 const SideBar = ({ deployedContractData, contractName, refreshDisplayVariables }: SideBarProps) => {
   const { targetNetwork } = useTargetNetwork();
   return (

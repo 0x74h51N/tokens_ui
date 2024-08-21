@@ -39,7 +39,7 @@ export async function getBscTransactions(
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
-          const fetchedTransactions = await fetchData(url, 86398);
+          const fetchedTransactions = await fetchData<ExtendedTransaction>(url, 86398);
           await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
@@ -71,7 +71,7 @@ export async function getBscTransactions(
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
     try {
       const revalidate = scaffoldConfig.pollingInterval / 1000;
-      transactions = await fetchData(url, revalidate - 1);
+      transactions = await fetchData<ExtendedTransaction>(url, revalidate - 1);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }

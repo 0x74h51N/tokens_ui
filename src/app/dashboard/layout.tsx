@@ -1,7 +1,7 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
-import { Footer } from "~~/app/dashboard/_components/Footer";
-import { Header } from "~~/app/dashboard/_components/Header";
+import { Footer } from "~~/components/Footer";
+import { Header } from "~~/components/Header";
 
 const layout = ({ children }: { children: React.ReactNode }) => {
   return (

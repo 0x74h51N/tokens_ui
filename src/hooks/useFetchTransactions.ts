@@ -76,6 +76,7 @@ const useFetchTransactions = (all: boolean, testnet: boolean, address: Address):
         return () => clearInterval(interval);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [all, sessionStart, globalTransactions]);
 
   return { data, pending, error };

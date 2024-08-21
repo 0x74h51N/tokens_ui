@@ -81,7 +81,7 @@ const AuthLogin = () => {
       setSessionStart(true);
       window.location.reload();
     }
-  }, [session, authWindow]);
+  }, [session, authWindow, setSessionStart]);
   return (
     <SignBtn
       setPending={setPending}

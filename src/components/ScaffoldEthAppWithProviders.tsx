@@ -41,6 +41,8 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
       setIsPending(false);
     };
     validate();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isLoading, setSessionStart]);
 
   return (

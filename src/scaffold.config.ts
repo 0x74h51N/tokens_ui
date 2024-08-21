@@ -9,14 +9,16 @@ export type ScaffoldConfig = {
   onlyLocalBurnerWallet: boolean;
   testnetContractAddressList: Address[];
   contractAddressList: Address[];
+  tokenNameToIdMap: Record<string, string>;
+  currency: { name: string; symbol: string };
 };
 
 const scaffoldConfig = {
   // The networks on which your DApp is live
   targetNetworks: [chains.bsc, chains.bscTestnet],
 
-  // The interval at which your front-end polls the RPC servers for new data
-  // BSC Scan transactions, uniswap native currency price
+  // The interval at which your front-end polls the RPC servers for new data (in milliseconds)
+  // E.g., fetching BSC Scan transactions or Uniswap native currency price
   pollingInterval: 30000,
 
   alchemyApiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string,
@@ -37,6 +39,21 @@ const scaffoldConfig = {
     "0x55b6d96126879Fe99ca1f57A05F81941d0932F9C",
     "0xF9f594D86AEF52644473edC43B6dC9656E4fD2Ce",
   ],
+
+  // Map of token symbols to their corresponding CoinGecko token IDs
+  // The token IDs should match the IDs used by CoinGecko's API and related coin/token name on ABI
+  tokenNameToIdMap: {
+    nnn: "novem-gold",
+    nvm: "novem-pro",
+    npt: "novem-silver",
+    nxag: "novem-platinum",
+  },
+
+  // Specifies the currency used to display token/coin prices within the app
+  currency: {
+    name: "usd",
+    symbol: "$",
+  },
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

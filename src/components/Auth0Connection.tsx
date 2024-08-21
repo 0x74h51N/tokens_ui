@@ -26,6 +26,19 @@ interface Auth0ConnectionProps {
     "chain"
   >["chain"];
 }
+/**
+ * Auth0Connection Component
+ *
+ * This component displays the user profile information or wallet connection status,
+ * depending on whether the user is logged in via Auth0 or connected via a wallet.
+ * It provides a dropdown menu to show user details or prompt the user to connect their wallet.
+ *
+ * @param user: The user's profile data from Auth0, including name, email, and avatar.
+ * @param isLoading: A boolean indicating whether the login process is still in progress.
+ * @param account: The user's connected wallet account info, including address and ENS avatar.
+ * @param blockExplorerAddressLink: A link to view the connected wallet address on the relevant blockchain explorer.
+ * @param chain: The target network chain related to the token/coin interaction in the app.
+ */
 const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, chain }: Auth0ConnectionProps) => {
   const [selectingNetwork, setSelectingNetwork] = useState(false);
   const dropdownRef = useRef<HTMLDetailsElement>(null);
@@ -42,6 +55,7 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
   const { isConnected, address } = useAccount();
   const { handleLogin, validateSession, handleLogout } = useAuth();
   const [imageError, setImageError] = useState(false);
+
   useEffect(() => {
     const login = async () => {
       try {
@@ -57,6 +71,7 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
       }
     };
     login();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, address]);
 
   const handleLogoutBtn = async () => {
@@ -86,6 +101,7 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
               {imageError ? (
                 <></>
               ) : (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   width={35}
                   height={35}

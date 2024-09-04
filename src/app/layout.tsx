@@ -4,6 +4,7 @@ import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import Head from "next/head";
 
 export const metadata = getMetadata({
   title: "BSC Tokens UI Demo",
@@ -14,6 +15,9 @@ export const metadata = getMetadata({
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning>
+      <Head>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
       <body>
         <ThemeProvider enableSystem>
           <UserProvider>

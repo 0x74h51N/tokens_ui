@@ -3,14 +3,15 @@
 This project aims to create a cool interface for managing Novem Gold tokens via the write functions of the smart contracts. It is developed using a forked version of [Scaffold Eth-2](https://github.com/scaffold-eth/scaffold-eth-2)
 
 - [🪙 Novem Gold BSC Token's UI](#-novem-gold-bsc-tokens-ui)
-- [🌳SRC Tree](#src-tree)
+  - [🌳SRC Tree](#src-tree)
+  - [🛠️ Techs](#️-techs)
+  - [👜 Requirements](#-requirements)
+  - [🚀 Quickstart](#-quickstart)
 - [🪧 APP Routes](#-app-routes)
   - [📑 Dashboard Pages](#-dashboard-pages)
     - [🧩 Dashboard Components](#-dashboard-components)
-  - [👜 Requirements](#-requirements)
-  - [🚀 Quickstart](#-quickstart)
 
-# 🌳SRC Tree
+## 🌳SRC Tree
 
 ```
 
@@ -65,17 +66,47 @@ This project aims to create a cool interface for managing Novem Gold tokens via 
 ├── actions.ts
 ```
 
-# 🪧 APP Routes
+## 🛠️ Techs
 
-TODO
+```
+- Framework:
+  - Next.js 14 (App Routing)
 
-## 📑 Dashboard Pages
+- UI Libraries:
+  - RainbowKit (Wallet UI)
+  - Daisy-UI (Styling)
+  - Tailwind CSS (Styling)
 
-The dynamically routed [id] pages displays transactions fetched from BSC Scan and an analytics table for the respective smart contracts. Through the custom-designed function table, users can access the write functions of the smart contracts.
+- State Management:
+  - Zustand (Global State Management)
 
-### 🧩 Dashboard Components
+- Data Visualization:
+  - Chart.js (Graphs and Charts)
+  - React-Chartjs-2 (React Integration)
 
-[For more detail.](/src/app/dashboard/README.md)
+- Session Management & Auth:
+  - iron-session (Session Management)
+  - JSON Web Token (JWT) (Token Encryption & Authentication)
+  - Auth0 (OAuth and Identity Management)
+
+- Blockchain Integration:
+  - Wagmi (Wallet Connection)
+  - BSC API (Smart Contract Functions)
+  - Scaffold Eth-2 (Smart Contract Integration)
+
+- API Integration:
+  - CoinGecko API (Price & Market Data)
+  - BSC Scan API (Transaction History)
+
+- Middleware and Server Functions:
+  - Next.js Server Actions & API
+  - Secure Cookie Management
+
+- Build & Deployment:
+  - Vercel (Deployment)
+  - Husky (Git Hooks)
+  - Lint-staged (Pre-commit Hooks)
+```
 
 ## 👜 Requirements
 
@@ -102,3 +133,15 @@ yarn start
 ```
 
 You can interact with your smart contract on `http://localhost:3000`.
+
+# 🪧 APP Routes
+
+TODO
+
+## 📑 Dashboard Pages
+
+The dynamically routed [id] pages displays transactions fetched from BSC Scan and an analytics table for the respective smart contracts. Through the custom-designed function table, users can access the write functions of the smart contracts.
+
+### 🧩 Dashboard Components
+
+[For more detail.](/src/app/dashboard/README.md)

@@ -1,7 +1,8 @@
 const cronSecret = process.env.CRON_SECRET;
 const vercelByPass = process.env.VERCEL_BYPASS;
 
-const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000";
+const baseDomain = process.env.DOMAIN;
+const baseUrl = process.env.NODE_ENV === "production" ? `https://${baseDomain}` : "http://localhost:3000";
 
 export async function fetchTransactions(contractAddress: string, testnet: boolean) {
   /**

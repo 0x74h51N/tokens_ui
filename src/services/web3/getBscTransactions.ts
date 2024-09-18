@@ -1,34 +1,25 @@
 "use server";
 import { Address } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
+import { delay, fetchData } from "./utils";
+import scaffoldConfig from "~~/scaffold.config";
 
-async function fetchData(url: string, revalidateTime?: number): Promise<ExtendedTransaction[]> {
-  const response = await fetch(
-    url,
-    revalidateTime
-      ? {
-          next: { revalidate: revalidateTime },
-        }
-      : {
-          method: "GET",
-          cache: "no-store",
-        },
-  );
-  const data = await response.json();
-
-  if (data.status === "1") {
-    return data.result as ExtendedTransaction[];
-  } else {
-    throw new Error(data.message || "Failed to fetch data");
-  }
-}
-async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+/**
+ * Fetches transaction data from the Binance Smart Chain (BSC) using the BSC Scan API.
+ * This function can fetch transactions either from the testnet or mainnet, and can fetch all transactions or a subset.
+ *
+ * @param contractAddress - The contract address for which to fetch transactions.
+ * @param testnet - A string indicating whether to fetch from the testnet ("true") or mainnet ("false").
+ * @param all - A string indicating whether to fetch all transactions ("true") or a subset ("false").
+ * @param offset - The number of transactions to fetch per page (used for pagination).
+ *
+ * @returns {Promise<ExtendedTransaction[]>} - Returns a promise that resolves to an array of ExtendedTransaction objects.
+ */
 export async function getBscTransactions(
   contractAddress: Address,
   testnet: string,
   all: string,
+  offset: string,
 ): Promise<ExtendedTransaction[]> {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -38,8 +29,7 @@ export async function getBscTransactions(
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   let transactions: ExtendedTransaction[] = [];
   if (all === "true") {
-    const maxOffset = 350;
-    const revalidateTime = 86200;
+    const maxOffset = Number(offset);
     let page = 1;
     const maxRetries = 5;
 
@@ -49,7 +39,7 @@ export async function getBscTransactions(
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
-          const fetchedTransactions = await fetchData(url, revalidateTime);
+          const fetchedTransactions = await fetchData<ExtendedTransaction>(url, 86398);
           await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
@@ -78,10 +68,10 @@ export async function getBscTransactions(
       }
     }
   } else {
-    const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
     try {
-      transactions = await fetchData(url);
+      const revalidate = scaffoldConfig.pollingInterval / 1000;
+      transactions = await fetchData<ExtendedTransaction>(url, revalidate - 1);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }

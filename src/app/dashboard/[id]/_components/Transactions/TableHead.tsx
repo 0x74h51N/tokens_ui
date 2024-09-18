@@ -1,7 +1,7 @@
 import { Dispatch, useState } from "react";
-import getMethodName from "../../../../utils/getMethodName";
 import { formatEther } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
+import getMethodName from "~~/utils/getMethodName";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
 
 interface TheadProps {

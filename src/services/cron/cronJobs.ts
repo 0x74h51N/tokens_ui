@@ -1,80 +1,55 @@
 "use server";
-import { revalidatePath } from "next/cache";
 import scaffoldConfig from "~~/scaffold.config";
+import { delay } from "../web3/utils";
+import { revalidatePath } from "next/cache";
+import { fetchTransactions } from "./utils";
 
-const cronSecret = process.env.CRON_SECRET;
-const vercelByPass = process.env.VERCEL_BYPASS;
 const testnetAddresses = scaffoldConfig.testnetContractAddressList || [];
 const mainnetAddresses = scaffoldConfig.contractAddressList || [];
-const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000/";
-
-async function fetchTransactions(contractAddress: string, testnet: boolean) {
-  const url = `${baseUrl}/api/fetch-transactions?contractaddress=${contractAddress}&testnet=${testnet}&allTx=true`;
-  console.log(`Fetching transactions from URL: ${url}`);
-
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${cronSecret}`,
-  };
-
-  if (vercelByPass) {
-    headers["x-vercel-protection-bypass"] = vercelByPass;
-  }
-
-  const response = await fetch(url, {
-    method: "GET",
-    headers,
-    cache: "no-store",
-  });
-  console.log(`Response status: ${response.status}`);
-
-  if (!response.ok) {
-    console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
-    throw new Error(`Failed to fetch transactions for ${contractAddress}`);
-  }
-
-  console.log(`Transactions fetched for ${contractAddress}`);
-  return `Transactions fetched for ${contractAddress}`;
-}
-
-async function delay(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
+/**
+ * This function is designed to be executed as a daily cron job. Its primary purpose is to fetch transactions
+ * from the BNB Smart Chain (BSC) for a list of contract addresses, both on testnet and mainnet, and cache
+ * the results for efficient retrieval for client requests.
+ */
 export async function runCronJobs() {
   console.log("Cron job started");
-  revalidatePath("/api/fetch-transactions");
   let resultMessage = "Cron jobs completed with the following results:\n";
 
-  await delay(500);
+  //Clean cached transaction from fetch-transactions route before cron-job run
+  revalidatePath("/api/fetch-transactions");
+  console.log("Revalidate complete");
 
+  await delay(500);
+  // Process testnet addresses
   for (const address of testnetAddresses) {
     console.log(`Fetching transactions for testnet address: ${address}`);
     try {
       const message = await fetchTransactions(address, true);
-      console.log(`Successfully fetched transactions for testnet address: ${address}`);
-      resultMessage += `Testnet address ${address}: ${message}\n`;
+
+      //await getBscTransactions(address, "true", "true", "300");
+      resultMessage += `Testnet address ${address} mes: ${message}\n`;
     } catch (error) {
       if (error instanceof Error) {
         console.error(`Error fetching transactions for testnet address ${address}:`, error);
         resultMessage += `Testnet address ${address}: ${error.message}\n`;
       }
     }
-    await delay(500);
+    await delay(500); // Avoid hitting rate limits
   }
-
+  // Process mainnet addresses
   for (const address of mainnetAddresses) {
     console.log(`Fetching transactions for mainnet address: ${address}`);
     try {
       const message = await fetchTransactions(address, false);
-      console.log(`Successfully fetched transactions for mainnet address: ${address}`);
-      resultMessage += `Mainnet address ${address}: ${message}\n`;
+      // await getBscTransactions(address, "false", "true", "300");
+      resultMessage += `Mainnet address ${address} mes: ${message}\n`;
     } catch (error) {
       if (error instanceof Error) {
         console.error(`Error fetching transactions for mainnet address ${address}:`, error);
         resultMessage += `Mainnet address ${address}: ${error.message}\n`;
       }
     }
-    await delay(500);
+    await delay(500); // Avoid hitting rate limits
   }
   console.log("Cron job finished");
   return resultMessage;

@@ -1,6 +1,10 @@
-import { ChartOptions } from "chart.js";
+import { ChartOptions, LegendItem, LegendElement, TooltipItem, ChartEvent } from "chart.js";
 import { Colors, color } from "./colors";
 import { ContractName } from "~~/utils/scaffold-eth/contract";
+
+const isTouchDevice = () => {
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+};
 
 const chartOptions = (
   chartData: ChartData,
@@ -96,32 +100,65 @@ const chartOptions = (
         labels: {
           usePointStyle: true,
         },
-        onHover: (event: any, legendItem: any, legend: any) => {
-          const chart = legend.chart;
-          const index = legendItem.datasetIndex;
-          if (chart.isDatasetVisible(index)) {
-            chart.data.datasets.forEach((dataset: any, i: number) => {
-              if (i !== index) {
-                dataset.borderColor = "rgba(200, 200, 200, 0.2)";
-                dataset.backgroundColor = "rgba(200, 200, 200, 0.2)";
+        onHover: !isTouchDevice()
+          ? (event: ChartEvent, legendItem: LegendItem, legend: LegendElement<"line" | "bar">) => {
+              const chart = legend.chart;
+              const index = legendItem.datasetIndex || 0;
+              if (chart.isDatasetVisible(index)) {
+                chart.data.datasets.forEach((dataset, i: number) => {
+                  if (i !== index) {
+                    dataset.borderColor = "rgba(200, 200, 200, 0.2)";
+                    dataset.backgroundColor = "rgba(200, 200, 200, 0.2)";
+                  }
+                });
+                chart.update();
               }
-            });
-            chart.update();
-          }
-        },
-        onLeave: (event: any, legendItem: any, legend: any) => {
-          const chart = legend.chart;
-          chart.data.datasets.forEach((dataset: any) => {
-            const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
-            const color = colors[colorKey as keyof Colors] as color;
-
-            if (color) {
-              dataset.borderColor = color.borderColor;
-              dataset.backgroundColor = color.backgroundColor;
             }
-          });
-          chart.update();
-        },
+          : undefined,
+        onLeave: !isTouchDevice()
+          ? (event: ChartEvent, legendItem: LegendItem, legend: LegendElement<"line" | "bar">) => {
+              const chart = legend.chart;
+              chart.data.datasets.forEach(dataset => {
+                if (dataset.label) {
+                  const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
+                  const color = colors[colorKey as keyof Colors] as color;
+
+                  if (color) {
+                    dataset.borderColor = color.borderColor;
+                    dataset.backgroundColor = color.backgroundColor;
+                  }
+                }
+              });
+              chart.update();
+            }
+          : undefined,
+        onClick: !isTouchDevice()
+          ? (event: ChartEvent, legendItem: LegendItem, legend: LegendElement<"line" | "bar">) => {
+              const chart = legend.chart;
+              const index = legendItem.datasetIndex || 0;
+
+              if (chart.data.datasets) {
+                chart.data.datasets.forEach(dataset => {
+                  if (dataset.label) {
+                    const colorKey = dataset.label.charAt(0).toLowerCase() + dataset.label.slice(1).replace(/\s+/g, "");
+                    const color = colors[colorKey as keyof Colors] as color;
+
+                    if (color) {
+                      dataset.borderColor = color.borderColor;
+                      dataset.backgroundColor = color.backgroundColor;
+                    }
+                  }
+                });
+              }
+
+              chart.update();
+              if (chart.isDatasetVisible(index)) {
+                chart.hide(index);
+              } else {
+                chart.show(index);
+              }
+            }
+          : undefined,
       },
       tooltip: {
         mode: "index",
@@ -129,7 +166,7 @@ const chartOptions = (
         intersect: false,
         yAlign: "center",
         callbacks: {
-          title: function (tooltipItems) {
+          title: function (tooltipItems: TooltipItem<"line" | "bar">[]) {
             if (tooltipItems.length) {
               const dateLabel = tooltipItems[0].label;
               return dateLabel.split(",")[0] + dateLabel.split(",")[1];

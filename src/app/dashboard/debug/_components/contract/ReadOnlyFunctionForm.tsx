@@ -5,16 +5,16 @@ import { InheritanceTooltip } from "./InheritanceTooltip";
 import { Abi, AbiFunction } from "abitype";
 import { Address } from "viem";
 import { useReadContract } from "wagmi";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { getParsedError, notification } from "~~/utils/scaffold-eth";
+import { ContractInput } from "./ContractInput";
 import {
-  ContractInput,
-  displayTxResult,
-  getFunctionInputKey,
   getInitialFormState,
   getParsedContractFunctionArgs,
   transformAbiFunction,
-} from "~~/app/debug/_components/contract";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
-import { getParsedError, notification } from "~~/utils/scaffold-eth";
+  getFunctionInputKey,
+} from "./utilsContract";
+import { displayTxResult } from "./utilsDisplay";
 
 type ReadOnlyFunctionFormProps = {
   contractAddress: Address;

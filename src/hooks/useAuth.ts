@@ -7,6 +7,11 @@ export const useAuth = () => {
   const setSessionStart = useGlobalState(state => state.setSessionStart);
   const { signMessageAsync } = useSignMessage();
   const [isSigning, setIsSigning] = useState(false);
+
+  /**
+   * Validates the current session by making an API call to check if the session is still valid.
+   * @returns {Promise<boolean>} - Returns true if the session is valid, otherwise false.
+   */
   const validateSession = async () => {
     try {
       const response = await validateSessionAction();
@@ -20,6 +25,13 @@ export const useAuth = () => {
       return false;
     }
   };
+
+  /**
+   * Handles the login process by signing a message with the user's wallet and verifying the signature.
+   * If the signature is valid, the session is established.
+   * @param {string} address - The wallet address of the user.
+   * @returns {Promise<{ isLogin: boolean } | undefined>} - Returns an object indicating if the login was successful.
+   */
   const handleLogin = async (address: string): Promise<{ isLogin: boolean } | undefined> => {
     if (isSigning) return;
 
@@ -47,6 +59,10 @@ export const useAuth = () => {
     }
   };
 
+  /**
+   * Handles the logout process by destroying the session.
+   * After the session is destroyed, the global session state is updated to reflect that the user is logged out.
+   */
   const handleLogout = async () => {
     const response = await logoutAction();
     if (response?.success) {

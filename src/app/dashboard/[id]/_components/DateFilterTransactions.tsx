@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { ExtendedTransaction } from "~~/types/utils";
 import { ArrowLongRightIcon } from "@heroicons/react/24/outline";
@@ -8,9 +8,23 @@ interface DateFilterTransactionsProps {
   transactions: ExtendedTransaction[];
   col?: boolean | false;
 }
-
+/**
+ * DateFilterTransactions Component
+ *
+ * This component allows users to filter a list of transactions by a specified date range.
+ * The filtered transactions are then passed to the parent component through the `setDateRangeTxs` prop.
+ * Users can either select predefined date ranges (e.g., 1 month, 6 months, 1 year)
+ * or specify a custom date range using date input fields.
+ *
+ * @param {DateFilterTransactionsProps} props - The props for the DateFilterTransactions component.
+ * @param {Dispatch<SetStateAction<ExtendedTransaction[]>>} props.setDateRangeTxs - A state setter function to update the filtered transactions list based on the selected date range.
+ * @param {ExtendedTransaction[]} props.transactions - The original list of transactions to be filtered.
+ * @param {boolean | false} [props.col] - An optional prop that determines the layout direction (column or row) for the component.
+ *
+ * @returns {JSX.Element} The rendered component for filtering transactions by date range.
+ */
 const DateFilterTransactions = ({ setDateRangeTxs, transactions, col }: DateFilterTransactionsProps) => {
-  const [selectedButton, setSelectedButton] = useState<string | null>("all");
+  const [selectedButton, setSelectedButton] = useState<string | null>(() => "all");
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -33,35 +47,37 @@ const DateFilterTransactions = ({ setDateRangeTxs, transactions, col }: DateFilt
       setEndDate(maxDate);
     }
     setDateRangeTxs(transactions);
-  }, [transactions]);
+  }, [minDate, maxDate, setDateRangeTxs, transactions]);
 
-  const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = e.target.value ? new Date(e.target.value) : null;
-    setStartDate(date);
-    startDate && setSelectedButton("date");
-  };
+  // Function to handle changes in the custom start or end date input fields
+  const handleDateChange =
+    (setter: Dispatch<SetStateAction<Date | null>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const date = e.target.value ? new Date(e.target.value) : null;
+      setter(date);
+      setSelectedButton("date");
+    };
 
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = e.target.value ? new Date(e.target.value) : null;
-    setEndDate(date);
-    startDate && setSelectedButton("date");
-  };
+  // Function to filter the transactions based on the selected date range
+  const updateDateRange = useCallback(
+    (start: Date, end: Date) => {
+      const startTime = start.getTime() / 1000;
+      const endTime = end.getTime() / 1000;
+      const filteredTransactions = transactions.filter(
+        tx => Number(tx.timeStamp) >= startTime && Number(tx.timeStamp) <= endTime,
+      );
+      setDateRangeTxs(filteredTransactions);
+    },
+    [transactions, setDateRangeTxs],
+  );
 
+  // Effect to update the filtered transactions when the start or end date changes
   useEffect(() => {
     if (startDate && endDate) {
       updateDateRange(startDate, endDate);
     }
-  }, [startDate, endDate]);
+  }, [startDate, endDate, updateDateRange]);
 
-  const updateDateRange = (start: Date, end: Date) => {
-    const startTime = start.getTime() / 1000;
-    const endTime = end.getTime() / 1000;
-    const filteredTransactions = transactions.filter(
-      tx => Number(tx.timeStamp) >= startTime && Number(tx.timeStamp) <= endTime,
-    );
-    setDateRangeTxs(filteredTransactions);
-  };
-
+  // Function to handle the selection of predefined date ranges (e.g., 1 month, 6 months, 1 year, all)
   const handleClick = (type: string) => {
     setSelectedButton(type);
     const now = new Date();
@@ -123,7 +139,7 @@ const DateFilterTransactions = ({ setDateRangeTxs, transactions, col }: DateFilt
         <input
           type="date"
           value={startDate ? dayjs(startDate).format("YYYY-MM-DD") : ""}
-          onChange={handleStartDateChange}
+          onChange={handleDateChange(setStartDate)}
           min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
           max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
           className={dateInputClass}
@@ -132,7 +148,7 @@ const DateFilterTransactions = ({ setDateRangeTxs, transactions, col }: DateFilt
         <input
           type="date"
           value={endDate ? dayjs(endDate).format("YYYY-MM-DD") : ""}
-          onChange={handleEndDateChange}
+          onChange={handleDateChange(setEndDate)}
           min={minDate ? dayjs(minDate).format("YYYY-MM-DD") : undefined}
           max={maxDate ? dayjs(maxDate).format("YYYY-MM-DD") : undefined}
           className={dateInputClass}

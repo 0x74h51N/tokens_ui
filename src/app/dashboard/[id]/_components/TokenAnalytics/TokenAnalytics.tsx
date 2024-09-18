@@ -14,6 +14,16 @@ import { dailyGroupedData, twoDaysGroupedData, weeklyGroupedData } from "./_util
 import DateFilterTransactions from "../DateFilterTransactions";
 ChartJS.register(...registerables);
 
+/**
+ * TokenAnalytics Component
+ *
+ * This component displays analytics for a specific token contract using Chart.js.
+ * It processes and visualizes transfer data related to the token contract, providing insights such as
+ * transfer amounts, counts, and unique senders/receivers over time.
+ *
+ * @param deployedContractData: Data of the deployed contract including its address and methods.
+ * @param contractName: The name of the token contract to display analytics for.
+ */
 const TokenAnalytics = ({
   deployedContractData,
   contractName,
@@ -37,12 +47,16 @@ const TokenAnalytics = ({
   const [chartData, setChartData] = useState<ChartData | null>(null);
 
   useEffect(() => {
+    // Update the colors based on the current theme (dark/light mode)
     if (resolvedTheme) {
       setColors(getThemeColors(resolvedTheme));
     }
   }, [resolvedTheme]);
 
-  /**Filter transactions to only include valid transfer transactions */
+  /**
+   * Filter transactions to only include valid transfer transactions.
+   * Valid transactions are those where the method name is "transfer".
+   */
   useEffect(() => {
     if (globalTransactions && globalTransactions.length > 0) {
       const transferTransactions = globalTransactions.filter(
@@ -52,7 +66,11 @@ const TokenAnalytics = ({
     }
   }, [globalTransactions]);
 
-  /**Select appropriate data grouping based on the number of days in filteredTransfers */
+  /**
+   * Select appropriate data grouping based on the number of days in the filtered transfers.
+   * If the data spans more than 365 days, group by week. If more than 182 days, group by two days.
+   * Otherwise, group by day.
+   */
   useEffect(() => {
     const dailyGrouped = dailyGroupedData(dateRangeTxs);
     let selectedData: Record<string, ChartDataType> = {};
@@ -128,7 +146,7 @@ const TokenAnalytics = ({
     if (chartData) {
       setOptions(chartOptions(chartData, colors, maxDateTicks, contractName));
     }
-  }, [chartData, colors]);
+  }, [chartData, colors, maxDateTicks, contractName]);
 
   return (
     <div className="w-full justify-center items-center h-auto max-md:px-1 relative flex-grow pb-3">
@@ -149,9 +167,7 @@ const TokenAnalytics = ({
           )}
         </div>
       ) : (
-        <div className="h-full flex items-center justify-center text-xl italic">
-          Please connect your wallet for data request...
-        </div>
+        <div className="h-full flex items-center justify-center text-xl italic">Please login for data request...</div>
       )}
     </div>
   );

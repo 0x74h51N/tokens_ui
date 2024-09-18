@@ -6,18 +6,18 @@ import { Abi, AbiFunction } from "abitype";
 import { Address, TransactionReceipt } from "viem";
 import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
-  ContractInput,
-  TxReceipt,
-  getFunctionInputKey,
   getInitialFormState,
   getParsedContractFunctionArgs,
   transformAbiFunction,
-} from "~~/app/debug/_components/contract";
+  getFunctionInputKey,
+} from "./utilsContract";
 import { IntegerInput } from "~~/components/scaffold-eth";
 import { useTransactor } from "~~/hooks/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { formatVariableName } from "~~/utils/formatVariableName";
 import { getCoolDisplayName } from "~~/utils/getCoolDisplayName";
+import { ContractInput } from "./ContractInput";
+import { TxReceipt } from "./TxReceipt";
 
 type WriteOnlyFunctionFormProps = {
   abi: Abi;

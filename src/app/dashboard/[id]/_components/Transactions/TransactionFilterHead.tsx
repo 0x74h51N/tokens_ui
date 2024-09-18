@@ -59,7 +59,7 @@ const TransactionFilterHead = ({ setSortedTransactions, transactions, contractNa
   }, [dateRangeTxs, searchTerm, tags]);
   useEffect(() => {
     setSortedTransactions(filteredTransactions);
-  }, [filteredTransactions]);
+  }, [filteredTransactions, setSortedTransactions]);
   return (
     <div className="p-4 bg-base-300 rounded-t-xl">
       <h1 className="w-full font-bold lg:text-4xl md:text-2xl text-xl card-title  antialiased m-0">

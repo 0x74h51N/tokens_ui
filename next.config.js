@@ -2,7 +2,12 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  reactStrictMode: process.env.NODE_ENV !== "production",
   async headers() {
     return [
       {
@@ -25,7 +30,12 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/nnn",
+        destination: "/dashboard/nnn",
+        permanent: true,
+      },
+      {
+        source: "/dashboard",
+        destination: "/dashboard/nnn",
         permanent: true,
       },
     ];

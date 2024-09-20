@@ -51,7 +51,7 @@
     "use-debounce": "^10.0.1",
     "usehooks-ts": "^3.1.0",
     "viem": "^2.19.4",
-    "wagmi": "^2.12.5",
+    "wagmi": "^2.12.12",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
@@ -76,7 +76,7 @@
     "tailwindcss": "^3.4.12",
     "type-fest": "^4.6.0",
     "typescript": "5.5.3",
-    "vercel": "^35.2.0"
+    "vercel": "^37.5.3"
   },
   "engines": {
     "node": ">=20.0.0"

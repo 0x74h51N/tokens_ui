@@ -1,9 +1,9 @@
 {
-  "installCommand": "yarn install",
+  "buildCommand": "yarn build",
   "crons": [
     {
       "path": "/api/cron-jobs",
-      "schedule": "30 0 * * *"
+      "schedule": "0 1 * * *"
     }
   ]
 }

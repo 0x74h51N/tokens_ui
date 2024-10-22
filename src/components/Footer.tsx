@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { CurrencyDollarIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/outline";
@@ -49,6 +50,15 @@ export const Footer = () => {
                 <span className="link">BuidlGuidl</span>
               </a>
             </div>
+            <span>·</span>
+            <a
+              className="flex justify-center items-center gap-1"
+              href="https://crunchypix.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="link">0x74h51N</span>
+            </a>
           </div>
         </ul>
       </div>

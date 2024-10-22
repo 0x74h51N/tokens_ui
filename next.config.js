@@ -2,7 +2,12 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
+  reactStrictMode: process.env.NODE_ENV !== "production",
   async headers() {
     return [
       {
@@ -25,10 +30,21 @@ const nextConfig = {
     return [
       {
         source: "/",
-        destination: "/nnn",
+        destination: "/dashboard/nnn",
+        permanent: true,
+      },
+      {
+        source: "/dashboard",
+        destination: "/dashboard/nnn",
         permanent: true,
       },
     ];
+  },
+  env: {
+    AUTH0_BASE_URL:
+      process.env.NODE_ENV === "production"
+        ? "https://tokens-ui.crunchypix.com"
+        : process.env.VERCEL_URL || "http://localhost:3000",
   },
   typescript: {
     ignoreBuildErrors: process.env.NEXT_PUBLIC_IGNORE_BUILD_ERROR === "true",

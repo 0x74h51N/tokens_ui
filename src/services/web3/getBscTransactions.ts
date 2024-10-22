@@ -1,25 +1,25 @@
-import { revalidatePath } from "next/cache";
-import scaffoldConfig from "~~/scaffold.config";
+"use server";
+import { Address } from "viem";
 import { ExtendedTransaction } from "~~/types/utils";
+import { delay, fetchData } from "./utils";
+import scaffoldConfig from "~~/scaffold.config";
 
-async function fetchData(url: string, revalidateTime: number): Promise<ExtendedTransaction[]> {
-  const response = await fetch(url, {
-    next: { revalidate: revalidateTime },
-  });
-  const data = await response.json();
-
-  if (data.status === "1") {
-    return data.result as ExtendedTransaction[];
-  } else {
-    throw new Error(data.message || "Failed to fetch data");
-  }
-}
-
+/**
+ * Fetches transaction data from the Binance Smart Chain (BSC) using the BSC Scan API.
+ * This function can fetch transactions either from the testnet or mainnet, and can fetch all transactions or a subset.
+ *
+ * @param contractAddress - The contract address for which to fetch transactions.
+ * @param testnet - A string indicating whether to fetch from the testnet ("true") or mainnet ("false").
+ * @param all - A string indicating whether to fetch all transactions ("true") or a subset ("false").
+ * @param offset - The number of transactions to fetch per page (used for pagination).
+ *
+ * @returns {Promise<ExtendedTransaction[]>} - Returns a promise that resolves to an array of ExtendedTransaction objects.
+ */
 export async function getBscTransactions(
-  contractAddress: string,
+  contractAddress: Address,
   testnet: string,
   all: string,
-  cleanCache: string,
+  offset: string,
 ): Promise<ExtendedTransaction[]> {
   if (!contractAddress) {
     throw new Error("Contract address is required");
@@ -28,25 +28,19 @@ export async function getBscTransactions(
   const apiKey = process.env.BSC_SCAN_API_KEY;
   const domain = testnet === "true" ? "api-testnet.bscscan.com" : "api.bscscan.com";
   let transactions: ExtendedTransaction[] = [];
-
   if (all === "true") {
-    const maxOffset = 450;
-    const revalidateTime = 60 * 60 * 24;
+    const maxOffset = Number(offset);
     let page = 1;
     const maxRetries = 5;
 
     while (true) {
       const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=${page}&offset=${maxOffset}&sort=desc&apikey=${apiKey}`;
-
-      if (cleanCache === "true") {
-        await revalidatePaths(url);
-      }
-
       let success = false;
       let retries = 0;
       while (!success && retries < maxRetries) {
         try {
-          const fetchedTransactions = await fetchData(url, revalidateTime);
+          const fetchedTransactions = await fetchData<ExtendedTransaction>(url, 86398);
+          await delay(200);
           console.log(`Fetched ${fetchedTransactions.length} transactions (page: ${page}, try: ${retries + 1})`);
 
           if (fetchedTransactions.length === 0) {
@@ -74,16 +68,10 @@ export async function getBscTransactions(
       }
     }
   } else {
-    const offset = 100;
     const url = `https://${domain}/api?module=account&action=tokentx&contractaddress=${contractAddress}&page=1&offset=${offset}&sort=desc&apikey=${apiKey}`;
-    const revalidateTime = scaffoldConfig.pollingInterval / 1000;
-
-    if (cleanCache === "true") {
-      await revalidatePaths(url);
-    }
-
     try {
-      transactions = await fetchData(url, revalidateTime - 1);
+      const revalidate = scaffoldConfig.pollingInterval / 1000;
+      transactions = await fetchData<ExtendedTransaction>(url, revalidate - 1);
     } catch (error) {
       console.error("Error fetching transactions:", error);
     }
@@ -91,13 +79,4 @@ export async function getBscTransactions(
 
   console.log(`Total transactions fetched: ${transactions.length}`);
   return transactions;
-}
-
-async function revalidatePaths(path: string) {
-  try {
-    await revalidatePath(path);
-  } catch (error) {
-    console.error("Error revalidating path:", error);
-    throw error;
-  }
 }

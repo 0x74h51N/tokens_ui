@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCookie, setCookie } from "cookies-next";
+import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { Address, getAddress } from "viem";
 
@@ -29,9 +29,9 @@ export async function POST(req: NextRequest) {
     const token = jwt.sign(payload, secretKey, { expiresIn: "30d" });
     const response = NextResponse.json({ message: "Token set successfully" });
 
-    setCookie(`${cookieName}_token_${contractAddress ? contractAddress : ""}`, token, {
-      req,
-      res: response,
+    cookies().set({
+      name: `${cookieName}_token_${contractAddress ? contractAddress : ""}`,
+      value: token,
       httpOnly: true,
       sameSite: "strict",
       secure: true,
@@ -68,13 +68,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Cookie name not provided" }, { status: 471 });
     }
 
-    const token = getCookie(`${cookieName}_token_${contractAddress ? contractAddress : ""}`, { req });
+    const token = cookies().get(`${cookieName}_token_${contractAddress ? contractAddress : ""}`);
 
     if (!token) {
       return NextResponse.json({ error: "Token not provided" }, { status: 400 });
     }
 
-    const decoded = jwt.verify(token, secretKey);
+    const decoded = jwt.verify(token.value, secretKey);
     return NextResponse.json({ message: "JWT Token valid, data access granted", data: decoded }, { status: 200 });
   } catch (err) {
     return NextResponse.json({ message: "Invalid token", error: err }, { status: 401 });

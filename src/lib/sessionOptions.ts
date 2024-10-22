@@ -4,7 +4,7 @@ export const sessionOptions = {
   password: process.env.SESSION_PASSWORD as string,
   cookieName: "token_ui_session",
   cookieOptions: {
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.VERCEL_ENV === "production",
     maxAge: undefined,
     sameSite: "strict" as const,
   },

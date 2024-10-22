@@ -55,7 +55,7 @@ export const loginAction = async (address: Address, signature: SignMessageReturn
 export const logoutAction = async () => {
   const session = await getSession();
   session.destroy();
-  return { success: true };
+  redirect("/login");
 };
 
 /**

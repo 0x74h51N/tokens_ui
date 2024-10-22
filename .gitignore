@@ -48,8 +48,6 @@ yarn-error.log*
 # cli
 dist
 
-# husky
-.husky/
 
 # local env files
 .env

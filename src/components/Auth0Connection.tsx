@@ -80,9 +80,8 @@ const Auth0Connection = ({ user, isLoading, account, blockExplorerAddressLink, c
       !account && setSessionStart(false);
     }
     if (account) {
-      await handleLogout();
       await disconnect();
-      router.push("/login");
+      await handleLogout();
     }
   };
 

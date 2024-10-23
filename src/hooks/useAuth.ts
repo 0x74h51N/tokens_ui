@@ -64,15 +64,8 @@ export const useAuth = () => {
    * After the session is destroyed, the global session state is updated to reflect that the user is logged out.
    */
   const handleLogout = async () => {
-    const response = await logoutAction();
-    if (response?.success) {
-      console.log("Logout successful");
-      setSessionStart(false);
-      return;
-    } else {
-      console.log("Logout failed");
-      return;
-    }
+    setSessionStart(false);
+    await logoutAction();
   };
 
   return { handleLogin, handleLogout, validateSession };
